@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "371466371148",
+    "project_id": "blogify-c6f62",
+    "storage_bucket": "blogify-c6f62.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371466371148:android:1e3a6104bab9780f69f4e9",
+        "android_client_info": {
+          "package_name": "com.example.blogify_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "371466371148-088ma3op9eiacbs3s4fh7hqn6s49qei9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGHKh8P6nAw5HY6HBEJE0vi9gia_AoA6M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "371466371148-088ma3op9eiacbs3s4fh7hqn6s49qei9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "371466371148-9csf75cvcanhm46fcou19ck929hiin1d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.blogifyFlutter"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
