@@ -5,6 +5,8 @@ import 'package:blogify_flutter/views/home/home_view.dart';
 import 'package:blogify_flutter/views/categories/categories_view.dart';
 import 'package:blogify_flutter/views/explore/explore_view.dart';
 import 'package:blogify_flutter/views/stories/stories_view.dart';
+import 'package:blogify_flutter/views/community/community_forum_view.dart';
+import 'package:blogify_flutter/views/settings/settings_view.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -25,6 +27,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/stories',
         builder: (context, state) => const StoriesView(),
+      ),
+      GoRoute(
+        path: '/community',
+        builder: (context, state) => const CommunityForumView(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsView(),
       ),
     ],
     errorBuilder: (context, state) => const NotFoundPage(),

@@ -186,56 +186,108 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                     'Explore the World of Blogging',
                                     style: TextStyle(
                                       fontSize: 24,
-                                      fontWeight: FontWeight.w800,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF1F2937),
                                     ),
                                   ),
-                                  SizedBox(height: 16),
-                                  Container(
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade50,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 12),
-                                          child: Icon(
-                                            Icons.search,
-                                            color: Colors.grey.shade600,
-                                            size: 20,
-                                          ),
+                                  SizedBox(height: 24),
+                                  // Modern Search Box
+                                  MouseRegion(
+                                    cursor: SystemMouseCursors.text,
+                                    child: Container(
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(24),
+                                        border: Border.all(
+                                          color: Colors.grey.shade200,
+                                          width: 1.5,
                                         ),
-                                        Expanded(
-                                          child: TextField(
-                                            decoration: InputDecoration(
-                                              hintText:
-                                                  'Search blogs, authors, or topics...',
-                                              hintStyle: TextStyle(
-                                                color: Colors.grey.shade600,
-                                                fontSize: 14,
-                                              ),
-                                              border: InputBorder.none,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.04),
+                                            blurRadius: 8,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 16),
+                                            child: Icon(
+                                              Icons.search_rounded,
+                                              color: AppTheme.primaryColor,
+                                              size: 20,
                                             ),
                                           ),
-                                        ),
-                                        IconButton(
-                                          icon: Icon(
-                                            Icons.tune,
-                                            color: Colors.grey.shade600,
-                                            size: 20,
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: TextField(
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color: Color(0xFF1F2937),
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                              decoration: InputDecoration(
+                                                hintText: 'Search...',
+                                                hintStyle: TextStyle(
+                                                  color: Colors.grey.shade400,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                border: InputBorder.none,
+                                                enabledBorder: InputBorder.none,
+                                                focusedBorder: InputBorder.none,
+                                                errorBorder: InputBorder.none,
+                                                disabledBorder:
+                                                    InputBorder.none,
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                  vertical: 14,
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                          onPressed: () {},
-                                        ),
-                                      ],
+                                          Container(
+                                            height: 28,
+                                            width: 1,
+                                            color: Colors.grey.shade200,
+                                            margin: EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                            ),
+                                          ),
+                                          Tooltip(
+                                            message: 'Advanced filters',
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                borderRadius:
+                                                    BorderRadius.circular(50),
+                                                onTap: () {},
+                                                child: Container(
+                                                  padding: EdgeInsets.all(8),
+                                                  child: Icon(
+                                                    Icons.tune_rounded,
+                                                    color:
+                                                        AppTheme.primaryColor,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 8),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
 
-                            SizedBox(height: 32),
+                            SizedBox(height: 48),
 
                             // Trending Topics Section
                             Padding(
@@ -246,8 +298,9 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                   Text(
                                     'Trending Topics',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.w600,
+                                      color: Color(0xFF1F2937),
                                     ),
                                   ),
                                   SizedBox(height: 16),
@@ -286,53 +339,20 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                               ),
                             ),
 
-                            SizedBox(height: 32),
+                            SizedBox(height: 48),
 
-                            // Updated Filters Section
+                            // Sort By Section
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 24),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Filters',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  SizedBox(height: 16),
-                                  Text(
-                                    'Categories',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: [
-                                      'Travel',
-                                      'Technology',
-                                      'Lifestyle',
-                                      'Food',
-                                      'Art',
-                                      'Health'
-                                    ].map((category) {
-                                      final isSelected =
-                                          selectedCategories.contains(category);
-                                      return _buildFilterChip(
-                                          category, isSelected);
-                                    }).toList(),
-                                  ),
-                                  SizedBox(height: 24),
-                                  Text(
                                     'Sort By',
                                     style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey.shade600,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF1F2937),
                                     ),
                                   ),
                                   SizedBox(height: 8),
@@ -341,7 +361,9 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                               ),
                             ),
 
-                            // Updated Popular Authors Section (without borders)
+                            SizedBox(height: 48),
+
+                            // Popular Authors Section
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 24),
                               child: Column(
@@ -350,8 +372,9 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                   Text(
                                     'Popular Authors',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.w600,
+                                      color: Color(0xFF1F2937),
                                     ),
                                   ),
                                   SizedBox(height: 16),
@@ -388,7 +411,9 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                               ),
                             ),
 
-                            // Updated Stay Updated Section
+                            SizedBox(height: 48),
+
+                            // Stay Updated Section
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 24),
                               child: Container(
@@ -449,6 +474,10 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                         child: TextField(
                                           decoration: InputDecoration(
                                             hintText: 'Enter your email',
+                                            hintStyle: TextStyle(
+                                              color: Colors.grey.shade500,
+                                              fontSize: 14,
+                                            ),
                                             contentPadding:
                                                 EdgeInsets.symmetric(
                                               horizontal: 12,
@@ -595,21 +624,16 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                           ),
                           SizedBox(height: 24),
                           if (isGridView)
-                            GridView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 24,
-                                mainAxisSpacing: 24,
-                                childAspectRatio: 0.8,
-                              ),
-                              itemCount: 9,
-                              itemBuilder: (context, index) {
-                                return _buildLatestPostCard(isGridView,
-                                    postId: 'post-$index');
-                              },
+                            Wrap(
+                              spacing: 24,
+                              runSpacing: 24,
+                              children: List.generate(9, (index) {
+                                return Container(
+                                  width: 320,
+                                  child: _buildLatestPostCard(isGridView,
+                                      postId: 'post-$index'),
+                                );
+                              }),
                             )
                           else
                             ListView.separated(
@@ -1058,95 +1082,187 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
   }
 
   Widget _buildLatestPostCard(bool isGrid, {required String postId}) {
+    final String title = 'The Future of AI in Healthcare';
+    final String content =
+        'Artificial Intelligence is revolutionizing healthcare with innovative solutions for diagnosis, treatment planning, and patient care. From machine learning algorithms analyzing medical images to AI-powered robotic surgery assistants, the possibilities are endless...';
+    final String author = 'Dr. Sarah Johnson';
+    final String date = '2 hours ago';
+    final String imageUrl =
+        'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d';
+    final String category = 'Technology';
+
     if (isGrid) {
       return Consumer(
         builder: (context, ref, child) {
           final isHovered = ref.watch(hoveredLatestPostProvider) == postId;
           return MouseRegion(
             cursor: SystemMouseCursors.click,
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade200),
-                    boxShadow: [
-                      BoxShadow(
-                        color: isHovered
-                            ? AppTheme.primaryColor.withOpacity(0.4)
-                            : Colors.black.withOpacity(0.05),
-                        blurRadius: 20,
-                        spreadRadius: isHovered ? 2 : 0,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: isHovered
+                        ? AppTheme.primaryColor.withOpacity(0.4)
+                        : Colors.black.withOpacity(0.05),
+                    blurRadius: 20,
+                    offset: Offset(0, 8),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Image with category and date overlay
+                  Stack(
                     children: [
                       ClipRRect(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(12)),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                        ),
                         child: Image.network(
-                          'https://images.unsplash.com/photo-1547592180-85f173990554',
+                          imageUrl,
                           height: 160,
                           width: double.infinity,
                           fit: BoxFit.cover,
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.green.shade50,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                'Lifestyle',
-                                style: TextStyle(
-                                  color: Colors.green.shade700,
-                                  fontSize: 12,
-                                ),
-                              ),
+                      Positioned(
+                        top: 16,
+                        left: 16,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryColor.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            category,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
                             ),
-                            SizedBox(height: 12),
-                            Text(
-                              'The Art of Mindful Living',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 16,
+                        right: 16,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            date,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
                             ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Discover the secrets to living a more mindful and balanced life...',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade600,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ),
-                if (isHovered)
-                  Positioned.fill(
-                    child: NeonBorderEffect(
-                      borderRadius: 12,
-                      margin: EdgeInsets.zero,
+                  // Content
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Title
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1F2937),
+                            height: 1.3,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 8),
+                        // Content
+                        Text(
+                          content,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                            height: 1.5,
+                          ),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 16),
+                        // Author info
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundImage: NetworkImage(
+                                'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    author,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                      color: Color(0xFF1F2937),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    'Author',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (isHovered)
+                              Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryColor.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.arrow_forward,
+                                  size: 16,
+                                  color: AppTheme.primaryColor,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-              ],
+                ],
+              ),
             ),
             onEnter: (_) =>
                 ref.read(hoveredLatestPostProvider.notifier).state = postId,
@@ -1161,115 +1277,154 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
           final isHovered = ref.watch(hoveredLatestPostProvider) == postId;
           return MouseRegion(
             cursor: SystemMouseCursors.click,
-            child: Stack(
-              children: [
-                Container(
-                  height: 180,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade200),
-                    boxShadow: [
-                      BoxShadow(
-                        color: isHovered
-                            ? AppTheme.primaryColor.withOpacity(0.4)
-                            : Colors.black.withOpacity(0.05),
-                        blurRadius: 20,
-                        spreadRadius: isHovered ? 2 : 0,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: isHovered
+                        ? AppTheme.primaryColor.withOpacity(0.4)
+                        : Colors.black.withOpacity(0.05),
+                    blurRadius: 20,
+                    offset: Offset(0, 8),
                   ),
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius:
-                            BorderRadius.horizontal(left: Radius.circular(12)),
-                        child: Image.network(
-                          'https://images.unsplash.com/photo-1547592180-85f173990554',
-                          width: 280,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Image
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        imageUrl,
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.cover,
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.all(24),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                    const SizedBox(width: 24),
+                    // Content
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Category and Date
+                          Row(
                             children: [
                               Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: Colors.green.shade50,
-                                  borderRadius: BorderRadius.circular(12),
+                                  color: AppTheme.primaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Text(
-                                  'Lifestyle',
+                                  category,
                                   style: TextStyle(
-                                    color: Colors.green.shade700,
-                                    fontSize: 12,
+                                    color: AppTheme.primaryColor,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 12),
+                              const SizedBox(width: 12),
                               Text(
-                                'Healthy Living in 2025: Simple habits that can transform your lifestyle',
+                                date,
                                 style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey.shade600,
+                                  fontSize: 14,
                                 ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Spacer(),
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 12,
-                                    backgroundImage: NetworkImage(
-                                      'https://images.unsplash.com/photo-1544005313-94ddf0286df2',
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Emma Wilson',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                  SizedBox(width: 16),
-                                  Text(
-                                    '5 min read',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                  SizedBox(width: 16),
-                                  Text(
-                                    '2 days ago',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                ],
                               ),
                             ],
                           ),
-                        ),
+                          const SizedBox(height: 16),
+                          // Title
+                          Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1F2937),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          // Blog Content
+                          Text(
+                            content,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey.shade600,
+                              height: 1.6,
+                              letterSpacing: 0.15,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 16),
+                          // Author
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 16,
+                                backgroundImage: NetworkImage(
+                                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                author,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF1F2937),
+                                ),
+                              ),
+                              const Spacer(),
+                              // Read More
+                              if (isHovered)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        AppTheme.primaryColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Read More',
+                                        style: TextStyle(
+                                          color: AppTheme.primaryColor,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.arrow_forward,
+                                        size: 16,
+                                        color: AppTheme.primaryColor,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                if (isHovered)
-                  Positioned.fill(
-                    child: NeonBorderEffect(
-                      borderRadius: 12,
-                      margin: EdgeInsets.zero,
                     ),
-                  ),
-              ],
+                  ],
+                ),
+              ),
             ),
             onEnter: (_) =>
                 ref.read(hoveredLatestPostProvider.notifier).state = postId,

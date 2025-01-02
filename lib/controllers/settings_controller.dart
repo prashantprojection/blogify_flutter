@@ -5,7 +5,7 @@ class SettingsModel {
   final double neonEffectSpeed;
 
   const SettingsModel({
-    this.neonEffectEnabled = true,
+    this.neonEffectEnabled = false,
     this.neonEffectSpeed = 1.0,
   });
 

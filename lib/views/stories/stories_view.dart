@@ -193,8 +193,21 @@ class StoriesView extends ConsumerStatefulWidget {
 }
 
 class _StoriesViewState extends ConsumerState<StoriesView> {
-  final _carouselController = CarouselController();
   final _scrollController = ScrollController();
+  late final CarouselController _carouselController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _carouselController = CarouselController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   final List<Map<String, dynamic>> stories = [
     {
@@ -451,6 +464,12 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                                       showIndicator: false,
                                       enlargeStrategy:
                                           CenterPageEnlargeStrategy.scale,
+                                      onPageChanged: (index, reason) {
+                                        setState(() {
+                                          _currentPage = index;
+                                        });
+                                      },
+                                      controller: _carouselController,
                                     ),
                                   ),
                                 ),
@@ -788,9 +807,25 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
       child: GestureDetector(
         onTap: () {
           if (isLeft) {
-            _carouselController.previousPage();
+            int newPage = _currentPage - 1;
+            if (newPage < 0) newPage = stories.length - 1;
+            setState(() {
+              _currentPage = newPage;
+            });
+            _carouselController.previousPage(
+              duration: Duration(milliseconds: 400),
+              curve: Curves.easeInOut,
+            );
           } else {
-            _carouselController.nextPage();
+            int newPage = _currentPage + 1;
+            if (newPage >= stories.length) newPage = 0;
+            setState(() {
+              _currentPage = newPage;
+            });
+            _carouselController.nextPage(
+              duration: Duration(milliseconds: 400),
+              curve: Curves.easeInOut,
+            );
           }
         },
         child: Container(

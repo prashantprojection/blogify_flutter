@@ -25,7 +25,7 @@ class _NeonBorderEffectState extends ConsumerState<NeonBorderEffect>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 3000),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat();
   }
@@ -41,8 +41,8 @@ class _NeonBorderEffectState extends ConsumerState<NeonBorderEffect>
       _baseSpeed = speed;
       // Stop the animation
       _controller.stop();
-      // Update the duration
-      _controller.duration = Duration(milliseconds: (3000 / speed).round());
+      // Update the duration - faster speeds will have shorter durations
+      _controller.duration = Duration(milliseconds: (1500 / speed).round());
       // Get the current value
       final currentValue = _controller.value;
       // Reset and repeat with new duration

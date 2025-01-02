@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:universal_platform/universal_platform.dart';
 import 'package:blogify_flutter/controllers/settings_controller.dart';
 import 'package:blogify_flutter/widgets/common/neon_border_effect.dart';
+import 'package:blogify_flutter/widgets/common/hover_box.dart';
 
 class MenuWidget extends ConsumerStatefulWidget {
   const MenuWidget({Key? key}) : super(key: key);
@@ -206,7 +208,7 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
         _buildMenuItem(
           icon: Icons.forum_outlined,
           label: 'Community Forum',
-          onTap: () {},
+          onTap: () => context.go('/community'),
           iconColor: Colors.blue,
         ),
       ],
@@ -360,10 +362,11 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
           label: 'Content Preferences',
           onTap: () {},
         ),
+        _buildDivider(),
         _buildMenuItem(
           icon: Icons.settings_outlined,
           label: 'Settings',
-          onTap: () {},
+          onTap: () => context.go('/settings'),
         ),
       ],
     );
@@ -396,25 +399,51 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
     Color? textColor,
     Color? iconColor,
   }) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Icon(icon, size: 20, color: iconColor ?? Colors.grey.shade700),
-            SizedBox(width: 12),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                color: textColor ?? Colors.grey.shade800,
-                fontWeight: FontWeight.w500,
+    final isDesktop = UniversalPlatform.isWindows ||
+        UniversalPlatform.isLinux ||
+        UniversalPlatform.isMacOS ||
+        UniversalPlatform.isWeb;
+
+    return HoverBox(
+      builder: (context, isHovered) {
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            hoverColor: isDesktop
+                ? const Color(0xFF6366F1).withOpacity(0.08)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    icon,
+                    size: 20,
+                    color: isHovered && isDesktop
+                        ? const Color(0xFF6366F1)
+                        : (iconColor ?? Colors.grey.shade700),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isHovered && isDesktop
+                          ? const Color(0xFF6366F1)
+                          : (textColor ?? Colors.grey.shade800),
+                      fontWeight: isHovered && isDesktop
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
