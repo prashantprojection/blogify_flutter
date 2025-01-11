@@ -6,6 +6,14 @@ import 'package:blogify_flutter/widgets/common/app_header.dart';
 import 'package:blogify_flutter/widgets/common/app_footer.dart';
 import 'package:blogify_flutter/widgets/common/hoverable_cards.dart';
 import 'package:blogify_flutter/widgets/common/neon_border_effect.dart';
+import 'package:blogify_flutter/views/article/article_view.dart';
+import 'package:blogify_flutter/controllers/article_controller.dart';
+import 'package:blogify_flutter/models/article.dart';
+import 'package:go_router/go_router.dart';
+import 'package:blogify_flutter/utils/navigation_helper.dart';
+import 'package:blogify_flutter/constants/ui_constants.dart';
+import 'package:blogify_flutter/constants/app_strings.dart';
+import 'package:blogify_flutter/widgets/common/error_widgets.dart';
 
 final viewTypeProvider =
     StateProvider<bool>((ref) => false); // false = list view, true = grid view
@@ -106,676 +114,1031 @@ class ExploreView extends ConsumerStatefulWidget {
 class _ExploreViewState extends ConsumerState<ExploreView> {
   String selectedCategory = 'Most Popular';
   bool isHovered = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  // Add a method to calculate grid columns based on screen width
+  // Add a method to check if the screen is mobile
+  bool isMobileScreen(BuildContext context) {
+    return MediaQuery.of(context).size.width < UIConstants.tabletBreakpoint;
+  }
+
+  // Add a method to check if the screen is tablet
+  bool isTabletScreen(BuildContext context) {
+    return MediaQuery.of(context).size.width >= UIConstants.tabletBreakpoint &&
+        MediaQuery.of(context).size.width < UIConstants.desktopBreakpoint;
+  }
+
+  // Update the grid columns calculation
   int _getGridColumns(double width) {
-    if (width > 1500) return 4;
-    if (width > 1200) return 3;
-    if (width > 800) return 2;
-    return 1;
+    if (width < 768) return 1;
+    if (width < 1024) return 2;
+    if (width < 1440) return 3;
+    return 4;
   }
 
-  // Add a method to calculate item spacing based on screen width
-  double _getItemSpacing(double width) {
-    if (width > 1200) return 24;
-    if (width > 800) return 16;
-    return 12;
-  }
-
-  // Update the grid columns calculation for collections
+  // Update collection grid columns
   int _getCollectionGridColumns(double width) {
-    if (width > 1800) return 4;
-    if (width > 1400) return 3;
-    if (width > 800) return 2;
+    if (width >= 1800) return 4;
+    if (width >= 1400) return 3;
+    if (width >= 768) return 2;
     return 1;
+  }
+
+  // Add a method to build the sidebar content
+  Widget _buildSidebarContent() {
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Explore the World of Blogging',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1F2937),
+            ),
+          ),
+          SizedBox(height: 24),
+          // Search Box
+          _buildSearchBar(),
+          SizedBox(height: 48),
+          // Trending Topics
+          _buildTrendingTopicsSection(),
+          SizedBox(height: 48),
+          // Sort By Section
+          _buildSortBySection(),
+          SizedBox(height: 48),
+          // Popular Authors Section
+          _buildPopularAuthorsSection(),
+          SizedBox(height: 48),
+          // Stay Updated Section
+          _buildStayUpdatedSection(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      height: UIConstants.inputHeight,
+      padding: EdgeInsets.symmetric(horizontal: UIConstants.spacingM),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(UIConstants.radiusM),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.search, color: Colors.grey.shade400),
+          SizedBox(width: UIConstants.spacingS),
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search articles...',
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: UIConstants.spacingM),
+              ),
+            ),
+          ),
+          Container(
+            height: UIConstants.iconSize + 4,
+            width: 1,
+            color: Colors.grey.shade200,
+            margin: EdgeInsets.symmetric(horizontal: UIConstants.spacingS),
+          ),
+          Tooltip(
+            message: 'Advanced filters',
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(UIConstants.radiusXL),
+                onTap: () {},
+                child: Container(
+                  padding: EdgeInsets.all(UIConstants.spacingS),
+                  child: Icon(
+                    Icons.tune_rounded,
+                    color: AppTheme.primaryColor,
+                    size: UIConstants.iconSize - 4,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: UIConstants.spacingS),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTrendingTopicsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Trending Topics',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1F2937),
+          ),
+        ),
+        SizedBox(height: 16),
+        _buildTrendingTopic(
+          'Travel Diaries',
+          Icons.flight_takeoff,
+          '2.5k',
+          Colors.blue,
+        ),
+        SizedBox(height: 12),
+        _buildTrendingTopic(
+          'Tech Innovations',
+          Icons.computer,
+          '1.4k',
+          Colors.purple,
+        ),
+        SizedBox(height: 12),
+        _buildTrendingTopic(
+          'Food & Recipes',
+          Icons.restaurant_menu,
+          '1.2k',
+          Colors.orange,
+        ),
+        SizedBox(height: 16),
+        TextButton(
+          onPressed: () {},
+          child: Text('View All Topics'),
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
+            minimumSize: Size(50, 30),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSortBySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Sort By',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1F2937),
+          ),
+        ),
+        SizedBox(height: 8),
+        _buildSortByDropdown(),
+      ],
+    );
+  }
+
+  Widget _buildPopularAuthorsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Popular Authors',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1F2937),
+          ),
+        ),
+        SizedBox(height: 16),
+        _buildPopularAuthor(
+          'Sarah Johnson',
+          '12.4k followers',
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+        ),
+        SizedBox(height: 12),
+        _buildPopularAuthor(
+          'Mark Thompson',
+          '8.3k followers',
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e',
+        ),
+        SizedBox(height: 12),
+        _buildPopularAuthor(
+          'Emily Chen',
+          '15.2k followers',
+          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStayUpdatedSection() {
+    return Container(
+      padding: EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.blue.shade300,
+            Colors.purple.shade300,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Stay Updated!',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Get exclusive content delivered to your inbox',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white.withOpacity(0.9),
+            ),
+          ),
+          SizedBox(height: 16),
+          MouseRegion(
+            onEnter: (_) => setState(() => isHovered = true),
+            onExit: (_) => setState(() => isHovered = false),
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: isHovered
+                    ? [
+                        BoxShadow(
+                          color: Colors.white.withOpacity(0.3),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        ),
+                      ]
+                    : [],
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Enter your email',
+                  hintStyle: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontSize: 14,
+                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 12),
+          MouseRegion(
+            onEnter: (_) => setState(() => isHovered = true),
+            onExit: (_) => setState(() => isHovered = false),
+            child: Container(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {},
+                child: Text('Subscribe'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.blue.shade700,
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  elevation: isHovered ? 8 : 0,
+                  shadowColor: isHovered
+                      ? Colors.white.withOpacity(0.3)
+                      : Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToArticle(BuildContext context, String postId) {
+    final articles = ref.read(sampleArticlesProvider);
+    final article = articles.firstWhere(
+      (article) => article.id == postId,
+      orElse: () => articles.first,
+    );
+    NavigationHelper.navigateToArticle(context, article);
   }
 
   @override
   Widget build(BuildContext context) {
-    final isGridView = ref.watch(viewTypeProvider);
-    final selectedCategories = ref.watch(selectedCategoriesProvider);
     final screenWidth = MediaQuery.of(context).size.width;
-    final gridColumns = _getGridColumns(screenWidth);
-    final itemSpacing = _getItemSpacing(screenWidth);
-    final contentWidth =
-        screenWidth > 1600 ? screenWidth * 0.7 : screenWidth * 0.85;
+    final isMobile = isMobileScreen(context);
+    final isTablet = isTabletScreen(context);
+    final contentPadding = isMobile ? 16.0 : 32.0;
 
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
-      appBar: AppHeader(),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Left Section (23% width)
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.23,
-                  height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8),
-                    border: Border(
-                      right: BorderSide(
-                        color: Colors.grey.shade200,
+      appBar: AppHeader(
+        isLarge: false,
+        leading: isMobile
+            ? IconButton(
+                icon: Icon(Icons.menu, color: Colors.grey.shade800),
+                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+              )
+            : null,
+        elevation: 1,
+        mobileActions: [
+          IconButton(
+            icon:
+                Icon(Icons.notifications_outlined, color: Colors.grey.shade800),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: Icon(Icons.person_outline, color: Colors.grey.shade800),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      drawer: isMobile
+          ? Drawer(
+              child: SafeArea(
+                child: _buildSidebarContent(),
+              ),
+            )
+          : null,
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Sidebar for tablet and desktop
+          if (!isMobile)
+            Container(
+              width: isTablet ? screenWidth * 0.3 : screenWidth * 0.23,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.8),
+                border: Border(
+                  right: BorderSide(color: Colors.grey.shade200),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.5),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: _buildSidebarContent(),
+                ),
+              ),
+            ),
+
+          // Main content
+          Expanded(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              color: Colors.grey.shade50,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(contentPadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Latest Posts Section
+                    _buildLatestPostsSection(isMobile),
+
+                    SizedBox(height: 40),
+
+                    // Popular Collections Section
+                    Text(
+                      'Popular Collections',
+                      style: TextStyle(
+                        fontSize: isMobile ? 20 : 24,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.white.withOpacity(0.5),
-                        blurRadius: 20,
-                        spreadRadius: 5,
+                    SizedBox(height: 24),
+                    _buildCollectionsGrid(screenWidth, contentPadding),
+
+                    SizedBox(height: 40),
+
+                    // Community Highlights Section
+                    Text(
+                      'Community Highlights',
+                      style: TextStyle(
+                        fontSize: isMobile ? 20 : 24,
+                        fontWeight: FontWeight.w700,
                       ),
-                    ],
+                    ),
+                    SizedBox(height: 24),
+                    _buildHighlightsGrid(screenWidth, contentPadding),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLatestPostsSection(bool isMobile) {
+    final articles = ref.watch(sampleArticlesProvider);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final contentPadding =
+        isMobile ? UIConstants.spacingM : UIConstants.spacingL;
+    final isGridView = ref.watch(viewTypeProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Latest Posts',
+              style: TextStyle(
+                fontSize: isMobile ? 20 : 24,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.grid_view_rounded,
+                    color: isGridView ? AppTheme.primaryColor : Colors.grey,
                   ),
-                  child: ClipRRect(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(vertical: 32),
+                  onPressed: () =>
+                      ref.read(viewTypeProvider.notifier).state = true,
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.view_agenda_rounded,
+                    color: !isGridView ? AppTheme.primaryColor : Colors.grey,
+                  ),
+                  onPressed: () =>
+                      ref.read(viewTypeProvider.notifier).state = false,
+                ),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: UIConstants.spacingL),
+        AsyncValueWidget<List<Article>>(
+          value: AsyncValue.data(articles),
+          data: (articles) {
+            if (articles.isEmpty) {
+              return EmptyStateView(
+                message: AppStrings.noContent,
+                icon: Icons.article_outlined,
+                actionLabel: 'Create Article',
+                onAction: () {
+                  // Handle create article action
+                },
+              );
+            }
+
+            if (isGridView) {
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: _getGridColumns(screenWidth),
+                  crossAxisSpacing:
+                      isMobile ? UIConstants.spacingM : UIConstants.spacingL,
+                  mainAxisSpacing:
+                      isMobile ? UIConstants.spacingM : UIConstants.spacingL,
+                  mainAxisExtent: 400,
+                ),
+                itemCount: articles.length,
+                itemBuilder: (context, index) {
+                  return _buildLatestPostCard(true, postId: 'post-$index');
+                },
+              );
+            }
+
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: articles.length,
+              separatorBuilder: (context, index) => SizedBox(
+                height: isMobile ? UIConstants.spacingM : UIConstants.spacingL,
+              ),
+              itemBuilder: (context, index) {
+                return _buildLatestPostCard(false, postId: 'post-$index');
+              },
+            );
+          },
+          loading: () => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: UIConstants.spacingM),
+                Text(AppStrings.loading),
+              ],
+            ),
+          ),
+          error: (error, stackTrace) => ErrorView(
+            message: error.toString(),
+            onRetry: () {
+              // Handle retry logic
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLatestPostCard(bool isGrid, {required String postId}) {
+    final String title = 'The Future of AI in Healthcare';
+    final String content =
+        'Artificial Intelligence is revolutionizing healthcare with innovative solutions for diagnosis, treatment planning, and patient care. From machine learning algorithms analyzing medical images to AI-powered robotic surgery assistants, the possibilities are endless...';
+    final String author = 'Dr. Sarah Johnson';
+    final String date = '2 hours ago';
+    final String imageUrl =
+        'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d';
+    final String category = 'Technology';
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 768;
+    final isTablet = screenWidth >= 768 && screenWidth < 1024;
+
+    if (isGrid) {
+      return Consumer(
+        builder: (context, ref, child) {
+          final isHovered = ref.watch(hoveredLatestPostProvider) == postId;
+          return MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () => _navigateToArticle(context, postId),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade200),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isHovered
+                          ? AppTheme.primaryColor.withOpacity(0.4)
+                          : Colors.black.withOpacity(0.05),
+                      blurRadius: 20,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Image Section with Fixed Height
+                    SizedBox(
+                      height: 200,
+                      width: double.infinity,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                        ),
+                        child: Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    // Content Section
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Header Section
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Explore the World of Blogging',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xFF1F2937),
-                                    ),
-                                  ),
-                                  SizedBox(height: 24),
-                                  // Modern Search Box
-                                  MouseRegion(
-                                    cursor: SystemMouseCursors.text,
-                                    child: Container(
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(24),
-                                        border: Border.all(
-                                          color: Colors.grey.shade200,
-                                          width: 1.5,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.04),
-                                            blurRadius: 8,
-                                            offset: Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.only(left: 16),
-                                            child: Icon(
-                                              Icons.search_rounded,
-                                              color: AppTheme.primaryColor,
-                                              size: 20,
-                                            ),
-                                          ),
-                                          SizedBox(width: 8),
-                                          Expanded(
-                                            child: TextField(
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                color: Color(0xFF1F2937),
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                              decoration: InputDecoration(
-                                                hintText: 'Search...',
-                                                hintStyle: TextStyle(
-                                                  color: Colors.grey.shade400,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                border: InputBorder.none,
-                                                enabledBorder: InputBorder.none,
-                                                focusedBorder: InputBorder.none,
-                                                errorBorder: InputBorder.none,
-                                                disabledBorder:
-                                                    InputBorder.none,
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                  vertical: 14,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            height: 28,
-                                            width: 1,
-                                            color: Colors.grey.shade200,
-                                            margin: EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                            ),
-                                          ),
-                                          Tooltip(
-                                            message: 'Advanced filters',
-                                            child: Material(
-                                              color: Colors.transparent,
-                                              child: InkWell(
-                                                borderRadius:
-                                                    BorderRadius.circular(50),
-                                                onTap: () {},
-                                                child: Container(
-                                                  padding: EdgeInsets.all(8),
-                                                  child: Icon(
-                                                    Icons.tune_rounded,
-                                                    color:
-                                                        AppTheme.primaryColor,
-                                                    size: 20,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(width: 8),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                            // Category Tag
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                category,
+                                style: TextStyle(
+                                  color: AppTheme.primaryColor,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
-
-                            SizedBox(height: 48),
-
-                            // Trending Topics Section
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Trending Topics',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF1F2937),
-                                    ),
-                                  ),
-                                  SizedBox(height: 16),
-                                  _buildTrendingTopic(
-                                    'Travel Diaries',
-                                    Icons.flight_takeoff,
-                                    '2.5k',
-                                    Colors.blue,
-                                  ),
-                                  SizedBox(height: 12),
-                                  _buildTrendingTopic(
-                                    'Tech Innovations',
-                                    Icons.computer,
-                                    '1.4k',
-                                    Colors.purple,
-                                  ),
-                                  SizedBox(height: 12),
-                                  _buildTrendingTopic(
-                                    'Food & Recipes',
-                                    Icons.restaurant_menu,
-                                    '1.2k',
-                                    Colors.orange,
-                                  ),
-                                  SizedBox(height: 16),
-                                  TextButton(
-                                    onPressed: () {},
-                                    child: Text('View All Topics'),
-                                    style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: Size(50, 30),
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                  ),
-                                ],
+                            SizedBox(height: 12),
+                            // Title
+                            Text(
+                              title,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1F2937),
+                                height: 1.3,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 8),
+                            // Content
+                            Expanded(
+                              child: Text(
+                                content,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                  height: 1.5,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-
-                            SizedBox(height: 48),
-
-                            // Sort By Section
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Sort By',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF1F2937),
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  _buildSortByDropdown(),
-                                ],
-                              ),
-                            ),
-
-                            SizedBox(height: 48),
-
-                            // Popular Authors Section
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Popular Authors',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF1F2937),
-                                    ),
-                                  ),
-                                  SizedBox(height: 16),
-                                  _buildPopularAuthor(
-                                    'Sarah Johnson',
-                                    '12.4k followers',
+                            // Author Section
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 16,
+                                  backgroundImage: NetworkImage(
                                     'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
                                   ),
-                                  SizedBox(height: 12),
-                                  _buildPopularAuthor(
-                                    'Mark Thompson',
-                                    '8.3k followers',
-                                    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e',
-                                  ),
-                                  SizedBox(height: 12),
-                                  _buildPopularAuthor(
-                                    'Emily Chen',
-                                    '15.2k followers',
-                                    'https://images.unsplash.com/photo-1438761681033-6461ffad8d80',
-                                  ),
-                                  SizedBox(height: 12),
-                                  _buildPopularAuthor(
-                                    'David Wilson',
-                                    '10.1k followers',
-                                    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e',
-                                  ),
-                                  SizedBox(height: 12),
-                                  _buildPopularAuthor(
-                                    'Sofia Rodriguez',
-                                    '9.8k followers',
-                                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb',
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            SizedBox(height: 48),
-
-                            // Stay Updated Section
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24),
-                              child: Container(
-                                padding: EdgeInsets.all(24),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Colors.blue.shade300,
-                                      Colors.purple.shade300,
+                                ),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        author,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                          color: Color(0xFF1F2937),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        date,
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 12,
+                                        ),
+                                      ),
                                     ],
                                   ),
-                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Stay Updated!',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
+                                if (isHovered)
+                                  Container(
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.primaryColor
+                                          .withOpacity(0.1),
+                                      shape: BoxShape.circle,
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Get exclusive content delivered to your inbox',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.white.withOpacity(0.9),
-                                      ),
+                                    child: Icon(
+                                      Icons.arrow_forward,
+                                      size: 16,
+                                      color: AppTheme.primaryColor,
                                     ),
-                                    SizedBox(height: 16),
-                                    MouseRegion(
-                                      onEnter: (_) =>
-                                          setState(() => isHovered = true),
-                                      onExit: (_) =>
-                                          setState(() => isHovered = false),
-                                      child: Container(
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          boxShadow: isHovered
-                                              ? [
-                                                  BoxShadow(
-                                                    color: Colors.white
-                                                        .withOpacity(0.3),
-                                                    blurRadius: 8,
-                                                    spreadRadius: 2,
-                                                  ),
-                                                ]
-                                              : [],
-                                        ),
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            hintText: 'Enter your email',
-                                            hintStyle: TextStyle(
-                                              color: Colors.grey.shade500,
-                                              fontSize: 14,
-                                            ),
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                            ),
-                                            border: InputBorder.none,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 12),
-                                    MouseRegion(
-                                      onEnter: (_) =>
-                                          setState(() => isHovered = true),
-                                      onExit: (_) =>
-                                          setState(() => isHovered = false),
-                                      child: Container(
-                                        width: double.infinity,
-                                        child: ElevatedButton(
-                                          onPressed: () {},
-                                          child: Text('Subscribe'),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.white,
-                                            foregroundColor:
-                                                Colors.blue.shade700,
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 12),
-                                            elevation: isHovered ? 8 : 0,
-                                            shadowColor: isHovered
-                                                ? Colors.white.withOpacity(0.3)
-                                                : Colors.transparent,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                                  ),
+                              ],
                             ),
                           ],
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
+              ),
+            ),
+            onEnter: (_) =>
+                ref.read(hoveredLatestPostProvider.notifier).state = postId,
+            onExit: (_) =>
+                ref.read(hoveredLatestPostProvider.notifier).state = null,
+          );
+        },
+      );
+    }
 
-                // Right Section (77% width)
-                Expanded(
-                  child: Container(
-                    height: MediaQuery.of(context).size.height,
-                    color: Colors.grey.shade50,
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.all(32),
+    // List view card layout
+    return Consumer(
+      builder: (context, ref, child) {
+        final isHovered = ref.watch(hoveredLatestPostProvider) == postId;
+        return MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: () => _navigateToArticle(context, postId),
+            child: Container(
+              height: isMobile ? 140 : null,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: isHovered
+                        ? AppTheme.primaryColor.withOpacity(0.4)
+                        : Colors.black.withOpacity(0.05),
+                    blurRadius: 20,
+                    offset: Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Image on the left
+                  ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      bottomLeft: Radius.circular(12),
+                    ),
+                    child: Image.network(
+                      imageUrl,
+                      width: isMobile ? 140 : 200,
+                      height: isMobile ? 140 : 200,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+
+                  // Content
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Featured Posts Section
-                          Text(
-                            'Featured Posts',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(height: 24),
+                          // Category and Date
                           Row(
                             children: [
-                              Expanded(
-                                child: _buildFeaturedPostCard(
-                                  'Ultimate Travel Guide 2025',
-                                  'Discover the most breathtaking destinations for your next adventure...',
-                                  'https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b',
-                                  'Alex Rives',
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
                                 ),
-                              ),
-                              SizedBox(width: 24),
-                              Expanded(
-                                child: _buildFeaturedPostCard(
-                                  'Future of Technology',
-                                  'Exploring the latest trends in AI and machine learning...',
-                                  'https://images.unsplash.com/photo-1581783898377-1c85bf937427',
-                                  'Marie Chen',
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 24),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildFeaturedPostCard(
-                                  'Sustainable Living',
-                                  'Simple ways to reduce your carbon footprint and live eco-friendly...',
-                                  'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09',
-                                  'Emma Green',
-                                ),
-                              ),
-                              SizedBox(width: 24),
-                              Expanded(
-                                child: _buildFeaturedPostCard(
-                                  'Modern Architecture',
-                                  'Exploring innovative designs and sustainable building practices...',
-                                  'https://images.unsplash.com/photo-1511818966892-d7d671e672a2',
-                                  'James Foster',
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          SizedBox(height: 40),
-
-                          // Latest Posts Section
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Latest Posts',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      isGridView
-                                          ? Icons.grid_view
-                                          : Icons.view_agenda,
-                                      color: Colors.grey.shade700,
-                                    ),
-                                    onPressed: () {
-                                      ref
-                                          .read(viewTypeProvider.notifier)
-                                          .state = !isGridView;
-                                    },
+                                child: Text(
+                                  category,
+                                  style: TextStyle(
+                                    color: AppTheme.primaryColor,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
                                   ),
-                                ],
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                date,
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 12,
+                                ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 24),
-                          if (isGridView)
-                            Wrap(
-                              spacing: 24,
-                              runSpacing: 24,
-                              children: List.generate(9, (index) {
-                                return Container(
-                                  width: 320,
-                                  child: _buildLatestPostCard(isGridView,
-                                      postId: 'post-$index'),
-                                );
-                              }),
-                            )
-                          else
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: 9,
-                              separatorBuilder: (context, index) =>
-                                  SizedBox(height: 24),
-                              itemBuilder: (context, index) {
-                                return _buildLatestPostCard(isGridView,
-                                    postId: 'post-$index');
-                              },
-                            ),
+                          SizedBox(height: 8),
 
-                          SizedBox(height: 40),
-
-                          // Popular Collections Section
+                          // Title
                           Text(
-                            'Popular Collections',
+                            title,
                             style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1F2937),
                             ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          SizedBox(height: 24),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount:
-                                  _getCollectionGridColumns(screenWidth),
-                              crossAxisSpacing: itemSpacing,
-                              mainAxisSpacing: itemSpacing,
-                              childAspectRatio: screenWidth > 800 ? 1.5 : 1.3,
-                            ),
-                            itemCount: collections.length,
-                            itemBuilder: (context, index) {
-                              final collection = collections[index];
-                              return _buildCollectionCard(
-                                collectionId: 'collection-$index',
-                                title: collection['title'] as String,
-                                description:
-                                    collection['description'] as String,
-                                images: (collection['images'] as List<String>),
-                              );
-                            },
-                          ),
+                          SizedBox(height: 4),
 
-                          SizedBox(height: 40),
+                          // Content
+                          if (!isMobile) ...[
+                            Text(
+                              content,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                                height: 1.5,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 12),
+                          ],
 
-                          // Community Highlights Section
-                          Text(
-                            'Community Highlights',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
+                          // Author info
+                          if (!isMobile)
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 16,
+                                  backgroundImage: NetworkImage(
+                                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  author,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    color: Color(0xFF1F2937),
+                                  ),
+                                ),
+                                Spacer(),
+                                if (isHovered)
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.primaryColor
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Read More',
+                                          style: TextStyle(
+                                            color: AppTheme.primaryColor,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        SizedBox(width: 4),
+                                        Icon(
+                                          Icons.arrow_forward,
+                                          size: 16,
+                                          color: AppTheme.primaryColor,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
                             ),
-                          ),
-                          SizedBox(height: 24),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: gridColumns,
-                              crossAxisSpacing: itemSpacing,
-                              mainAxisSpacing: itemSpacing,
-                              childAspectRatio: 1.5,
+
+                          // Author info for mobile (simplified)
+                          if (isMobile)
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 12,
+                                  backgroundImage: NetworkImage(
+                                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+                                  ),
+                                ),
+                                SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    author,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                      color: Color(0xFF1F2937),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
-                            itemCount: 8,
-                            itemBuilder: (context, index) {
-                              final highlights = [
-                                {
-                                  'title': 'Photography Tips',
-                                  'likes': '1.2K',
-                                  'icon': Icons.thumb_up,
-                                  'color': Colors.blue
-                                },
-                                {
-                                  'title': 'Best Travel Stories',
-                                  'likes': '2.5K',
-                                  'icon': Icons.trending_up,
-                                  'color': Colors.orange
-                                },
-                                {
-                                  'title': 'Tech Reviews',
-                                  'likes': '1.8K',
-                                  'icon': Icons.star,
-                                  'color': Colors.purple
-                                },
-                                {
-                                  'title': 'Cooking Guides',
-                                  'likes': '3.1K',
-                                  'icon': Icons.favorite,
-                                  'color': Colors.red
-                                },
-                                {
-                                  'title': 'Fitness Journey',
-                                  'likes': '1.5K',
-                                  'icon': Icons.directions_run,
-                                  'color': Colors.green
-                                },
-                                {
-                                  'title': 'Art Tutorials',
-                                  'likes': '2.2K',
-                                  'icon': Icons.palette,
-                                  'color': Colors.pink
-                                },
-                                {
-                                  'title': 'Book Reviews',
-                                  'likes': '1.9K',
-                                  'icon': Icons.menu_book,
-                                  'color': Colors.teal
-                                },
-                                {
-                                  'title': 'DIY Projects',
-                                  'likes': '2.7K',
-                                  'icon': Icons.build,
-                                  'color': Colors.amber
-                                },
-                              ];
-                              final highlight = highlights[index];
-                              return _buildHighlightCard(
-                                highlightId: 'highlight-$index',
-                                title: highlight['title'] as String,
-                                likes: highlight['likes'] as String,
-                                icon: highlight['icon'] as IconData,
-                                color: highlight['color'] as Color,
-                              );
-                            },
-                          ),
                         ],
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ],
+          onEnter: (_) =>
+              ref.read(hoveredLatestPostProvider.notifier).state = postId,
+          onExit: (_) =>
+              ref.read(hoveredLatestPostProvider.notifier).state = null,
+        );
+      },
+    );
+  }
+
+  Widget _buildCollectionsGrid(double screenWidth, double spacing) {
+    final isMobile = screenWidth < 768;
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: _getCollectionGridColumns(screenWidth),
+        crossAxisSpacing: isMobile ? 16 : spacing,
+        mainAxisSpacing: isMobile ? 16 : spacing,
+        childAspectRatio: isMobile ? 1 : (screenWidth > 1200 ? 1.5 : 1.3),
       ),
+      itemCount: collections.length,
+      itemBuilder: (context, index) {
+        final collection = collections[index];
+        return _buildCollectionCard(
+          collectionId: 'collection-$index',
+          title: collection['title'] as String,
+          description: collection['description'] as String,
+          images: (collection['images'] as List<String>),
+        );
+      },
+    );
+  }
+
+  Widget _buildHighlightsGrid(double screenWidth, double spacing) {
+    final isMobile = screenWidth < 768;
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: isMobile ? 1 : _getGridColumns(screenWidth),
+        crossAxisSpacing: isMobile ? 16 : spacing,
+        mainAxisSpacing: isMobile ? 16 : spacing,
+        childAspectRatio: isMobile ? 1.2 : 1.5,
+      ),
+      itemCount: 8,
+      itemBuilder: (context, index) {
+        final highlights = [
+          {
+            'title': 'Photography Tips',
+            'likes': '1.2K',
+            'icon': Icons.thumb_up,
+            'color': Colors.blue
+          },
+          {
+            'title': 'Best Travel Stories',
+            'likes': '2.5K',
+            'icon': Icons.trending_up,
+            'color': Colors.orange
+          },
+          {
+            'title': 'Tech Reviews',
+            'likes': '1.8K',
+            'icon': Icons.star,
+            'color': Colors.purple
+          },
+          {
+            'title': 'Cooking Guides',
+            'likes': '3.1K',
+            'icon': Icons.favorite,
+            'color': Colors.red
+          },
+          {
+            'title': 'Fitness Journey',
+            'likes': '1.5K',
+            'icon': Icons.directions_run,
+            'color': Colors.green
+          },
+          {
+            'title': 'Art Tutorials',
+            'likes': '2.2K',
+            'icon': Icons.palette,
+            'color': Colors.pink
+          },
+          {
+            'title': 'Book Reviews',
+            'likes': '1.9K',
+            'icon': Icons.menu_book,
+            'color': Colors.teal
+          },
+          {
+            'title': 'DIY Projects',
+            'likes': '2.7K',
+            'icon': Icons.build,
+            'color': Colors.amber
+          },
+        ];
+        final highlight = highlights[index];
+        return _buildHighlightCard(
+          highlightId: 'highlight-$index',
+          title: highlight['title'] as String,
+          likes: highlight['likes'] as String,
+          icon: highlight['icon'] as IconData,
+          color: highlight['color'] as Color,
+        );
+      },
     );
   }
 
@@ -958,482 +1321,6 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
         );
       },
     );
-  }
-
-  Widget _buildFeaturedPostCard(
-      String title, String description, String imageUrl, String author) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final isHovered = ref.watch(hoveredFeaturedPostProvider) == title;
-        return MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isHovered
-                          ? AppTheme.primaryColor.withOpacity(0.4)
-                          : Colors.black.withOpacity(0.05),
-                      blurRadius: 20,
-                      spreadRadius: isHovered ? 2 : 0,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(16)),
-                      child: Image.network(
-                        imageUrl,
-                        height: 200,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: AppTheme.headingSmall,
-                          ),
-                          SizedBox(height: 12),
-                          Text(
-                            description,
-                            style: AppTheme.bodyMedium.copyWith(
-                              color: AppTheme.secondaryTextColor,
-                            ),
-                          ),
-                          SizedBox(height: 24),
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundImage:
-                                    NetworkImage('https://i.pravatar.cc/150'),
-                              ),
-                              SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    author,
-                                    style: AppTheme.bodyMedium.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    '5 min read',
-                                    style: AppTheme.bodySmall,
-                                  ),
-                                ],
-                              ),
-                              Spacer(),
-                              AnimatedOpacity(
-                                duration: Duration(milliseconds: 200),
-                                opacity: isHovered ? 1.0 : 0.0,
-                                child: Container(
-                                  padding: EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        AppTheme.primaryColor.withOpacity(0.1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    Icons.arrow_forward,
-                                    color: AppTheme.primaryColor,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isHovered)
-                Positioned.fill(
-                  child: NeonBorderEffect(
-                    borderRadius: 16,
-                    margin: EdgeInsets.zero,
-                  ),
-                ),
-            ],
-          ),
-          onEnter: (_) =>
-              ref.read(hoveredFeaturedPostProvider.notifier).state = title,
-          onExit: (_) =>
-              ref.read(hoveredFeaturedPostProvider.notifier).state = null,
-        );
-      },
-    );
-  }
-
-  Widget _buildLatestPostCard(bool isGrid, {required String postId}) {
-    final String title = 'The Future of AI in Healthcare';
-    final String content =
-        'Artificial Intelligence is revolutionizing healthcare with innovative solutions for diagnosis, treatment planning, and patient care. From machine learning algorithms analyzing medical images to AI-powered robotic surgery assistants, the possibilities are endless...';
-    final String author = 'Dr. Sarah Johnson';
-    final String date = '2 hours ago';
-    final String imageUrl =
-        'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d';
-    final String category = 'Technology';
-
-    if (isGrid) {
-      return Consumer(
-        builder: (context, ref, child) {
-          final isHovered = ref.watch(hoveredLatestPostProvider) == postId;
-          return MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade200),
-                boxShadow: [
-                  BoxShadow(
-                    color: isHovered
-                        ? AppTheme.primaryColor.withOpacity(0.4)
-                        : Colors.black.withOpacity(0.05),
-                    blurRadius: 20,
-                    offset: Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Image with category and date overlay
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
-                        ),
-                        child: Image.network(
-                          imageUrl,
-                          height: 160,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Positioned(
-                        top: 16,
-                        left: 16,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            category,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 16,
-                        right: 16,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.7),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text(
-                            date,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  // Content
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Title
-                        Text(
-                          title,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1F2937),
-                            height: 1.3,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 8),
-                        // Content
-                        Text(
-                          content,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                            height: 1.5,
-                          ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 16),
-                        // Author info
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 16,
-                              backgroundImage: NetworkImage(
-                                'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    author,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                      color: Color(0xFF1F2937),
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    'Author',
-                                    style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (isHovered)
-                              Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.primaryColor.withOpacity(0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.arrow_forward,
-                                  size: 16,
-                                  color: AppTheme.primaryColor,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            onEnter: (_) =>
-                ref.read(hoveredLatestPostProvider.notifier).state = postId,
-            onExit: (_) =>
-                ref.read(hoveredLatestPostProvider.notifier).state = null,
-          );
-        },
-      );
-    } else {
-      return Consumer(
-        builder: (context, ref, child) {
-          final isHovered = ref.watch(hoveredLatestPostProvider) == postId;
-          return MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade200),
-                boxShadow: [
-                  BoxShadow(
-                    color: isHovered
-                        ? AppTheme.primaryColor.withOpacity(0.4)
-                        : Colors.black.withOpacity(0.05),
-                    blurRadius: 20,
-                    offset: Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Image
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        imageUrl,
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    // Content
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Category and Date
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.primaryColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Text(
-                                  category,
-                                  style: TextStyle(
-                                    color: AppTheme.primaryColor,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                date,
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          // Title
-                          Text(
-                            title,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1F2937),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          // Blog Content
-                          Text(
-                            content,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey.shade600,
-                              height: 1.6,
-                              letterSpacing: 0.15,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 16),
-                          // Author
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 16,
-                                backgroundImage: NetworkImage(
-                                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                author,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFF1F2937),
-                                ),
-                              ),
-                              const Spacer(),
-                              // Read More
-                              if (isHovered)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        AppTheme.primaryColor.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        'Read More',
-                                        style: TextStyle(
-                                          color: AppTheme.primaryColor,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Icon(
-                                        Icons.arrow_forward,
-                                        size: 16,
-                                        color: AppTheme.primaryColor,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            onEnter: (_) =>
-                ref.read(hoveredLatestPostProvider.notifier).state = postId,
-            onExit: (_) =>
-                ref.read(hoveredLatestPostProvider.notifier).state = null,
-          );
-        },
-      );
-    }
   }
 
   Widget _buildCollectionCard({

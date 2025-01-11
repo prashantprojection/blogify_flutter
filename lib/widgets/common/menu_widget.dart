@@ -130,50 +130,59 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
   }
 
   Widget _buildProfileSection() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundImage: NetworkImage(
-              'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pop(); // Close the menu
+        context.go('/profile'); // Navigate to profile
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 25,
+              backgroundImage: NetworkImage(
+                'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+              ),
             ),
-          ),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Sarah Johnson',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Sarah Johnson',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                Text(
-                  '@sarahjohnson',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade600,
+                  Text(
+                    '@sarahjohnson',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey.shade600,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          IconButton(
-            icon: Icon(
-              IconsaxPlusBold.edit,
-              size: 18,
-              color: Colors.grey.shade700,
+            IconButton(
+              icon: Icon(
+                IconsaxPlusBold.edit,
+                size: 18,
+                color: Colors.grey.shade700,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the menu
+                context.go('/profile'); // Navigate to profile
+              },
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(),
+              splashRadius: 20,
             ),
-            onPressed: () {},
-            padding: EdgeInsets.zero,
-            constraints: BoxConstraints(),
-            splashRadius: 20,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
