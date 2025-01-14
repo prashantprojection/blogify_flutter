@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 
-class SectionTitle extends StatelessWidget {
+class SectionTitle extends ConsumerWidget {
   final String title;
   final String? subtitle;
   final Widget? leading;
@@ -13,7 +14,7 @@ class SectionTitle extends StatelessWidget {
   final TextStyle? subtitleStyle;
 
   const SectionTitle({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     this.leading,
@@ -23,10 +24,11 @@ class SectionTitle extends StatelessWidget {
     this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
     this.titleStyle,
     this.subtitleStyle,
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     return Padding(
       padding: padding ?? EdgeInsets.zero,
       child: Row(
@@ -43,7 +45,7 @@ class SectionTitle extends StatelessWidget {
                 Text(
                   title,
                   style: titleStyle ??
-                      AppTheme.headingMedium.copyWith(
+                      theme.typography.title.copyWith(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
                       ),
@@ -53,7 +55,7 @@ class SectionTitle extends StatelessWidget {
                   Text(
                     subtitle!,
                     style: subtitleStyle ??
-                        AppTheme.bodyLarge.copyWith(
+                        theme.typography.body.copyWith(
                           color: Colors.grey.shade600,
                         ),
                   ),
@@ -86,7 +88,7 @@ class SectionTitle extends StatelessWidget {
       padding: padding,
       leading: Icon(
         icon,
-        color: iconColor ?? AppTheme.primaryColor,
+        color: iconColor ?? Colors.white,
         size: iconSize ?? 32,
       ),
       trailing: trailing,
@@ -109,10 +111,6 @@ class SectionTitle extends StatelessWidget {
         onPressed: onAction,
         child: Text(
           actionLabel,
-          style: AppTheme.bodyMedium.copyWith(
-            color: AppTheme.primaryColor,
-            fontWeight: FontWeight.w600,
-          ),
         ),
       ),
     );

@@ -3,6 +3,8 @@
 *.log
 *.pyc
 *.swp
+.cursorignore
+.cursorrules
 .DS_Store
 .atom/
 .build/
@@ -32,6 +34,9 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+
+/TODO.md
+/functions/
 
 # Symbolication related
 app.*.symbols

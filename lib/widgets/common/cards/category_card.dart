@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 
-class CategoryCard extends StatelessWidget {
+class CategoryCard extends ConsumerWidget {
   final String title;
   final IconData icon;
   final Color color;
@@ -9,16 +10,17 @@ class CategoryCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const CategoryCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.icon,
     required this.color,
     this.isSelected = false,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -53,7 +55,7 @@ class CategoryCard extends StatelessWidget {
               SizedBox(width: 12),
               Text(
                 title,
-                style: AppTheme.bodyMedium.copyWith(
+                style: theme.typography.body.copyWith(
                   color: isSelected ? color : Colors.grey.shade800,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 ),

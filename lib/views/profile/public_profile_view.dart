@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
 import 'package:blogify_flutter/widgets/common/app_header.dart';
 
 class PublicProfileView extends ConsumerWidget {
@@ -40,7 +39,6 @@ class _PublicProfileViewContentState
     final contentWidth = screenWidth * 0.9;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppHeader(),
       body: SingleChildScrollView(
         child: Center(

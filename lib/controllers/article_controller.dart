@@ -4,7 +4,8 @@ import 'package:blogify_flutter/models/article.dart';
 // State providers for article view
 final fontSizeProvider = StateProvider<double>((ref) => 18.0);
 final lineHeightProvider = StateProvider<double>((ref) => 1.8);
-final themeProvider = StateProvider<ReadingTheme>((ref) => ReadingTheme.light);
+final readingThemeProvider =
+    StateProvider<ReadingTheme>((ref) => ReadingTheme.light);
 final scrollProgressProvider = StateProvider<double>((ref) => 0.0);
 final isExpandedProvider = StateProvider<bool>((ref) => false);
 final showControlsProvider = StateProvider<bool>((ref) => true);

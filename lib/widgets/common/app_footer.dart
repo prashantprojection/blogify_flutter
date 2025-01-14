@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -132,9 +132,6 @@ class AppFooter extends StatelessWidget {
       onTap: () => context.go(route),
       child: Text(
         title,
-        style: AppTheme.bodyMedium.copyWith(
-          color: (textColor ?? Colors.white).withOpacity(0.7),
-        ),
       ),
     );
   }
@@ -147,15 +144,18 @@ class AppFooter extends StatelessWidget {
       children: [
         Text(
           brandName ?? 'Blogify',
-          style: AppTheme.headingMedium.copyWith(
-            color: textColor ?? Colors.white,
+          style: TextStyle(
+            fontSize: 24,
             fontWeight: FontWeight.w900,
+            color: textColor ?? Colors.white,
           ),
         ),
         const SizedBox(height: 16),
         Text(
           tagline ?? 'Empowering Bloggers, One Story at a Time',
-          style: AppTheme.bodyLarge.copyWith(
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
             color: (textColor ?? Colors.white).withOpacity(0.7),
           ),
         ),
@@ -216,7 +216,9 @@ class AppFooter extends StatelessWidget {
       children: [
         Text(
           'Quick Links',
-          style: AppTheme.headingSmall.copyWith(
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
             color: textColor ?? Colors.white,
           ),
         ),
@@ -248,7 +250,9 @@ class AppFooter extends StatelessWidget {
       children: [
         Text(
           'Legal',
-          style: AppTheme.headingSmall.copyWith(
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
             color: textColor ?? Colors.white,
           ),
         ),
@@ -285,7 +289,9 @@ class AppFooter extends StatelessWidget {
           Text(
             copyrightText ??
                 '© ${DateTime.now().year} Blogify. All rights reserved.',
-            style: AppTheme.bodySmall.copyWith(
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
               color: (textColor ?? Colors.white).withOpacity(0.5),
             ),
           ),
@@ -294,7 +300,9 @@ class AppFooter extends StatelessWidget {
             children: [
               Text(
                 'Made with',
-                style: AppTheme.bodySmall.copyWith(
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
                   color: (textColor ?? Colors.white).withOpacity(0.5),
                 ),
               ),
@@ -308,7 +316,9 @@ class AppFooter extends StatelessWidget {
               ),
               Text(
                 'by Blogify Team',
-                style: AppTheme.bodySmall.copyWith(
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
                   color: (textColor ?? Colors.white).withOpacity(0.5),
                 ),
               ),

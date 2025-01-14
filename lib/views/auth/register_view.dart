@@ -1,7 +1,7 @@
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../theme/app_theme.dart';
 
 final registerLoadingProvider = StateProvider<bool>((ref) => false);
 
@@ -51,6 +51,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(registerLoadingProvider);
+    final theme = ref.watch(themeProvider);
 
     return Scaffold(
       body: Center(
@@ -66,9 +67,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 children: [
                   Text(
                     'Join Blogify',
-                    style: AppTheme.headingLarge.copyWith(
-                      color: AppTheme.primaryColor,
-                    ),
+                    style: theme.typography.headline,
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 48),
@@ -139,7 +138,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                     ),
                   ElevatedButton(
-                    style: AppTheme.primaryButtonStyle,
                     onPressed: isLoading ? null : _register,
                     child: Padding(
                       padding: const EdgeInsets.all(12),

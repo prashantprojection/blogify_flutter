@@ -1,9 +1,10 @@
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum CustomButtonType { filled, outlined }
 
-class CustomButton extends StatelessWidget {
+class CustomButton extends ConsumerWidget {
   final String label;
   final VoidCallback onPressed;
   final CustomButtonType type;
@@ -16,7 +17,7 @@ class CustomButton extends StatelessWidget {
   final IconData? icon;
 
   const CustomButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.type = CustomButtonType.filled,
@@ -27,10 +28,11 @@ class CustomButton extends StatelessWidget {
     this.padding,
     this.fontSize,
     this.icon,
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     final defaultPadding = EdgeInsets.symmetric(horizontal: 32, vertical: 20);
     final defaultStyle = TextStyle(
       fontSize: fontSize ?? 18,
@@ -61,7 +63,7 @@ class CustomButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor ?? Colors.white,
-        foregroundColor: foregroundColor ?? AppTheme.primaryColor,
+        foregroundColor: foregroundColor ?? theme.colors.primary,
         padding: padding ?? defaultPadding,
         textStyle: defaultStyle,
         elevation: 0,

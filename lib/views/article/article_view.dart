@@ -1,14 +1,11 @@
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blogify_flutter/widgets/common/app_header.dart';
-import 'package:blogify_flutter/widgets/common/app_footer.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
 import 'package:blogify_flutter/models/article.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import 'package:blogify_flutter/models/comment.dart';
-import 'package:blogify_flutter/widgets/common/shimmer_image.dart';
-import 'package:blogify_flutter/controllers/article_controller.dart';
 import 'package:blogify_flutter/widgets/common/error_widgets.dart';
 
 // Add these constants at the top of the file after the imports
@@ -22,7 +19,8 @@ const Duration kDefaultDuration = Duration(milliseconds: 300);
 // State providers for article view
 final fontSizeProvider = StateProvider<double>((ref) => 18.0);
 final lineHeightProvider = StateProvider<double>((ref) => 1.8);
-final themeProvider = StateProvider<ReadingTheme>((ref) => ReadingTheme.light);
+final readingThemeProvider =
+    StateProvider<ReadingTheme>((ref) => ReadingTheme.light);
 final scrollProgressProvider = StateProvider<double>((ref) => 0.0);
 final isExpandedProvider = StateProvider<bool>((ref) => false);
 final showControlsProvider = StateProvider<bool>((ref) => true);
@@ -935,7 +933,7 @@ class _ArticleViewState extends ConsumerState<ArticleView>
             _buildModernControlButton(
               icon: isDarkMode ? Icons.light_mode : Icons.dark_mode,
               label: '${isDarkMode ? 'Light' : 'Dark'} Mode',
-              onPressed: () => ref.read(themeProvider.notifier).state =
+              onPressed: () => ref.read(readingThemeProvider.notifier).state =
                   isDarkMode ? ReadingTheme.light : ReadingTheme.dark,
               showBorder: true,
             ),
@@ -2041,7 +2039,7 @@ class _ArticleViewState extends ConsumerState<ArticleView>
                     backgroundColor: backgroundColor,
                     elevation: 2,
                     onPressed: () {
-                      ref.read(themeProvider.notifier).state =
+                      ref.read(readingThemeProvider.notifier).state =
                           isDarkMode ? ReadingTheme.light : ReadingTheme.dark;
                     },
                     child: Icon(

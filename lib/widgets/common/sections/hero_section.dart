@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:blogify_flutter/widgets/common/buttons/custom_button.dart';
 
-class HeroSection extends StatelessWidget {
+class HeroSection extends ConsumerWidget {
   final String title;
   final String? subtitle;
   final String? description;
@@ -15,7 +16,7 @@ class HeroSection extends StatelessWidget {
   final double? descriptionFontSize;
 
   const HeroSection({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     this.description,
@@ -26,21 +27,25 @@ class HeroSection extends StatelessWidget {
     this.titleFontSize,
     this.subtitleFontSize,
     this.descriptionFontSize,
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     return Container(
       width: double.infinity,
       padding: padding ?? EdgeInsets.symmetric(vertical: 150, horizontal: 45),
-      decoration: decoration ?? AppTheme.heroBackground,
+      decoration: decoration ??
+          BoxDecoration(
+            color: theme.colors.primary,
+          ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: alignment ?? CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: AppTheme.headingLarge.copyWith(
+            style: theme.typography.title.copyWith(
               color: Colors.white,
               fontSize: titleFontSize ?? 64,
               height: 1.1,
@@ -51,7 +56,7 @@ class HeroSection extends StatelessWidget {
             SizedBox(height: 24),
             Text(
               subtitle!,
-              style: AppTheme.bodyLarge.copyWith(
+              style: theme.typography.body.copyWith(
                 color: Colors.white.withOpacity(0.9),
                 fontSize: subtitleFontSize ?? 24,
               ),
@@ -62,7 +67,7 @@ class HeroSection extends StatelessWidget {
             SizedBox(height: 16),
             Text(
               description!,
-              style: AppTheme.bodyLarge.copyWith(
+              style: theme.typography.body.copyWith(
                 color: Colors.white.withOpacity(0.9),
                 fontSize: descriptionFontSize ?? 20,
               ),
@@ -106,7 +111,6 @@ class HeroSection extends StatelessWidget {
           label: primaryActionLabel,
           onPressed: onPrimaryAction,
           backgroundColor: Colors.white,
-          foregroundColor: AppTheme.primaryColor,
         ),
         if (secondaryActionLabel != null && onSecondaryAction != null) ...[
           SizedBox(width: 24),

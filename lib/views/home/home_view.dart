@@ -1,7 +1,7 @@
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
 import 'package:blogify_flutter/widgets/common/app_header.dart';
 import 'package:blogify_flutter/widgets/common/app_footer.dart';
 import 'package:blogify_flutter/widgets/common/hoverable_cards.dart';
@@ -348,9 +348,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
   }
 
   Widget _buildSectionTitle(String title, {bool isMobile = false}) {
+    final theme = ref.watch(themeProvider);
     return Text(
       title,
-      style: AppTheme.headingMedium.copyWith(
+      style: theme.typography.headline.copyWith(
         fontSize: isMobile ? 24 : 28,
         fontWeight: FontWeight.w800,
       ),
@@ -358,6 +359,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   }
 
   Widget _buildHeroSection(BuildContext context, bool isMobile, bool isTablet) {
+    final theme = ref.watch(themeProvider);
     final titleFontSize = isMobile ? 36.0 : (isTablet ? 48.0 : 64.0);
     final subtitleFontSize = isMobile ? 18.0 : (isTablet ? 20.0 : 24.0);
     final taglineFontSize = isMobile ? 16.0 : (isTablet ? 18.0 : 20.0);
@@ -368,14 +370,28 @@ class _HomeViewState extends ConsumerState<HomeView> {
         vertical: isMobile ? 48 : (isTablet ? 80 : 120),
         horizontal: isMobile ? 16 : (isTablet ? 32 : 45),
       ),
-      decoration: AppTheme.heroBackground,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/effects/hero_section.png'),
+          opacity: 0.05,
+          fit: BoxFit.cover,
+        ),
+        gradient: LinearGradient(
+          colors: [
+            theme.colors.primary,
+            theme.colors.secondary,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Unleash Your Voice with\nBlogify',
-            style: AppTheme.headingLarge.copyWith(
+            style: theme.typography.headline.copyWith(
               color: Colors.white,
               fontSize: titleFontSize,
               height: 1.1,
@@ -384,7 +400,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
           SizedBox(height: isMobile ? 16 : 24),
           Text(
             'Share your stories with the world',
-            style: AppTheme.bodyLarge.copyWith(
+            style: theme.typography.body.copyWith(
               color: Colors.white.withOpacity(0.9),
               fontSize: subtitleFontSize,
             ),
@@ -392,7 +408,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
           SizedBox(height: isMobile ? 12 : 16),
           Text(
             'Connect. Create. Share.',
-            style: AppTheme.bodyLarge.copyWith(
+            style: theme.typography.body.copyWith(
               color: Colors.white.withOpacity(0.9),
               fontSize: taglineFontSize,
             ),
@@ -427,20 +443,21 @@ class _HomeViewState extends ConsumerState<HomeView> {
     required bool isMobile,
     required bool isPrimary,
   }) {
+    final theme = ref.watch(themeProvider);
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isPrimary ? AppTheme.primaryColor : Colors.white,
-        foregroundColor: isPrimary ? Colors.white : AppTheme.primaryColor,
+        backgroundColor:
+            isPrimary ? theme.colors.primary : theme.colors.onPrimary,
+        foregroundColor:
+            isPrimary ? theme.colors.onPrimary : theme.colors.primary,
         padding: EdgeInsets.symmetric(
           horizontal: UIConstants.spacingL,
           vertical: UIConstants.spacingM,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UIConstants.radiusM),
-          side: isPrimary
-              ? BorderSide.none
-              : BorderSide(color: AppTheme.primaryColor),
+          side: isPrimary ? BorderSide.none : BorderSide(),
         ),
       ),
       child: Text(
@@ -619,6 +636,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   Widget _buildCategoriesSection(
       BuildContext context, bool isMobile, bool isTablet) {
+    final theme = ref.watch(themeProvider);
     return _buildResponsiveSection(
       isMobile: isMobile,
       isTablet: isTablet,
@@ -636,7 +654,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   SizedBox(height: 8),
                   Text(
                     'Discover content that matters to you',
-                    style: AppTheme.bodyMedium.copyWith(
+                    style: theme.typography.body.copyWith(
                       color: Colors.grey.shade600,
                       fontSize: isMobile ? 14 : 16,
                     ),
@@ -651,7 +669,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     Text(
                       'View All',
                       style: TextStyle(
-                        color: AppTheme.primaryColor,
                         fontWeight: FontWeight.w600,
                         fontSize: isMobile ? 14 : 16,
                       ),
@@ -660,7 +677,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     Icon(
                       Icons.arrow_forward,
                       size: isMobile ? 14 : 16,
-                      color: AppTheme.primaryColor,
                     ),
                   ],
                 ),
@@ -836,7 +852,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     Text(
                       'View All',
                       style: TextStyle(
-                        color: AppTheme.primaryColor,
                         fontWeight: FontWeight.w600,
                         fontSize: isMobile ? 14 : 16,
                       ),
@@ -845,7 +860,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     Icon(
                       Icons.arrow_forward,
                       size: isMobile ? 14 : 16,
-                      color: AppTheme.primaryColor,
                     ),
                   ],
                 ),
@@ -938,7 +952,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     Text(
                       'View All',
                       style: TextStyle(
-                        color: AppTheme.primaryColor,
                         fontWeight: FontWeight.w600,
                         fontSize: isMobile ? 14 : 16,
                       ),
@@ -947,7 +960,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     Icon(
                       Icons.arrow_forward,
                       size: isMobile ? 14 : 16,
-                      color: AppTheme.primaryColor,
                     ),
                   ],
                 ),
@@ -1011,7 +1023,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     Text(
                       'View All',
                       style: TextStyle(
-                        color: AppTheme.primaryColor,
                         fontWeight: FontWeight.w600,
                         fontSize: isMobile ? 14 : 16,
                       ),
@@ -1020,7 +1031,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     Icon(
                       Icons.arrow_forward,
                       size: isMobile ? 14 : 16,
-                      color: AppTheme.primaryColor,
                     ),
                   ],
                 ),
@@ -1054,7 +1064,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
     final isTablet = screenWidth >= 600 && screenWidth < 1024;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
       appBar: AppHeader(),
       body: SingleChildScrollView(
         child: Column(

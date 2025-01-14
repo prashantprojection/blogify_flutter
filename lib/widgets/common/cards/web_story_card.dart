@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:blogify_flutter/widgets/common/overlays/gradient_overlay.dart';
 import 'package:blogify_flutter/widgets/common/images/network_image.dart';
 import 'package:blogify_flutter/widgets/common/cards/badge.dart'
     as custom_badge;
 
-class WebStoryCard extends StatefulWidget {
+class WebStoryCard extends ConsumerStatefulWidget {
   final String title;
   final String imageUrl;
   final String? author;
@@ -17,7 +18,7 @@ class WebStoryCard extends StatefulWidget {
   final double? height;
 
   const WebStoryCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.imageUrl,
     this.author,
@@ -27,17 +28,18 @@ class WebStoryCard extends StatefulWidget {
     this.onTap,
     this.width,
     this.height,
-  }) : super(key: key);
+  });
 
   @override
-  State<WebStoryCard> createState() => _WebStoryCardState();
+  ConsumerState<WebStoryCard> createState() => _WebStoryCardState();
 }
 
-class _WebStoryCardState extends State<WebStoryCard> {
+class _WebStoryCardState extends ConsumerState<WebStoryCard> {
   bool isHovered = false;
 
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => isHovered = true),
@@ -76,7 +78,7 @@ class _WebStoryCardState extends State<WebStoryCard> {
                     left: 16,
                     child: custom_badge.Badge(
                       text: widget.category!,
-                      color: widget.badgeColor ?? AppTheme.primaryColor,
+                      color: widget.badgeColor ?? theme.colors.primary,
                     ),
                   ),
                 Positioned(
@@ -89,7 +91,7 @@ class _WebStoryCardState extends State<WebStoryCard> {
                     children: [
                       Text(
                         widget.title,
-                        style: AppTheme.headingSmall.copyWith(
+                        style: theme.typography.title.copyWith(
                           color: Colors.white,
                           fontSize: 20,
                         ),
@@ -110,7 +112,7 @@ class _WebStoryCardState extends State<WebStoryCard> {
                             ],
                             Text(
                               widget.author!,
-                              style: AppTheme.bodySmall.copyWith(
+                              style: theme.typography.body.copyWith(
                                 color: Colors.white.withOpacity(0.8),
                               ),
                             ),

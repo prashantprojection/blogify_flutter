@@ -47,11 +47,11 @@
 /// - hoveredArrowProvider: Manages navigation arrow hover states
 /// - currentIndexProvider: Tracks the current carousel index
 
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:flutter/material.dart' hide CarouselController;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:blogify_flutter/widgets/common/app_header.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui';
@@ -103,6 +103,7 @@ class StoryPlayer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     return Container(
       width: 270,
       height: 479,
@@ -163,7 +164,7 @@ class StoryPlayer extends ConsumerWidget {
                 ),
                 child: Text(
                   category,
-                  style: AppTheme.bodySmall.copyWith(
+                  style: theme.typography.body.copyWith(
                     color: badgeColor,
                     fontWeight: FontWeight.w500,
                   ),
@@ -275,9 +276,10 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
     final storyHeight = 479.0;
     final storyWidth = 270.0;
     final hoveredStory = ref.watch(hoveredStoryProvider);
+    final theme = ref.watch(themeProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: theme.colors.background,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -300,7 +302,7 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                 children: [
                   Text(
                     'Dive into Stories That Come Alive!',
-                    style: AppTheme.headingLarge.copyWith(
+                    style: theme.typography.headline.copyWith(
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
                     ),
@@ -309,8 +311,8 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                   SizedBox(height: 16),
                   Text(
                     'Swipe through engaging web stories, one frame at a time.',
-                    style: AppTheme.bodyLarge.copyWith(
-                      color: AppTheme.subtitleColor,
+                    style: theme.typography.body.copyWith(
+                      color: theme.colors.secondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -398,8 +400,8 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                                                       ),
                                                       child: Text(
                                                         story['badgeName'],
-                                                        style: AppTheme
-                                                            .bodySmall
+                                                        style: theme
+                                                            .typography.body
                                                             .copyWith(
                                                           color: story[
                                                               'badgeColor'],
@@ -412,8 +414,8 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                                                     // Title
                                                     Text(
                                                       story['title'],
-                                                      style: AppTheme
-                                                          .headingSmall
+                                                      style: theme
+                                                          .typography.title
                                                           .copyWith(
                                                         fontWeight:
                                                             FontWeight.w600,
@@ -437,11 +439,11 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                                                         SizedBox(width: 8),
                                                         Text(
                                                           story['author'],
-                                                          style: AppTheme
-                                                              .bodyMedium
+                                                          style: theme
+                                                              .typography.body
                                                               .copyWith(
-                                                            color: AppTheme
-                                                                .subtitleColor,
+                                                            color: theme.colors
+                                                                .secondary,
                                                           ),
                                                         ),
                                                       ],
@@ -500,14 +502,14 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                           children: [
                             Text(
                               'Explore Categories',
-                              style: AppTheme.headingMedium,
+                              style: theme.typography.headline,
                             ),
                             SizedBox(width: 16),
                             Container(
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryColor,
+                                color: theme.colors.primary,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: IconButton(
@@ -527,7 +529,7 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryColor,
+                                color: theme.colors.primary,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: IconButton(
@@ -555,7 +557,7 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                                 _buildCategoryCard(
                                   'All',
                                   IconsaxPlusLinear.category,
-                                  AppTheme.primaryColor,
+                                  theme.colors.primary,
                                 ),
                                 SizedBox(width: 24),
                                 _buildCategoryCard(
@@ -601,7 +603,7 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                       children: [
                         Text(
                           'Latest Web Stories',
-                          style: AppTheme.headingMedium,
+                          style: theme.typography.headline,
                         ),
                         SizedBox(height: 32),
                         LayoutBuilder(
@@ -670,14 +672,14 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
               width: double.infinity,
               padding: EdgeInsets.symmetric(vertical: 64),
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor,
+                color: theme.colors.primary,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Your Story Deserves to Be Told',
-                    style: AppTheme.headingLarge.copyWith(
+                    style: theme.typography.headline.copyWith(
                       color: Colors.white,
                       fontSize: 36,
                       fontWeight: FontWeight.w600,
@@ -692,7 +694,7 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: AppTheme.primaryColor,
+                          foregroundColor: theme.colors.primary,
                           padding: EdgeInsets.symmetric(
                               horizontal: 32, vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -753,7 +755,7 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                           SizedBox(width: 8),
                           Text(
                             'Blogify',
-                            style: AppTheme.headingMedium.copyWith(
+                            style: theme.typography.headline.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -763,7 +765,7 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
                       SizedBox(width: 32),
                       Text(
                         '© 2025 All rights reserved',
-                        style: AppTheme.bodyMedium.copyWith(
+                        style: theme.typography.body.copyWith(
                           color: Colors.white.withOpacity(0.7),
                         ),
                       ),
@@ -800,6 +802,7 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
   }
 
   Widget _buildNavigationArrow(bool isLeft) {
+    final theme = ref.watch(themeProvider);
     return MouseRegion(
       onEnter: (_) => ref.read(hoveredArrowProvider.notifier).state =
           isLeft ? 'left' : 'right',
@@ -845,7 +848,7 @@ class _StoriesViewState extends ConsumerState<StoriesView> {
           ),
           child: Icon(
             isLeft ? Icons.arrow_back : Icons.arrow_forward,
-            color: AppTheme.primaryColor,
+            color: theme.colors.primary,
           ),
         ),
       ),
@@ -899,6 +902,7 @@ class _CategoryCardState extends ConsumerState<CategoryCard> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
     final selectedCategory = ref.watch(selectedCategoryProvider);
     final isSelected = selectedCategory == widget.title;
 
@@ -938,10 +942,13 @@ class _CategoryCardState extends ConsumerState<CategoryCard> {
                 color: widget.color,
               ),
               SizedBox(height: 12),
-              Text(
-                widget.title,
-                style: AppTheme.headingSmall.copyWith(
-                  color: isSelected ? widget.color : null,
+              FittedBox(
+                child: Text(
+                  widget.title,
+                  maxLines: 1,
+                  style: theme.typography.headline.copyWith(
+                    color: isSelected ? widget.color : null,
+                  ),
                 ),
               ),
               SizedBox(height: 12),
@@ -1006,6 +1013,7 @@ class _WebStoryCardState extends ConsumerState<WebStoryCard> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
     final selectedStory = ref.watch(hoveredStoryProvider);
     final isSelected = selectedStory == widget.title;
 
@@ -1082,7 +1090,7 @@ class _WebStoryCardState extends ConsumerState<WebStoryCard> {
                     ),
                     child: Text(
                       widget.category,
-                      style: AppTheme.bodySmall.copyWith(
+                      style: theme.typography.body.copyWith(
                         color: widget.badgeColor,
                         fontWeight: FontWeight.w500,
                       ),
@@ -1099,7 +1107,7 @@ class _WebStoryCardState extends ConsumerState<WebStoryCard> {
                     children: [
                       Text(
                         widget.title,
-                        style: AppTheme.headingSmall.copyWith(
+                        style: theme.typography.headline.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
                         ),
@@ -1117,7 +1125,7 @@ class _WebStoryCardState extends ConsumerState<WebStoryCard> {
                           Expanded(
                             child: Text(
                               widget.author,
-                              style: AppTheme.bodyMedium.copyWith(
+                              style: theme.typography.body.copyWith(
                                 color: Colors.white.withOpacity(0.8),
                               ),
                               maxLines: 1,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 
-class InfoCard extends StatefulWidget {
+class InfoCard extends ConsumerStatefulWidget {
   final String title;
   final String? description;
   final IconData? icon;
@@ -14,7 +15,7 @@ class InfoCard extends StatefulWidget {
   final bool isSelected;
 
   const InfoCard({
-    Key? key,
+    super.key,
     required this.title,
     this.description,
     this.icon,
@@ -25,18 +26,19 @@ class InfoCard extends StatefulWidget {
     this.height,
     this.padding,
     this.isSelected = false,
-  }) : super(key: key);
+  });
 
   @override
-  State<InfoCard> createState() => _InfoCardState();
+  ConsumerState<InfoCard> createState() => _InfoCardState();
 }
 
-class _InfoCardState extends State<InfoCard> {
+class _InfoCardState extends ConsumerState<InfoCard> {
   bool isHovered = false;
 
   @override
   Widget build(BuildContext context) {
-    final effectiveIconColor = widget.iconColor ?? AppTheme.primaryColor;
+    final theme = ref.watch(themeProvider);
+    final effectiveIconColor = widget.iconColor ?? theme.colors.primary;
     final effectiveBackgroundColor = widget.backgroundColor ?? Colors.white;
 
     return MouseRegion(
@@ -82,7 +84,7 @@ class _InfoCardState extends State<InfoCard> {
               if (widget.icon != null) SizedBox(height: 16),
               Text(
                 widget.title,
-                style: AppTheme.headingSmall.copyWith(
+                style: theme.typography.title.copyWith(
                   color: widget.isSelected
                       ? effectiveIconColor
                       : Colors.grey.shade800,
@@ -94,7 +96,7 @@ class _InfoCardState extends State<InfoCard> {
                 SizedBox(height: 8),
                 Text(
                   widget.description!,
-                  style: AppTheme.bodyMedium.copyWith(
+                  style: theme.typography.body.copyWith(
                     color: Colors.grey.shade600,
                   ),
                 ),

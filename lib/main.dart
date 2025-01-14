@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
 import 'package:blogify_flutter/routes/app_router.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 
 void main() {
   runApp(
@@ -17,9 +17,10 @@ class MainApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final theme = ref.watch(themeProvider);
     return MaterialApp.router(
       title: 'Blogify',
-      theme: AppTheme.lightTheme,
+      theme: theme.toThemeData(),
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );

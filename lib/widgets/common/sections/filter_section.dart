@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:blogify_flutter/widgets/common/inputs/search_box.dart';
 import 'package:blogify_flutter/widgets/common/chips/filter_chip.dart';
 
-class FilterSection extends StatelessWidget {
+class FilterSection extends ConsumerWidget {
   final String? title;
   final String searchHint;
   final TextEditingController? searchController;
@@ -18,7 +19,7 @@ class FilterSection extends StatelessWidget {
   final Widget? trailing;
 
   const FilterSection({
-    Key? key,
+    super.key,
     this.title,
     this.searchHint = 'Search...',
     this.searchController,
@@ -31,10 +32,11 @@ class FilterSection extends StatelessWidget {
     this.onSortOptionSelected,
     this.padding,
     this.trailing,
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     return Container(
       padding: padding,
       child: Column(
@@ -45,7 +47,7 @@ class FilterSection extends StatelessWidget {
               padding: EdgeInsets.only(bottom: 16),
               child: Text(
                 title!,
-                style: AppTheme.headingSmall,
+                style: theme.typography.title,
               ),
             ),
           SearchBox(
@@ -56,7 +58,7 @@ class FilterSection extends StatelessWidget {
           SizedBox(height: 24),
           Text(
             'Categories',
-            style: AppTheme.bodyMedium.copyWith(
+            style: theme.typography.body.copyWith(
               color: Colors.grey.shade600,
               fontWeight: FontWeight.w600,
             ),
@@ -77,7 +79,7 @@ class FilterSection extends StatelessWidget {
             SizedBox(height: 24),
             Text(
               'Sort By',
-              style: AppTheme.bodyMedium.copyWith(
+              style: theme.typography.body.copyWith(
                 color: Colors.grey.shade600,
                 fontWeight: FontWeight.w600,
               ),

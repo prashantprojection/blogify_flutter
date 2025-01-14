@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 
-class SectionHeader extends StatelessWidget {
+class SectionHeader extends ConsumerWidget {
   final String title;
   final String? subtitle;
   final Widget? trailing;
@@ -9,16 +10,17 @@ class SectionHeader extends StatelessWidget {
   final double? fontSize;
 
   const SectionHeader({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     this.trailing,
     this.alignment = CrossAxisAlignment.start,
     this.fontSize,
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     return Column(
       crossAxisAlignment: alignment,
       children: [
@@ -27,7 +29,7 @@ class SectionHeader extends StatelessWidget {
           children: [
             Text(
               title,
-              style: AppTheme.headingMedium.copyWith(
+              style: theme.typography.title.copyWith(
                 fontSize: fontSize ?? 28,
                 fontWeight: FontWeight.w800,
               ),
@@ -39,7 +41,7 @@ class SectionHeader extends StatelessWidget {
           SizedBox(height: 8),
           Text(
             subtitle!,
-            style: AppTheme.bodyLarge.copyWith(
+            style: theme.typography.body.copyWith(
               color: Colors.grey.shade600,
             ),
           ),

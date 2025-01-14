@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
 import 'package:blogify_flutter/widgets/common/app_header.dart';
 import 'dart:math';
 

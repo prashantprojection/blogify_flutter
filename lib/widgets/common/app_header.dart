@@ -304,6 +304,18 @@ class _AppHeaderState extends State<AppHeader> {
                             ),
                           ),
                         ),
+                        SizedBox(width: widget.isLarge ? 40 : 32),
+                        TextButton(
+                          onPressed: () => context.go('/stories'),
+                          child: Text(
+                            'Stories',
+                            style: TextStyle(
+                              fontSize: widget.isLarge ? 16 : 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey.shade800,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

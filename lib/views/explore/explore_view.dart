@@ -1,7 +1,7 @@
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:ui';
-import 'package:blogify_flutter/theme/app_theme.dart';
 import 'package:blogify_flutter/widgets/common/app_header.dart';
 import 'package:blogify_flutter/widgets/common/app_footer.dart';
 import 'package:blogify_flutter/widgets/common/hoverable_cards.dart';
@@ -222,7 +222,6 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                   padding: EdgeInsets.all(UIConstants.spacingS),
                   child: Icon(
                     Icons.tune_rounded,
-                    color: AppTheme.primaryColor,
                     size: UIConstants.iconSize - 4,
                   ),
                 ),
@@ -558,6 +557,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
     final contentPadding =
         isMobile ? UIConstants.spacingM : UIConstants.spacingL;
     final isGridView = ref.watch(viewTypeProvider);
+    final theme = ref.watch(themeProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -577,7 +577,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                 IconButton(
                   icon: Icon(
                     Icons.grid_view_rounded,
-                    color: isGridView ? AppTheme.primaryColor : Colors.grey,
+                    color: isGridView ? theme.colors.primary : Colors.grey,
                   ),
                   onPressed: () =>
                       ref.read(viewTypeProvider.notifier).state = true,
@@ -585,7 +585,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                 IconButton(
                   icon: Icon(
                     Icons.view_agenda_rounded,
-                    color: !isGridView ? AppTheme.primaryColor : Colors.grey,
+                    color: !isGridView ? theme.colors.primary : Colors.grey,
                   ),
                   onPressed: () =>
                       ref.read(viewTypeProvider.notifier).state = false,
@@ -673,6 +673,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 768;
     final isTablet = screenWidth >= 768 && screenWidth < 1024;
+    final theme = ref.watch(themeProvider);
 
     if (isGrid) {
       return Consumer(
@@ -690,7 +691,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                   boxShadow: [
                     BoxShadow(
                       color: isHovered
-                          ? AppTheme.primaryColor.withOpacity(0.4)
+                          ? theme.colors.primary.withOpacity(0.4)
                           : Colors.black.withOpacity(0.05),
                       blurRadius: 20,
                       offset: Offset(0, 8),
@@ -729,13 +730,12 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryColor.withOpacity(0.1),
+                                color: theme.colors.primary.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Text(
                                 category,
                                 style: TextStyle(
-                                  color: AppTheme.primaryColor,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
                                 ),
@@ -808,14 +808,13 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                   Container(
                                     padding: EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: AppTheme.primaryColor
-                                          .withOpacity(0.1),
+                                      color:
+                                          theme.colors.primary.withOpacity(0.1),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
                                       Icons.arrow_forward,
                                       size: 16,
-                                      color: AppTheme.primaryColor,
                                     ),
                                   ),
                               ],
@@ -854,7 +853,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                 boxShadow: [
                   BoxShadow(
                     color: isHovered
-                        ? AppTheme.primaryColor.withOpacity(0.4)
+                        ? theme.colors.primary.withOpacity(0.4)
                         : Colors.black.withOpacity(0.05),
                     blurRadius: 20,
                     offset: Offset(0, 8),
@@ -895,13 +894,12 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primaryColor.withOpacity(0.1),
+                                  color: theme.colors.primary.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
                                   category,
                                   style: TextStyle(
-                                    color: AppTheme.primaryColor,
                                     fontWeight: FontWeight.w500,
                                     fontSize: 12,
                                   ),
@@ -974,8 +972,8 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                       vertical: 8,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppTheme.primaryColor
-                                          .withOpacity(0.1),
+                                      color:
+                                          theme.colors.primary.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Row(
@@ -984,7 +982,6 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                         Text(
                                           'Read More',
                                           style: TextStyle(
-                                            color: AppTheme.primaryColor,
                                             fontWeight: FontWeight.w500,
                                             fontSize: 14,
                                           ),
@@ -993,7 +990,6 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                                         Icon(
                                           Icons.arrow_forward,
                                           size: 16,
-                                          color: AppTheme.primaryColor,
                                         ),
                                       ],
                                     ),
@@ -1329,6 +1325,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
     required String description,
     required List<String> images,
   }) {
+    final theme = ref.watch(themeProvider);
     return Consumer(
       builder: (context, ref, child) {
         final isHovered = ref.watch(hoveredCollectionProvider) == collectionId;
@@ -1346,7 +1343,7 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                   boxShadow: [
                     BoxShadow(
                       color: isHovered
-                          ? AppTheme.primaryColor.withOpacity(0.4)
+                          ? theme.colors.primary.withOpacity(0.4)
                           : Colors.black.withOpacity(0.05),
                       blurRadius: 20,
                       spreadRadius: isHovered ? 2 : 0,
@@ -1446,7 +1443,6 @@ class _ExploreViewState extends ConsumerState<ExploreView> {
                           child: Text(
                             'View →',
                             style: TextStyle(
-                              color: AppTheme.primaryColor,
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),

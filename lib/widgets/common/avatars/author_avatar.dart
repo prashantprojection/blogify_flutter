@@ -1,8 +1,9 @@
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
 import 'package:blogify_flutter/widgets/common/images/network_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AuthorAvatar extends StatelessWidget {
+class AuthorAvatar extends ConsumerWidget {
   final String name;
   final String? imageUrl;
   final double? avatarRadius;
@@ -13,7 +14,7 @@ class AuthorAvatar extends StatelessWidget {
   final Widget? trailing;
 
   const AuthorAvatar({
-    Key? key,
+    super.key,
     required this.name,
     this.imageUrl,
     this.avatarRadius = 16,
@@ -22,10 +23,11 @@ class AuthorAvatar extends StatelessWidget {
     this.onTap,
     this.showName = true,
     this.trailing,
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     return GestureDetector(
       onTap: onTap,
       child: Row(
@@ -68,7 +70,7 @@ class AuthorAvatar extends StatelessWidget {
             Text(
               name,
               style: textStyle ??
-                  AppTheme.bodySmall.copyWith(
+                  theme.typography.body.copyWith(
                     color: Colors.grey[800],
                     fontWeight: FontWeight.w500,
                   ),

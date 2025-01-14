@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 
-class StoryCard extends StatelessWidget {
+class StoryCard extends ConsumerWidget {
   final String title;
   final String imageUrl;
   final String? subtitle;
@@ -22,7 +23,8 @@ class StoryCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -87,7 +89,7 @@ class StoryCard extends StatelessWidget {
                       ),
                       child: Text(
                         badgeText!,
-                        style: AppTheme.bodySmall.copyWith(
+                        style: theme.typography.body.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
                         ),
@@ -104,7 +106,7 @@ class StoryCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: AppTheme.headingSmall.copyWith(
+                        style: theme.typography.headline.copyWith(
                           color: Colors.white,
                           fontSize: 20,
                         ),
@@ -115,7 +117,7 @@ class StoryCard extends StatelessWidget {
                         SizedBox(height: 8),
                         Text(
                           subtitle!,
-                          style: AppTheme.bodySmall.copyWith(
+                          style: theme.typography.body.copyWith(
                             color: Colors.white.withOpacity(0.8),
                           ),
                         ),

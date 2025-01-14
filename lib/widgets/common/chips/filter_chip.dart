@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 
-class CustomFilterChip extends StatelessWidget {
+class CustomFilterChip extends ConsumerWidget {
   final String label;
   final bool isSelected;
   final VoidCallback? onTap;
@@ -14,7 +15,7 @@ class CustomFilterChip extends StatelessWidget {
   final TextStyle? labelStyle;
 
   const CustomFilterChip({
-    Key? key,
+    super.key,
     required this.label,
     this.isSelected = false,
     this.onTap,
@@ -25,11 +26,12 @@ class CustomFilterChip extends StatelessWidget {
     this.height = 32,
     this.padding,
     this.labelStyle,
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) {
-    final effectiveSelectedColor = selectedColor ?? AppTheme.primaryColor;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
+    final effectiveSelectedColor = selectedColor ?? theme.colors.primary;
     final effectiveBackgroundColor = backgroundColor ?? Colors.white;
     final effectiveLabelColor = labelColor ?? Colors.grey.shade800;
 
@@ -64,7 +66,7 @@ class CustomFilterChip extends StatelessWidget {
             Text(
               label,
               style: labelStyle ??
-                  AppTheme.bodySmall.copyWith(
+                  theme.typography.body.copyWith(
                     color: isSelected
                         ? effectiveSelectedColor
                         : effectiveLabelColor,

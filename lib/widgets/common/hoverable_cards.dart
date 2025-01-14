@@ -1,9 +1,9 @@
 // Export all components for easy access
 library hoverable_components;
 
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
 import 'package:blogify_flutter/controllers/home/hover_state_controller.dart';
 import 'package:blogify_flutter/widgets/common/neon_border_effect.dart';
 import 'package:blogify_flutter/utils/navigation_helper.dart';
@@ -415,7 +415,7 @@ class HoverableTrendingTopic extends ConsumerWidget {
   }
 }
 
-class HoverableAuthorCard extends StatefulWidget {
+class HoverableAuthorCard extends ConsumerStatefulWidget {
   final String name;
   final String imageUrl;
   final String bio;
@@ -434,10 +434,11 @@ class HoverableAuthorCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<HoverableAuthorCard> createState() => _HoverableAuthorCardState();
+  ConsumerState<HoverableAuthorCard> createState() =>
+      _HoverableAuthorCardState();
 }
 
-class _HoverableAuthorCardState extends State<HoverableAuthorCard> {
+class _HoverableAuthorCardState extends ConsumerState<HoverableAuthorCard> {
   bool isHovered = false;
 
   @override
@@ -538,7 +539,7 @@ class _HoverableAuthorCardState extends State<HoverableAuthorCard> {
   }
 }
 
-class HoverableBlogOfDayCard extends StatefulWidget {
+class HoverableBlogOfDayCard extends ConsumerStatefulWidget {
   final String title;
   final String author;
   final String authorImageUrl;
@@ -561,10 +562,12 @@ class HoverableBlogOfDayCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<HoverableBlogOfDayCard> createState() => _HoverableBlogOfDayCardState();
+  ConsumerState<HoverableBlogOfDayCard> createState() =>
+      _HoverableBlogOfDayCardState();
 }
 
-class _HoverableBlogOfDayCardState extends State<HoverableBlogOfDayCard> {
+class _HoverableBlogOfDayCardState
+    extends ConsumerState<HoverableBlogOfDayCard> {
   bool isHovered = false;
 
   @override
@@ -621,6 +624,7 @@ class _HoverableBlogOfDayCardState extends State<HoverableBlogOfDayCard> {
   }
 
   Widget _buildContent() {
+    final theme = ref.watch(themeProvider);
     return Padding(
       padding: const EdgeInsets.all(32),
       child: Column(
@@ -629,13 +633,13 @@ class _HoverableBlogOfDayCardState extends State<HoverableBlogOfDayCard> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: theme.colors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
               widget.category,
               style: TextStyle(
-                color: AppTheme.primaryColor,
+                color: theme.colors.primary,
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
               ),

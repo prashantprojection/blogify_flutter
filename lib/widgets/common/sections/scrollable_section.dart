@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:blogify_flutter/widgets/common/navigation/carousel_navigation.dart';
 
-class ScrollableSection extends StatefulWidget {
+class ScrollableSection extends ConsumerStatefulWidget {
   final String? title;
   final String? subtitle;
   final List<Widget> children;
@@ -16,7 +17,7 @@ class ScrollableSection extends StatefulWidget {
   final Widget? trailing;
 
   const ScrollableSection({
-    Key? key,
+    super.key,
     this.title,
     this.subtitle,
     required this.children,
@@ -28,13 +29,13 @@ class ScrollableSection extends StatefulWidget {
     this.scrollDirection = Axis.horizontal,
     this.crossAxisAlignment = CrossAxisAlignment.start,
     this.trailing,
-  }) : super(key: key);
+  });
 
   @override
-  State<ScrollableSection> createState() => _ScrollableSectionState();
+  ConsumerState<ScrollableSection> createState() => _ScrollableSectionState();
 }
 
-class _ScrollableSectionState extends State<ScrollableSection> {
+class _ScrollableSectionState extends ConsumerState<ScrollableSection> {
   late ScrollController _scrollController;
   bool _showPrevious = false;
   bool _showNext = true;
@@ -80,6 +81,7 @@ class _ScrollableSectionState extends State<ScrollableSection> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
     return Column(
       crossAxisAlignment: widget.crossAxisAlignment,
       children: [
@@ -100,7 +102,7 @@ class _ScrollableSectionState extends State<ScrollableSection> {
                       children: [
                         Text(
                           widget.title!,
-                          style: AppTheme.headingMedium.copyWith(
+                          style: theme.typography.title.copyWith(
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
                           ),
@@ -109,7 +111,7 @@ class _ScrollableSectionState extends State<ScrollableSection> {
                           SizedBox(height: 8),
                           Text(
                             widget.subtitle!,
-                            style: AppTheme.bodyLarge.copyWith(
+                            style: theme.typography.body.copyWith(
                               color: Colors.grey.shade600,
                             ),
                           ),

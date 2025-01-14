@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 
-class Badge extends StatelessWidget {
+class Badge extends ConsumerWidget {
   final String text;
   final Color color;
   final Color? textColor;
@@ -10,17 +11,18 @@ class Badge extends StatelessWidget {
   final double? borderRadius;
 
   const Badge({
-    Key? key,
+    super.key,
     required this.text,
     required this.color,
     this.textColor,
     this.fontSize,
     this.padding,
     this.borderRadius,
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     return Container(
       padding: padding ?? EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
@@ -29,7 +31,7 @@ class Badge extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: AppTheme.bodySmall.copyWith(
+        style: theme.typography.body.copyWith(
           color: textColor ?? Colors.white,
           fontWeight: FontWeight.w500,
           fontSize: fontSize,

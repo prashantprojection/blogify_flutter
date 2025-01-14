@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:blogify_flutter/theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:blogify_flutter/widgets/common/overlays/gradient_overlay.dart';
 import 'package:blogify_flutter/widgets/common/images/network_image.dart';
 import 'package:blogify_flutter/widgets/common/cards/badge.dart'
     as custom_badge;
 
-class FeaturedStoryCard extends StatefulWidget {
+class FeaturedStoryCard extends ConsumerStatefulWidget {
   final String title;
   final String imageUrl;
   final String? subtitle;
@@ -17,7 +18,7 @@ class FeaturedStoryCard extends StatefulWidget {
   final double? height;
 
   const FeaturedStoryCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.imageUrl,
     this.subtitle,
@@ -27,17 +28,18 @@ class FeaturedStoryCard extends StatefulWidget {
     this.isHoverable = true,
     this.width,
     this.height,
-  }) : super(key: key);
+  });
 
   @override
-  State<FeaturedStoryCard> createState() => _FeaturedStoryCardState();
+  ConsumerState<FeaturedStoryCard> createState() => _FeaturedStoryCardState();
 }
 
-class _FeaturedStoryCardState extends State<FeaturedStoryCard> {
+class _FeaturedStoryCardState extends ConsumerState<FeaturedStoryCard> {
   bool isHovered = false;
 
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => isHovered = true),
@@ -76,7 +78,7 @@ class _FeaturedStoryCardState extends State<FeaturedStoryCard> {
                     left: 16,
                     child: custom_badge.Badge(
                       text: widget.category!,
-                      color: widget.badgeColor ?? AppTheme.primaryColor,
+                      color: widget.badgeColor ?? theme.colors.primary,
                     ),
                   ),
                 Positioned(
@@ -89,7 +91,7 @@ class _FeaturedStoryCardState extends State<FeaturedStoryCard> {
                     children: [
                       Text(
                         widget.title,
-                        style: AppTheme.headingMedium.copyWith(
+                        style: theme.typography.title.copyWith(
                           color: Colors.white,
                           fontSize: 24,
                         ),
@@ -100,7 +102,7 @@ class _FeaturedStoryCardState extends State<FeaturedStoryCard> {
                         SizedBox(height: 8),
                         Text(
                           widget.subtitle!,
-                          style: AppTheme.bodyMedium.copyWith(
+                          style: theme.typography.body.copyWith(
                             color: Colors.white.withOpacity(0.8),
                           ),
                         ),
