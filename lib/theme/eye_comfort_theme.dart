@@ -32,6 +32,34 @@ class EyeComfortTheme {
   static const _surface = Color(0xFFF5ECD9);
   static const _onSurface = Color(0xFF2C3E50);
 
+  // Additional color definitions for UI elements
+  static const _accent = Color(0xFF00796B); // Teal
+  static const _accentLight = Color(0xFF26A69A);
+  static const _accentDark = Color(0xFF004D40);
+  static const _divider = Color(0xFFBDBDBD);
+  static const _cardColor = Color(0xFFFAF6E9);
+  static const _dialogBackgroundColor = Color(0xFFFDF9EC);
+  static const _disabledColor = Color(0xFF9E9E9E);
+  static const _hintColor = Color(0xFF757575);
+  static const _indicatorColor = Color(0xFF1B5E20);
+  static const _scaffoldBackgroundColor = Color(0xFFF8F1E3);
+  static const _secondaryHeaderColor = Color(0xFFF0E6D6);
+  static const _selectedRowColor = Color(0xFFE8F5E9);
+  static const _unselectedWidgetColor = Color(0xFF757575);
+
+  // Text-specific colors
+  static const _textPrimary = Color(0xFF2C3E50);
+  static const _textSecondary = Color(0xFF455A64);
+  static const _textHint = Color(0xFF757575);
+  static const _textDisabled = Color(0xFF9E9E9E);
+  static const _textSelectionColor = Color(0xFFB2DFDB);
+  static const _textSelectionHandleColor = Color(0xFF00796B);
+
+  // State colors
+  static const _hoverStateColor = Color(0x0A000000);
+  static const _focusStateColor = Color(0x1F000000);
+  static const _splashStateColor = Color(0x1A000000);
+
   // Shared instances for theme configurations
   static const _corners = Corners(
     zero: 0,
@@ -42,6 +70,11 @@ class EyeComfortTheme {
     extraLarge: 20,
     maximum: 999,
   );
+
+  // Helper methods
+  static Color _withOpacity(Color color, double opacity) {
+    return color.withAlpha((opacity * 255).round());
+  }
 
   // Shared theme colors instance
   static final _themeColors = ThemeColors(
@@ -61,10 +94,11 @@ class EyeComfortTheme {
     onError: _onError,
     errorContainer: _errorContainer,
     onErrorContainer: _onErrorContainer,
-    background: _background,
-    onBackground: _onBackground,
-    surface: _surface,
-    onSurface: _onSurface,
+    background: Colors.white,
+    accent: _accent,
+    onBackground: _textPrimary,
+    surface: Colors.white,
+    onSurface: _textPrimary,
     surfaceVariant: _withOpacity(_surface, 0.9),
     onSurfaceVariant: _withOpacity(_onSurface, 0.9),
     outline: _withOpacity(_onSurface, 0.12),
@@ -82,10 +116,34 @@ class EyeComfortTheme {
     surfaceContainerHighest: _withOpacity(_surface, 0.75),
     surfaceDim: _withOpacity(_surface, 0.7),
     surfaceBright: _withOpacity(_surface, 1),
-    hoverColor: _withOpacity(_primary, 0.05),
+    pressedOpacity: 0.12,
+    draggedOpacity: 0.16,
+    disabledOpacity: 0.38,
+    accentLight: _accentLight,
+    accentDark: _accentDark,
+    divider: _divider,
+    cardColor: _cardColor,
+    dialogBackgroundColor: _dialogBackgroundColor,
+    disabledColor: _disabledColor,
     focusColor: _withOpacity(_primary, 0.08),
-    highlightColor: _withOpacity(_primary, 0.08),
+    hintColor: _hintColor,
+    hoverColor: _withOpacity(_primary, 0.05),
+    indicatorColor: _indicatorColor,
+    scaffoldBackgroundColor: _scaffoldBackgroundColor,
+    secondaryHeaderColor: _secondaryHeaderColor,
+    selectedRowColor: _selectedRowColor,
     splashColor: _withOpacity(_primary, 0.08),
+    unselectedWidgetColor: _unselectedWidgetColor,
+    textPrimary: _textPrimary,
+    textSecondary: _textSecondary,
+    textHint: _textHint,
+    textDisabled: _textDisabled,
+    textSelectionColor: _textSelectionColor,
+    textSelectionHandleColor: _textSelectionHandleColor,
+    hoverStateColor: _hoverStateColor,
+    focusStateColor: _focusStateColor,
+    splashStateColor: _splashStateColor,
+    highlightColor: _withOpacity(_primary, 0.08),
   );
 
   // Shared typography instance - Optimized for readability
@@ -132,6 +190,13 @@ class EyeComfortTheme {
       height: 1.6,
       color: _onSurface,
     ),
+    button: GoogleFonts.sourceSerif4(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.15,
+      height: 1.4,
+      color: _onSurface,
+    ),
     label: GoogleFonts.sourceSerif4(
       fontSize: 16,
       fontWeight: FontWeight.w500,
@@ -169,10 +234,6 @@ class EyeComfortTheme {
       color: _onSurface,
     ),
   );
-
-  static Color _withOpacity(Color color, double opacity) {
-    return color.withAlpha((opacity * 255).round());
-  }
 
   static ThemePalette get theme => ThemePalette(
         id: 'eye_comfort',

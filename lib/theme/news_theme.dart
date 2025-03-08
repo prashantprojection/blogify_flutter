@@ -29,6 +29,34 @@ class NewsTheme {
   static const _surface = Color(0xFFFFFFFF);
   static const _onSurface = Color(0xFF000000);
 
+  // Additional color definitions for UI elements
+  static const _accent = Color(0xFF1976D2); // Blue accent
+  static const _accentLight = Color(0xFF42A5F5);
+  static const _accentDark = Color(0xFF1565C0);
+  static const _divider = Color(0xFFE0E0E0);
+  static const _cardColor = Color(0xFFFAFAFA);
+  static const _dialogBackgroundColor = Color(0xFFFFFFFF);
+  static const _disabledColor = Color(0xFFBDBDBD);
+  static const _hintColor = Color(0xFF9E9E9E);
+  static const _indicatorColor = Color(0xFFE60000);
+  static const _scaffoldBackgroundColor = Color(0xFFF5F5F5);
+  static const _secondaryHeaderColor = Color(0xFFECEFF1);
+  static const _selectedRowColor = Color(0xFFF5F5F5);
+  static const _unselectedWidgetColor = Color(0xFF757575);
+
+  // Text-specific colors
+  static const _textPrimary = Color(0xFF212121);
+  static const _textSecondary = Color(0xFF757575);
+  static const _textHint = Color(0xFF9E9E9E);
+  static const _textDisabled = Color(0xFFBDBDBD);
+  static const _textSelectionColor = Color(0xFFBBDEFB);
+  static const _textSelectionHandleColor = Color(0xFF1976D2);
+
+  // State colors
+  static const _hoverStateColor = Color(0x0A000000);
+  static const _focusStateColor = Color(0x1F000000);
+  static const _splashStateColor = Color(0x1F000000);
+
   // Shared instances for theme configurations
   static const _corners = Corners(
     zero: 0,
@@ -63,10 +91,10 @@ class NewsTheme {
     onError: _onError,
     errorContainer: _errorContainer,
     onErrorContainer: _onErrorContainer,
-    background: _background,
-    onBackground: _onBackground,
-    surface: _surface,
-    onSurface: _onSurface,
+    background: Colors.white,
+    onBackground: _textPrimary,
+    surface: Colors.white,
+    onSurface: _textPrimary,
     surfaceVariant: _withOpacity(_surface, 0.95),
     onSurfaceVariant: _withOpacity(_onSurface, 0.95),
     outline: _withOpacity(_tertiary, 0.2),
@@ -84,10 +112,35 @@ class NewsTheme {
     surfaceContainerHighest: _withOpacity(_surface, 0.92),
     surfaceDim: _withOpacity(_surface, 0.9),
     surfaceBright: _withOpacity(_surface, 1),
+    accent: _accent,
+    accentLight: _accentLight,
+    accentDark: _accentDark,
+    divider: _divider,
+    cardColor: _cardColor,
+    dialogBackgroundColor: _dialogBackgroundColor,
+    disabledColor: _disabledColor,
+    hintColor: _hintColor,
+    indicatorColor: _indicatorColor,
+    scaffoldBackgroundColor: _scaffoldBackgroundColor,
+    secondaryHeaderColor: _secondaryHeaderColor,
+    selectedRowColor: _selectedRowColor,
+    unselectedWidgetColor: _unselectedWidgetColor,
+    textPrimary: _textPrimary,
+    textSecondary: _textSecondary,
+    textHint: _textHint,
+    textDisabled: _textDisabled,
+    textSelectionColor: _textSelectionColor,
+    textSelectionHandleColor: _textSelectionHandleColor,
+    hoverStateColor: _hoverStateColor,
+    focusStateColor: _focusStateColor,
+    splashStateColor: _splashStateColor,
     hoverColor: _withOpacity(_tertiary, 0.05),
     focusColor: _withOpacity(_tertiary, 0.08),
     highlightColor: _withOpacity(_tertiary, 0.08),
     splashColor: _withOpacity(_tertiary, 0.08),
+    pressedOpacity: 0.12,
+    draggedOpacity: 0.16,
+    disabledOpacity: 0.38,
   );
 
   // Shared typography instance
@@ -137,6 +190,13 @@ class NewsTheme {
       fontSize: 14,
       fontWeight: FontWeight.w500,
       letterSpacing: 0.1,
+      height: 1.4,
+      color: _onSurface,
+    ),
+    button: GoogleFonts.inter(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.15,
       height: 1.4,
       color: _onSurface,
     ),

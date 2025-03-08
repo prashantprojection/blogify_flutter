@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:blogify_flutter/constants/ui_constants.dart';
 import 'package:blogify_flutter/constants/app_strings.dart';
 
 class ErrorView extends StatelessWidget {
@@ -21,7 +20,7 @@ class ErrorView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(UIConstants.spacingL),
+        padding: EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -30,14 +29,14 @@ class ErrorView extends StatelessWidget {
               size: 48,
               color: Theme.of(context).colorScheme.error,
             ),
-            SizedBox(height: UIConstants.spacingM),
+            SizedBox(height: 8),
             Text(
               message ?? AppStrings.generalError,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             if (showRetry && onRetry != null) ...[
-              SizedBox(height: UIConstants.spacingL),
+              SizedBox(height: 16),
               ElevatedButton(
                 onPressed: onRetry,
                 child: Text(AppStrings.retry),
@@ -68,7 +67,7 @@ class EmptyStateView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(UIConstants.spacingL),
+        padding: EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -77,14 +76,14 @@ class EmptyStateView extends StatelessWidget {
               size: 48,
               color: Theme.of(context).colorScheme.secondary,
             ),
-            SizedBox(height: UIConstants.spacingM),
+            SizedBox(height: 8),
             Text(
               message ?? AppStrings.noContent,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             if (onAction != null && actionLabel != null) ...[
-              SizedBox(height: UIConstants.spacingL),
+              SizedBox(height: 16),
               ElevatedButton(
                 onPressed: onAction,
                 child: Text(actionLabel!),
@@ -113,15 +112,15 @@ class ErrorBanner extends StatelessWidget {
       color: Theme.of(context).colorScheme.error,
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(UIConstants.spacingM),
+          padding: EdgeInsets.all(8),
           child: Row(
             children: [
               Icon(
                 Icons.error_outline_rounded,
                 color: Colors.white,
-                size: UIConstants.iconSize,
+                size: 24,
               ),
-              SizedBox(width: UIConstants.spacingM),
+              SizedBox(width: 8),
               Expanded(
                 child: Text(
                   message ?? AppStrings.generalError,

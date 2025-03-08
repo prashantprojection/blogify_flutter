@@ -2,32 +2,60 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/theme_palette.dart';
 
-class PirateShipTheme {
-  // Color definitions - Nautical Color Palette
-  static const _primary = Color(0xFF191970); // Midnight Blue
-  static const _onPrimary = Color(0xFFF0F8FF); // Soft Moonlight White
-  static const _primaryContainer = Color(0xFF000080); // Deeper Midnight
-  static const _onPrimaryContainer = Color(0xFFF0F8FF);
+class NauticalTheme {
+  // Color definitions - Extended Nautical Color Palette
+  static const _primary = Color(0xFF1E88E5); // Ocean Blue
+  static const _onPrimary = Color(0xFFFFFFFF); // Pure White
+  static const _primaryContainer = Color(0xFF1565C0); // Deep Ocean Blue
+  static const _onPrimaryContainer = Color(0xFFFFFFFF);
 
-  static const _secondary = Color(0xFF008080); // Deep Ocean Teal
-  static const _onSecondary = Color(0xFFF0F8FF);
-  static const _secondaryContainer = Color(0xFF006666);
-  static const _onSecondaryContainer = Color(0xFFF0F8FF);
+  static const _secondary = Color(0xFF26A69A); // Sea Green
+  static const _onSecondary = Color(0xFFFFFFFF);
+  static const _secondaryContainer = Color(0xFF00897B); // Deep Sea Green
+  static const _onSecondaryContainer = Color(0xFFFFFFFF);
 
-  static const _tertiary = Color(0xFFD2691E); // Burnt Orange
-  static const _onTertiary = Color(0xFFF0F8FF);
-  static const _tertiaryContainer = Color(0xFFA0522D);
-  static const _onTertiaryContainer = Color(0xFFF0F8FF);
+  static const _tertiary = Color(0xFFFF8F00); // Sunset Orange
+  static const _onTertiary = Color(0xFF000000); // Black for contrast
+  static const _tertiaryContainer = Color(0xFFF57C00); // Deep Sunset
+  static const _onTertiaryContainer = Color(0xFF000000);
 
-  static const _error = Color(0xFFB22222); // Fire Brick Red
-  static const _onError = Color(0xFFF0F8FF);
-  static const _errorContainer = Color(0xFF8B0000);
-  static const _onErrorContainer = Color(0xFFF0F8FF);
+  static const _error = Color(0xFFD32F2F); // Alert Red
+  static const _onError = Color(0xFFFFFFFF);
+  static const _errorContainer = Color(0xFFC62828);
+  static const _onErrorContainer = Color(0xFFFFFFFF);
 
-  static const _background = Color(0xFF0A1929); // Deep Ocean Night
-  static const _onBackground = Color(0xFFF0F8FF);
-  static const _surface = Color(0xFF0A1929);
-  static const _onSurface = Color(0xFFF0F8FF);
+  static const _background = Color(0xFF102027); // Dark Ocean
+  static const _onBackground = Color(0xFFECEFF1); // Sea Foam White
+  static const _surface = Color(0xFF162B32); // Deep Water
+  static const _onSurface = Color(0xFFECEFF1);
+
+  // Additional theme colors
+  static const _accent = Color(0xFFFFD700); // Gold
+  static const _accentLight = Color(0xFFFFE57F); // Light Gold
+  static const _accentDark = Color(0xFFFFC400); // Dark Gold
+  static const _divider = Color(0xFF37474F); // Slate Gray
+  static const _cardColor = Color(0xFF1C353F); // Deep Blue Gray
+  static const _dialogBackgroundColor = Color(0xFF15272E); // Darker Ocean
+  static const _disabledColor = Color(0xFF546E7A); // Muted Blue Gray
+  static const _hintColor = Color(0xFF78909C); // Light Blue Gray
+  static const _indicatorColor = Color(0xFF29B6F6); // Light Blue
+  static const _scaffoldBackgroundColor = Color(0xFF0B171C); // Darkest Ocean
+  static const _secondaryHeaderColor = Color(0xFF26A69A); // Teal
+  static const _selectedRowColor = Color(0xFF1C353F); // Selected Blue
+  static const _unselectedWidgetColor = Color(0xFF78909C); // Unselected Gray
+
+  // Text Colors
+  static const _textPrimary = Color(0xFFECEFF1); // Primary Text
+  static const _textSecondary = Color(0xFFB0BEC5); // Secondary Text
+  static const _textHint = Color(0xFF78909C); // Hint Text
+  static const _textDisabled = Color(0xFF607D8B); // Disabled Text
+  static const _textSelectionColor = Color(0xFF29B6F6); // Selection Blue
+  static const _textSelectionHandleColor = Color(0xFF039BE5); // Handle Blue
+
+  // State Colors
+  static const _hoverStateColor = Color(0x1426A69A); // Teal with 8% opacity
+  static const _focusStateColor = Color(0x1F26A69A); // Teal with 12% opacity
+  static const _splashStateColor = Color(0x1F26A69A); // Teal with 12% opacity
 
   // Shared instances for theme configurations
   static const _corners = Corners(
@@ -84,6 +112,28 @@ class PirateShipTheme {
     surfaceContainerHighest: _withOpacity(_surface, 0.75),
     surfaceDim: _withOpacity(_surface, 0.7),
     surfaceBright: _withOpacity(_surface, 1),
+    accent: _accent,
+    accentLight: _accentLight,
+    accentDark: _accentDark,
+    divider: _divider,
+    cardColor: _cardColor,
+    dialogBackgroundColor: _dialogBackgroundColor,
+    disabledColor: _disabledColor,
+    hintColor: _hintColor,
+    indicatorColor: _indicatorColor,
+    scaffoldBackgroundColor: _scaffoldBackgroundColor,
+    secondaryHeaderColor: _secondaryHeaderColor,
+    selectedRowColor: _selectedRowColor,
+    unselectedWidgetColor: _unselectedWidgetColor,
+    textPrimary: _textPrimary,
+    textSecondary: _textSecondary,
+    textHint: _textHint,
+    textDisabled: _textDisabled,
+    textSelectionColor: _textSelectionColor,
+    textSelectionHandleColor: _textSelectionHandleColor,
+    hoverStateColor: _hoverStateColor,
+    focusStateColor: _focusStateColor,
+    splashStateColor: _splashStateColor,
     hoverColor: _withOpacity(_secondary, 0.08),
     focusColor: _withOpacity(_secondary, 0.12),
     highlightColor: _withOpacity(_secondary, 0.12),
@@ -140,6 +190,13 @@ class PirateShipTheme {
       height: 1.4,
       color: _onSurface,
     ),
+    button: GoogleFonts.pirataOne(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.15,
+      height: 1.4,
+      color: _onSurface,
+    ),
     caption: GoogleFonts.sourceCodePro(
       fontSize: 12,
       fontWeight: FontWeight.w400,
@@ -172,8 +229,8 @@ class PirateShipTheme {
   );
 
   static ThemePalette get theme => ThemePalette(
-        id: 'pirate_ship',
-        name: 'Pirate Ship',
+        id: 'nautical',
+        name: 'Nautical',
         colors: _themeColors,
         typography: _typography,
         corners: _corners,

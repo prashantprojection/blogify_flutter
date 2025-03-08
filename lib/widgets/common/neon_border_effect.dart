@@ -54,7 +54,7 @@ class _NeonBorderEffectState extends ConsumerState<NeonBorderEffect>
 
   @override
   Widget build(BuildContext context) {
-    final settings = ref.watch(settingsControllerProvider);
+    final settings = ref.watch(settingsProvider);
 
     if (!settings.neonEffectEnabled) {
       return const SizedBox.shrink();

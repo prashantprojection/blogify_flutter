@@ -29,6 +29,34 @@ class GoldAgeTheme {
   static const _surface = Color(0xFFFFFAF0);
   static const _onSurface = Color(0xFF1A1A1A);
 
+  // Additional color definitions for UI elements
+  static const _accent = Color(0xFFB8860B); // Dark Golden Rod
+  static const _accentLight = Color(0xFFDAA520); // Golden Rod
+  static const _accentDark = Color(0xFF8B6914); // Darker Gold
+  static const _divider = Color(0xFFDEB887); // Burly Wood
+  static const _cardColor = Color(0xFFFFF8DC); // Cornsilk
+  static const _dialogBackgroundColor = Color(0xFFFFFAF0); // Floral White
+  static const _disabledColor = Color(0xFFD2B48C); // Tan
+  static const _hintColor = Color(0xFFCD853F); // Peru
+  static const _indicatorColor = Color(0xFFDAA520); // Golden Rod
+  static const _scaffoldBackgroundColor = Color(0xFFFFFAF0); // Ivory
+  static const _secondaryHeaderColor = Color(0xFFF5DEB3); // Wheat
+  static const _selectedRowColor = Color(0xFFFFE4B5); // Moccasin
+  static const _unselectedWidgetColor = Color(0xFFDEB887); // Burly Wood
+
+  // Text-specific colors
+  static const _textPrimary = Color(0xFF1A1A1A);
+  static const _textSecondary = Color(0xFF4A4A4A);
+  static const _textHint = Color(0xFF8B7355); // Metallic Gold
+  static const _textDisabled = Color(0xFFBDB76B); // Dark Khaki
+  static const _textSelectionColor = Color(0xFFFFD700); // Gold
+  static const _textSelectionHandleColor = Color(0xFFDAA520); // Golden Rod
+
+  // State colors
+  static const _hoverStateColor = Color(0x1AD4AF37);
+  static const _focusStateColor = Color(0x1FFFD700);
+  static const _splashStateColor = Color(0x1AB8860B);
+
   // Shared instances for theme configurations
   static const _corners = Corners(
     zero: 0,
@@ -44,8 +72,6 @@ class GoldAgeTheme {
   static Color _withOpacity(Color color, double opacity) {
     return color.withAlpha((opacity * 255).round());
   }
-
-  // Helper methods for text styles with color overrides
 
   // Shared theme colors instance
   static final _themeColors = ThemeColors(
@@ -65,10 +91,11 @@ class GoldAgeTheme {
     onError: _onError,
     errorContainer: _errorContainer,
     onErrorContainer: _onErrorContainer,
-    background: _background,
-    onBackground: _onBackground,
-    surface: _surface,
-    onSurface: _onSurface,
+    accent: _accent,
+    background: Colors.white,
+    onBackground: _textPrimary,
+    surface: Colors.white,
+    onSurface: _textPrimary,
     surfaceVariant: _withOpacity(_surface, 0.9),
     onSurfaceVariant: _withOpacity(_onSurface, 0.9),
     outline: _withOpacity(_primary, 0.2),
@@ -86,10 +113,34 @@ class GoldAgeTheme {
     surfaceContainerHighest: _withOpacity(_surface, 0.75),
     surfaceDim: _withOpacity(_surface, 0.7),
     surfaceBright: _withOpacity(_surface, 1),
+    accentLight: _accentLight,
+    accentDark: _accentDark,
+    divider: _divider,
+    cardColor: _cardColor,
+    dialogBackgroundColor: _dialogBackgroundColor,
+    disabledColor: _disabledColor,
+    hintColor: _hintColor,
+    indicatorColor: _indicatorColor,
+    scaffoldBackgroundColor: _scaffoldBackgroundColor,
+    secondaryHeaderColor: _secondaryHeaderColor,
+    selectedRowColor: _selectedRowColor,
+    unselectedWidgetColor: _unselectedWidgetColor,
+    textPrimary: _textPrimary,
+    textSecondary: _textSecondary,
+    textHint: _textHint,
+    textDisabled: _textDisabled,
+    textSelectionColor: _textSelectionColor,
+    textSelectionHandleColor: _textSelectionHandleColor,
+    hoverStateColor: _hoverStateColor,
+    focusStateColor: _focusStateColor,
+    splashStateColor: _splashStateColor,
     hoverColor: _withOpacity(_primary, 0.08),
     focusColor: _withOpacity(_primary, 0.12),
     highlightColor: _withOpacity(_primary, 0.12),
     splashColor: _withOpacity(_primary, 0.12),
+    pressedOpacity: 0.12,
+    draggedOpacity: 0.16,
+    disabledOpacity: 0.38,
   );
 
   // Shared typography instance
@@ -139,6 +190,13 @@ class GoldAgeTheme {
       fontSize: 16,
       fontWeight: FontWeight.w500,
       letterSpacing: 0.25,
+      height: 1.4,
+      color: _onSurface,
+    ),
+    button: GoogleFonts.crimsonText(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.15,
       height: 1.4,
       color: _onSurface,
     ),

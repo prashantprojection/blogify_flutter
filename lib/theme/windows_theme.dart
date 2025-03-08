@@ -30,6 +30,34 @@ class WindowsTheme {
   static const _surface = Color(0xFFFFFFFF);
   static const _onSurface = Color(0xFF000000);
 
+  // Additional Windows 11 colors
+  static const _accent = Color(0xFF00B7C3); // Cyan accent
+  static const _accentLight = Color(0xFF61EBFF);
+  static const _accentDark = Color(0xFF008C98);
+  static const _divider = Color(0xFFE5E5E5);
+  static const _cardColor = Color(0xFFFAFAFA);
+  static const _dialogBackgroundColor = Color(0xFFF8F8F8);
+  static const _disabledColor = Color(0xFFBDBDBD);
+  static const _hintColor = Color(0xFF9E9E9E);
+  static const _indicatorColor = Color(0xFF0078D4);
+  static const _scaffoldBackgroundColor = Color(0xFFF0F0F0);
+  static const _secondaryHeaderColor = Color(0xFFECECEC);
+  static const _selectedRowColor = Color(0xFFE3F2FD);
+  static const _unselectedWidgetColor = Color(0xFF757575);
+
+  // Text colors
+  static const _textPrimary = Color(0xFF000000);
+  static const _textSecondary = Color(0xFF666666);
+  static const _textHint = Color(0xFF9E9E9E);
+  static const _textDisabled = Color(0xFFBDBDBD);
+  static const _textSelectionColor = Color(0xFFB3D6FC);
+  static const _textSelectionHandleColor = Color(0xFF0078D4);
+
+  // State colors
+  static const _hoverStateColor = Color(0x0A000000); // 4% opacity
+  static const _focusStateColor = Color(0x1F000000); // 12% opacity
+  static const _splashStateColor = Color(0x1F000000); // 12% opacity
+
   // Shared instances for theme configurations
   static const _corners = Corners(
     zero: 0,
@@ -85,6 +113,28 @@ class WindowsTheme {
     surfaceContainerHighest: _withOpacity(_surface, 0.90),
     surfaceDim: _withOpacity(_surface, 0.85),
     surfaceBright: _withOpacity(_surface, 1),
+    accent: _accent,
+    accentLight: _accentLight,
+    accentDark: _accentDark,
+    divider: _divider,
+    cardColor: _cardColor,
+    dialogBackgroundColor: _dialogBackgroundColor,
+    disabledColor: _disabledColor,
+    hintColor: _hintColor,
+    indicatorColor: _indicatorColor,
+    scaffoldBackgroundColor: _scaffoldBackgroundColor,
+    secondaryHeaderColor: _secondaryHeaderColor,
+    selectedRowColor: _selectedRowColor,
+    unselectedWidgetColor: _unselectedWidgetColor,
+    textPrimary: _textPrimary,
+    textSecondary: _textSecondary,
+    textHint: _textHint,
+    textDisabled: _textDisabled,
+    textSelectionColor: _textSelectionColor,
+    textSelectionHandleColor: _textSelectionHandleColor,
+    hoverStateColor: _hoverStateColor,
+    focusStateColor: _focusStateColor,
+    splashStateColor: _splashStateColor,
     hoverColor: _withOpacity(_primary, 0.04),
     focusColor: _withOpacity(_primary, 0.12),
     highlightColor: _withOpacity(_primary, 0.08),
@@ -135,6 +185,13 @@ class WindowsTheme {
       height: 1.4,
       color: _onSurface,
     ),
+    button: GoogleFonts.notoSans(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.15,
+      height: 1.4,
+      color: _onSurface,
+    ),
     label: GoogleFonts.notoSans(
       fontSize: 14,
       fontWeight: FontWeight.w500,
@@ -182,7 +239,7 @@ class WindowsTheme {
         typography: _typography,
         corners: _corners,
         shadows: Shadows.standard(
-          shadowColor: Colors.black,
+          shadowColor: _themeColors.shadow,
           opacity: 0.06,
         ),
       );

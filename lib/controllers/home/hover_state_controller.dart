@@ -10,6 +10,8 @@ class HoverStates {
   final Map<String, bool> trendingTopicHoverStates;
   final bool isBlogOfDayHovered;
 
+  var blogOfDayHoverStates;
+
   HoverStates({
     required this.featuredStoryHoverStates,
     required this.webStoryHoverStates,

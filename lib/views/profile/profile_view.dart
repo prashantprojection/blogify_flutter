@@ -1,9 +1,11 @@
+import 'package:blogify_flutter/models/theme_palette.dart';
+import 'package:blogify_flutter/views/profile/profile_temp_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:blogify_flutter/widgets/common/app_header.dart';
-import 'dart:math';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 
 class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
@@ -18,8 +20,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
       TextEditingController();
   final TextEditingController _quickReplyController = TextEditingController();
   bool _isFollowersTab = true;
-  Map<int, bool> _expandedReplies = {}; // Track expanded state for each comment
-  Map<int, TextEditingController> _replyControllers =
+  final Map<int, bool> _expandedReplies =
+      {}; // Track expanded state for each comment
+  final Map<int, TextEditingController> _replyControllers =
       {}; // Controllers for each comment's reply
 
   @override
@@ -43,14 +46,25 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   }
 
   Widget _buildProfileHeader() {
+    final theme = ref.watch(themeProvider);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        color: theme.colors.surface,
+        borderRadius: theme.corners.roundedLarge,
+        border: Border.all(
+          color: theme.colors.outlineVariant.withOpacity(0.1),
+          width: theme.borders.small,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colors.shadow.withOpacity(0.05),
+            offset: Offset(0, 4),
+            blurRadius: 20,
+          ),
+        ],
       ),
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      padding: const EdgeInsets.all(24),
+      margin: EdgeInsets.symmetric(horizontal: theme.spacing.large),
+      padding: EdgeInsets.all(theme.spacing.large),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -61,7 +75,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                 height: 100,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey[200]!, width: 2),
+                  border: Border.all(
+                    color: theme.colors.outlineVariant.withOpacity(0.2),
+                    width: theme.borders.small,
+                  ),
                   image: const DecorationImage(
                     image: NetworkImage(
                         'https://images.unsplash.com/photo-1494790108377-be9c29b29330'),
@@ -73,19 +90,32 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                 right: 0,
                 bottom: 0,
                 child: Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: EdgeInsets.all(theme.spacing.small),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: theme.colors.surface,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.grey[200]!),
+                    border: Border.all(
+                      color: theme.colors.outlineVariant.withOpacity(0.2),
+                      width: theme.borders.small,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colors.shadow.withOpacity(0.05),
+                        offset: Offset(0, 2),
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
-                  child:
-                      Icon(Icons.camera_alt, size: 16, color: Colors.grey[600]),
+                  child: Icon(
+                    Icons.camera_alt,
+                    size: 16,
+                    color: theme.colors.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(width: 24),
+          SizedBox(width: theme.spacing.large),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,20 +130,23 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           children: [
                             Text(
                               'Sarah Anderson',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                              style: theme.typography.title.copyWith(
+                                color: theme.colors.onSurface,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Icon(Icons.verified, color: Colors.blue, size: 20),
+                            SizedBox(width: theme.spacing.small),
+                            Icon(
+                              Icons.verified,
+                              color: theme.colors.primary,
+                              size: 20,
+                            ),
                           ],
                         ),
                         Text(
                           '@sarahanderson',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
+                          style: theme.typography.body.copyWith(
+                            color: theme.colors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -124,61 +157,87 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           onPressed: () {},
                           style: OutlinedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 24, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              horizontal: theme.spacing.large,
+                              vertical: theme.spacing.medium,
                             ),
-                            side: BorderSide(color: Colors.grey[300]!),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: theme.corners.roundedMedium,
+                            ),
+                            side: BorderSide(
+                              color:
+                                  theme.colors.outlineVariant.withOpacity(0.2),
+                              width: theme.borders.small,
+                            ),
                           ),
-                          child: Text('Edit Profile'),
+                          child: Text(
+                            'Edit Profile',
+                            style: theme.typography.button.copyWith(
+                              color: theme.colors.onSurface,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: theme.spacing.medium),
                         OutlinedButton.icon(
                           onPressed: () {},
-                          icon: Icon(Icons.public, size: 20),
-                          label: Text('Public View'),
+                          icon: Icon(
+                            Icons.public,
+                            size: 20,
+                            color: theme.colors.onSurface,
+                          ),
+                          label: Text(
+                            'Public View',
+                            style: theme.typography.button.copyWith(
+                              color: theme.colors.onSurface,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                           style: OutlinedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 24, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              horizontal: theme.spacing.large,
+                              vertical: theme.spacing.medium,
                             ),
-                            side: BorderSide(color: Colors.grey[300]!),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: theme.corners.roundedMedium,
+                            ),
+                            side: BorderSide(
+                              color:
+                                  theme.colors.outlineVariant.withOpacity(0.2),
+                              width: theme.borders.small,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: theme.spacing.medium),
                 Text(
                   'Digital content creator | Tech enthusiast | Coffee lover ☕ | Sharing insights about web development and design | 5 years of experience in frontend development',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[800],
+                  style: theme.typography.body.copyWith(
+                    color: theme.colors.onSurfaceVariant,
                     height: 1.5,
                   ),
                 ),
                 Text(
                   '160/160',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[500],
+                  style: theme.typography.caption.copyWith(
+                    color: theme.colors.onSurfaceVariant,
                   ),
                   textAlign: TextAlign.right,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: theme.spacing.medium),
                 Row(
                   children: [
-                    _buildStatItem('245', 'Posts'),
-                    const SizedBox(width: 24),
-                    _buildStatItem('15.3K', 'Followers'),
-                    const SizedBox(width: 24),
-                    _buildStatItem('892', 'Following'),
-                    const SizedBox(width: 24),
-                    _buildStatItem('1.2K', 'Comments'),
-                    const SizedBox(width: 24),
-                    _buildStatItem('48', 'Forums'),
+                    _buildStatItem('245', 'Posts', theme),
+                    SizedBox(width: theme.spacing.large),
+                    _buildStatItem('15.3K', 'Followers', theme),
+                    SizedBox(width: theme.spacing.large),
+                    _buildStatItem('892', 'Following', theme),
+                    SizedBox(width: theme.spacing.large),
+                    _buildStatItem('1.2K', 'Comments', theme),
+                    SizedBox(width: theme.spacing.large),
+                    _buildStatItem('48', 'Forums', theme),
                   ],
                 ),
               ],
@@ -189,21 +248,20 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     );
   }
 
-  Widget _buildStatItem(String value, String label) {
+  Widget _buildStatItem(String value, String label, ThemePalette theme) {
     return Column(
       children: [
         Text(
           value,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          style: theme.typography.title.copyWith(
+            color: theme.colors.onSurface,
+            fontWeight: FontWeight.w600,
           ),
         ),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
+          style: theme.typography.body.copyWith(
+            color: theme.colors.onSurfaceVariant,
           ),
         ),
       ],
@@ -211,28 +269,39 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   }
 
   Widget _buildSavedPosts() {
+    final theme = ref.watch(themeProvider);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        color: theme.colors.surface,
+        borderRadius: theme.corners.roundedLarge,
+        border: Border.all(
+          color: theme.colors.outlineVariant.withOpacity(0.1),
+          width: theme.borders.small,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colors.shadow.withOpacity(0.05),
+            offset: Offset(0, 4),
+            blurRadius: 20,
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(theme.spacing.large),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Saved Posts',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  style: theme.typography.title.copyWith(
+                    color: theme.colors.onSurface,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: 300,
                   child: Row(
                     children: [
@@ -241,31 +310,51 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           controller: _searchPostsController,
                           decoration: InputDecoration(
                             hintText: 'Search posts...',
-                            hintStyle: TextStyle(color: Colors.grey[400]),
+                            hintStyle: theme.typography.body.copyWith(
+                              color: theme.colors.onSurfaceVariant
+                                  .withOpacity(0.7),
+                            ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey[200]!),
+                              borderRadius: theme.corners.roundedMedium,
+                              borderSide: BorderSide(
+                                color: theme.colors.outlineVariant
+                                    .withOpacity(0.2),
+                                width: theme.borders.small,
+                              ),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey[200]!),
+                              borderRadius: theme.corners.roundedMedium,
+                              borderSide: BorderSide(
+                                color: theme.colors.outlineVariant
+                                    .withOpacity(0.2),
+                                width: theme.borders.small,
+                              ),
                             ),
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 16),
-                            suffixIcon:
-                                Icon(Icons.search, color: Colors.grey[400]),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: theme.spacing.medium,
+                            ),
+                            suffixIcon: Icon(
+                              Icons.search,
+                              color: theme.colors.onSurfaceVariant
+                                  .withOpacity(0.7),
+                            ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: theme.spacing.medium),
                       Container(
-                        padding: EdgeInsets.all(8),
+                        padding: EdgeInsets.all(theme.spacing.small),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey[200]!),
-                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: theme.colors.outlineVariant.withOpacity(0.2),
+                            width: theme.borders.small,
+                          ),
+                          borderRadius: theme.corners.roundedMedium,
                         ),
-                        child: Icon(Icons.keyboard_arrow_down,
-                            color: Colors.grey[600]),
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: theme.colors.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -274,60 +363,58 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: theme.spacing.large),
             child: GridView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                crossAxisSpacing: 24,
-                mainAxisSpacing: 24,
+                crossAxisSpacing: theme.spacing.large,
+                mainAxisSpacing: theme.spacing.large,
                 childAspectRatio: 1.5,
               ),
               itemCount: 2,
               itemBuilder: (context, index) => _buildSavedPostCard(index),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: theme.spacing.large),
           Center(
             child: TextButton(
               onPressed: () {},
               child: Text(
                 'Load More',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 16,
+                style: theme.typography.button.copyWith(
+                  color: theme.colors.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: theme.spacing.large),
         ],
       ),
     );
   }
 
   Widget _buildSavedPostCard(int index) {
-    final posts = [
-      {
-        'title': 'Getting Started with React Hooks',
-        'image': 'assets/react_hooks.png',
-        'tags': ['React', 'Tutorial', 'Frontend'],
-      },
-      {
-        'title': 'TypeScript Best Practices',
-        'image': 'assets/typescript.png',
-        'tags': ['TypeScript', 'Development'],
-      },
-    ];
-
+    final theme = ref.watch(themeProvider);
     final post = posts[index];
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        color: theme.colors.surface,
+        borderRadius: theme.corners.roundedLarge,
+        border: Border.all(
+          color: theme.colors.outlineVariant.withOpacity(0.1),
+          width: theme.borders.small,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colors.shadow.withOpacity(0.05),
+            offset: Offset(0, 4),
+            blurRadius: 20,
+          ),
+        ],
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -336,7 +423,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Color(0xFF1A1F36),
+                color: theme.colors.surfaceVariant,
                 image: DecorationImage(
                   image: AssetImage(post['image'] as String),
                   fit: BoxFit.cover,
@@ -345,61 +432,61 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(theme.spacing.medium),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   post['title'] as String,
-                  style: TextStyle(
+                  style: theme.typography.title.copyWith(
+                    color: theme.colors.onSurface,
                     fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: Colors.grey[900],
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: theme.spacing.medium),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: theme.spacing.small,
+                  runSpacing: theme.spacing.small,
                   children: (post['tags'] as List<String>).map((tag) {
                     Color tagColor;
                     Color bgColor;
                     switch (tag) {
                       case 'React':
-                        tagColor = Color(0xFF2563EB);
-                        bgColor = Color(0xFFDBEAFE);
+                        tagColor = theme.colors.primary;
+                        bgColor = theme.colors.primary.withOpacity(0.1);
                         break;
                       case 'Tutorial':
-                        tagColor = Color(0xFF9333EA);
-                        bgColor = Color(0xFFF3E8FF);
+                        tagColor = theme.colors.secondary;
+                        bgColor = theme.colors.secondary.withOpacity(0.1);
                         break;
                       case 'Frontend':
                         tagColor = Color(0xFF16A34A);
                         bgColor = Color(0xFFDCFCE7);
                         break;
                       case 'TypeScript':
-                        tagColor = Color(0xFF2563EB);
-                        bgColor = Color(0xFFDBEAFE);
+                        tagColor = theme.colors.primary;
+                        bgColor = theme.colors.primary.withOpacity(0.1);
                         break;
                       case 'Development':
                         tagColor = Color(0xFFEA580C);
                         bgColor = Color(0xFFFFEDD5);
                         break;
                       default:
-                        tagColor = Colors.blue;
-                        bgColor = Colors.blue.withOpacity(0.1);
+                        tagColor = theme.colors.primary;
+                        bgColor = theme.colors.primary.withOpacity(0.1);
                     }
                     return Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: theme.spacing.medium,
+                        vertical: theme.spacing.small,
+                      ),
                       decoration: BoxDecoration(
                         color: bgColor,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: theme.corners.roundedSmall,
                       ),
                       child: Text(
                         tag,
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: theme.typography.label.copyWith(
                           color: tagColor,
                           fontWeight: FontWeight.w500,
                         ),
@@ -416,36 +503,50 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   }
 
   Widget _buildFollowersSection() {
+    final theme = ref.watch(themeProvider);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        color: theme.colors.surface,
+        borderRadius: theme.corners.roundedLarge,
+        border: Border.all(
+          color: theme.colors.outlineVariant.withOpacity(0.1),
+          width: theme.borders.small,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colors.shadow.withOpacity(0.05),
+            offset: Offset(0, 4),
+            blurRadius: 20,
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(theme.spacing.large),
             child: Text(
               'Connections',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+              style: theme.typography.title.copyWith(
+                color: theme.colors.onSurface,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(
+              horizontal: theme.spacing.medium,
+              vertical: theme.spacing.small,
+            ),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
                       color: _isFollowersTab
-                          ? Color(0xFF1A1F36)
+                          ? theme.colors.primary
                           : Colors.transparent,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: theme.corners.roundedMedium,
                     ),
                     child: TextButton(
                       onPressed: () {
@@ -453,32 +554,34 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           _isFollowersTab = true;
                         });
                       },
-                      child: Text(
-                        'Followers',
-                        style: TextStyle(
-                          color:
-                              _isFollowersTab ? Colors.white : Colors.grey[700],
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: theme.spacing.medium,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: theme.corners.roundedMedium,
                         ),
                       ),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                      child: Text(
+                        'Followers',
+                        style: theme.typography.button.copyWith(
+                          color: _isFollowersTab
+                              ? theme.colors.onPrimary
+                              : theme.colors.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: theme.spacing.small),
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
                       color: !_isFollowersTab
-                          ? Color(0xFF1A1F36)
+                          ? theme.colors.primary
                           : Colors.transparent,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: theme.corners.roundedMedium,
                     ),
                     child: TextButton(
                       onPressed: () {
@@ -486,20 +589,21 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           _isFollowersTab = false;
                         });
                       },
-                      child: Text(
-                        'Following',
-                        style: TextStyle(
-                          color: !_isFollowersTab
-                              ? Colors.white
-                              : Colors.grey[700],
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: theme.spacing.medium,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: theme.corners.roundedMedium,
                         ),
                       ),
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                      child: Text(
+                        'Following',
+                        style: theme.typography.button.copyWith(
+                          color: !_isFollowersTab
+                              ? theme.colors.onPrimary
+                              : theme.colors.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
@@ -509,22 +613,35 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(theme.spacing.medium),
             child: TextField(
               controller: _searchConnectionsController,
               decoration: InputDecoration(
                 hintText: 'Search connections...',
-                hintStyle: TextStyle(color: Colors.grey[400]),
+                hintStyle: theme.typography.body.copyWith(
+                  color: theme.colors.onSurfaceVariant.withOpacity(0.7),
+                ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey[200]!),
+                  borderRadius: theme.corners.roundedMedium,
+                  borderSide: BorderSide(
+                    color: theme.colors.outlineVariant.withOpacity(0.2),
+                    width: theme.borders.small,
+                  ),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey[200]!),
+                  borderRadius: theme.corners.roundedMedium,
+                  borderSide: BorderSide(
+                    color: theme.colors.outlineVariant.withOpacity(0.2),
+                    width: theme.borders.small,
+                  ),
                 ),
-                contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                suffixIcon: Icon(Icons.search, color: Colors.grey[400]),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: theme.spacing.medium,
+                ),
+                suffixIcon: Icon(
+                  Icons.search,
+                  color: theme.colors.onSurfaceVariant.withOpacity(0.7),
+                ),
               ),
             ),
           ),
@@ -540,65 +657,46 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   }
 
   Widget _buildFollowerItem(int index) {
-    final followers = [
-      {
-        'name': 'Alex Chen',
-        'username': '@alexchen',
-        'image': 'https://randomuser.me/api/portraits/men/1.jpg',
-        'isFollowing': false,
-      },
-      {
-        'name': 'Maria Garcia',
-        'username': '@mariagarcia',
-        'image': 'https://randomuser.me/api/portraits/women/2.jpg',
-        'isFollowing': true,
-      },
-    ];
-
-    final following = [
-      {
-        'name': 'John Smith',
-        'username': '@johnsmith',
-        'image': 'https://randomuser.me/api/portraits/men/2.jpg',
-        'isFollowing': true,
-      },
-      {
-        'name': 'Emma Wilson',
-        'username': '@emmawilson',
-        'image': 'https://randomuser.me/api/portraits/women/3.jpg',
-        'isFollowing': true,
-      },
-    ];
-
+    final theme = ref.watch(themeProvider);
     final items = _isFollowersTab ? followers : following;
     final item = items[index];
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(
+        horizontal: theme.spacing.medium,
+        vertical: theme.spacing.medium,
+      ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundImage: NetworkImage(item['image'] as String),
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: theme.colors.primary.withOpacity(0.2),
+                width: theme.borders.small,
+              ),
+            ),
+            child: CircleAvatar(
+              radius: 20,
+              backgroundImage: NetworkImage(item['image'] as String),
+            ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: theme.spacing.medium),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   item['name'] as String,
-                  style: TextStyle(
+                  style: theme.typography.title.copyWith(
+                    color: theme.colors.onSurface,
                     fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: Colors.grey[900],
                   ),
                 ),
                 Text(
                   item['username'] as String,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
+                  style: theme.typography.body.copyWith(
+                    color: theme.colors.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -607,23 +705,29 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           OutlinedButton(
             onPressed: () {},
             style: OutlinedButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+              padding: EdgeInsets.symmetric(
+                horizontal: theme.spacing.medium,
+                vertical: theme.spacing.small,
               ),
-              side: BorderSide(color: Colors.grey[200]!),
-              backgroundColor:
-                  item['isFollowing'] as bool ? Colors.grey[100] : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: theme.corners.roundedMedium,
+              ),
+              side: BorderSide(
+                color: theme.colors.outlineVariant.withOpacity(0.2),
+                width: theme.borders.small,
+              ),
+              backgroundColor: item['isFollowing'] as bool
+                  ? theme.colors.surfaceVariant.withOpacity(0.5)
+                  : theme.colors.surface,
             ),
             child: Text(
               _isFollowersTab
                   ? (item['isFollowing'] as bool ? 'Following' : 'Follow Back')
                   : 'Following',
-              style: TextStyle(
+              style: theme.typography.button.copyWith(
                 color: item['isFollowing'] as bool
-                    ? Colors.grey[700]
-                    : Colors.grey[900],
-                fontSize: 14,
+                    ? theme.colors.onSurfaceVariant
+                    : theme.colors.onSurface,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -634,34 +738,45 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   }
 
   Widget _buildSocialMediaSection() {
+    final theme = ref.watch(themeProvider);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        color: theme.colors.surface,
+        borderRadius: theme.corners.roundedLarge,
+        border: Border.all(
+          color: theme.colors.outlineVariant.withOpacity(0.1),
+          width: theme.borders.small,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colors.shadow.withOpacity(0.05),
+            offset: Offset(0, 4),
+            blurRadius: 20,
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(theme.spacing.large),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Social Media',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  style: theme.typography.title.copyWith(
+                    color: theme.colors.onSurface,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 TextButton(
                   onPressed: () {},
                   child: Text(
                     'Add New',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 16,
+                    style: theme.typography.button.copyWith(
+                      color: theme.colors.primary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -680,315 +795,104 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   }
 
   Widget _buildSocialMediaItem(int index) {
-    final socialMedia = [
-      {
-        'platform': 'Twitter',
-        'handle': '@sarahanderson',
-        'icon': FontAwesomeIcons.twitter,
-        'isActive': true,
-      },
-      {
-        'platform': 'LinkedIn',
-        'handle': 'Sarah Anderson',
-        'icon': FontAwesomeIcons.linkedin,
-        'isActive': true,
-      },
-      {
-        'platform': 'GitHub',
-        'handle': 'sarahanderson',
-        'icon': FontAwesomeIcons.github,
-        'isActive': false,
-      },
-    ];
-
+    final theme = ref.watch(themeProvider);
     final account = socialMedia[index];
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: EdgeInsets.symmetric(
+        horizontal: theme.spacing.large,
+        vertical: theme.spacing.small,
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: theme.spacing.medium,
+        vertical: theme.spacing.medium,
+      ),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        color: theme.colors.surface,
+        borderRadius: theme.corners.roundedLarge,
+        border: Border.all(
+          color: theme.colors.outlineVariant.withOpacity(0.1),
+          width: theme.borders.small,
+        ),
       ),
       child: Row(
         children: [
           FaIcon(
             account['icon'] as IconData,
             size: 24,
-            color: Colors.grey[700],
+            color: theme.colors.onSurfaceVariant,
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: theme.spacing.medium),
           Text(
             account['handle'] as String,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[800],
+            style: theme.typography.body.copyWith(
+              color: theme.colors.onSurface,
             ),
           ),
           Spacer(),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            padding: EdgeInsets.symmetric(
+              horizontal: theme.spacing.medium,
+              vertical: theme.spacing.small,
+            ),
             decoration: BoxDecoration(
               color: account['isActive'] as bool
-                  ? Color(0xFFE8F5E9) // Light green background
-                  : Color(0xFFF5F5F5), // Light grey background
-              borderRadius: BorderRadius.circular(16),
+                  ? theme.colors.primary.withOpacity(0.1)
+                  : theme.colors.surfaceVariant.withOpacity(0.5),
+              borderRadius: theme.corners.roundedSmall,
             ),
             child: Text(
               account['isActive'] as bool ? 'Active' : 'Inactive',
-              style: TextStyle(
+              style: theme.typography.label.copyWith(
                 color: account['isActive'] as bool
-                    ? Color(0xFF2E7D32) // Dark green text
-                    : Colors.grey[600],
-                fontSize: 14,
+                    ? theme.colors.primary
+                    : theme.colors.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: theme.spacing.medium),
           Icon(
             Icons.edit,
             size: 20,
-            color: Colors.grey[400],
+            color: theme.colors.onSurfaceVariant.withOpacity(0.7),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCommentItem(Map<String, dynamic> comment, int index) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey[200]!),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                comment['author'] as String,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: Colors.grey[900],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                comment['timeAgo'] as String,
-                style: TextStyle(
-                  color: Colors.grey[500],
-                  fontSize: 12,
-                ),
-              ),
-              Spacer(),
-              IconButton(
-                icon: Icon(Icons.visibility_outlined, size: 20),
-                onPressed: () {
-                  print(
-                      'Navigate to post ${comment['postId']} at comment position');
-                },
-                tooltip: 'View in post: ${comment['postTitle']}',
-                color: Colors.grey[600],
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            comment['content'] as String,
-            style: TextStyle(
-              color: Colors.grey[800],
-              fontSize: 14,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[200]!),
-            ),
-            child: Row(
-              children: [
-                Text(
-                  'On: ',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
-                ),
-                Text(
-                  comment['postTitle'] as String,
-                  style: TextStyle(
-                    color: Colors.grey[900],
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              setState(() {
-                _expandedReplies[index] = !(_expandedReplies[index] ?? false);
-              });
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    _expandedReplies[index] == true
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    size: 20,
-                    color: Colors.grey[600],
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Quick Reply',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (_expandedReplies[index] == true) ...[
-            Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[200]!),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextField(
-                    controller: _replyControllers[index],
-                    decoration: InputDecoration(
-                      hintText: 'Write a reply...',
-                      hintStyle: TextStyle(color: Colors.grey[400]),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey[200]!),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.grey[200]!),
-                      ),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.emoji_emotions_outlined,
-                                color: Colors.grey[400]),
-                            onPressed: () {},
-                            tooltip: 'Add emoji',
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.send, color: Colors.blue),
-                            onPressed: () {
-                              if (_replyControllers[index]!.text.isNotEmpty) {
-                                print(
-                                    'Sending reply to comment ${comment['postId']}: ${_replyControllers[index]!.text}');
-                                _replyControllers[index]!.clear();
-                                setState(() {
-                                  _expandedReplies[index] = false;
-                                });
-                              }
-                            },
-                            tooltip: 'Send reply',
-                          ),
-                        ],
-                      ),
-                    ),
-                    maxLines: 3,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.format_bold, color: Colors.grey[600]),
-                        onPressed: () {},
-                        tooltip: 'Bold',
-                      ),
-                      IconButton(
-                        icon:
-                            Icon(Icons.format_italic, color: Colors.grey[600]),
-                        onPressed: () {},
-                        tooltip: 'Italic',
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.link, color: Colors.grey[600]),
-                        onPressed: () {},
-                        tooltip: 'Insert link',
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
         ],
       ),
     );
   }
 
   Widget _buildQuickReply() {
-    final latestComments = [
-      {
-        'author': 'Sarah Anderson',
-        'content':
-            'Great article! The React hooks explanation really helped me understand useEffect better.',
-        'timeAgo': '2h ago',
-        'postTitle': 'Understanding React Hooks',
-        'postId': '1',
-      },
-      {
-        'author': 'Sarah Anderson',
-        'content':
-            'The comparison between Next.js and Remix is very insightful. Would love to see more content like this.',
-        'timeAgo': '1d ago',
-        'postTitle': 'Next.js vs Remix Comparison',
-        'postId': '2',
-      },
-    ];
-
+    final theme = ref.watch(themeProvider);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        color: theme.colors.surface,
+        borderRadius: theme.corners.roundedLarge,
+        border: Border.all(
+          color: theme.colors.outlineVariant.withOpacity(0.1),
+          width: theme.borders.small,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colors.shadow.withOpacity(0.05),
+            offset: Offset(0, 4),
+            blurRadius: 20,
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(theme.spacing.large),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Latest Comments',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  style: theme.typography.title.copyWith(
+                    color: theme.colors.onSurface,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -1006,30 +910,276 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     );
   }
 
+  Widget _buildCommentItem(Map<String, dynamic> comment, int index) {
+    final theme = ref.watch(themeProvider);
+    return Container(
+      padding: EdgeInsets.all(theme.spacing.medium),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: theme.colors.outlineVariant.withOpacity(0.1),
+            width: theme.borders.small,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                comment['author'] as String,
+                style: theme.typography.title.copyWith(
+                  color: theme.colors.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(width: theme.spacing.small),
+              Text(
+                comment['timeAgo'] as String,
+                style: theme.typography.caption.copyWith(
+                  color: theme.colors.onSurfaceVariant,
+                ),
+              ),
+              Spacer(),
+              IconButton(
+                icon: Icon(
+                  Icons.visibility_outlined,
+                  size: 20,
+                  color: theme.colors.onSurfaceVariant,
+                ),
+                onPressed: () {
+                  print(
+                      'Navigate to post ${comment['postId']} at comment position');
+                },
+                tooltip: 'View in post: ${comment['postTitle']}',
+              ),
+            ],
+          ),
+          SizedBox(height: theme.spacing.small),
+          Text(
+            comment['content'] as String,
+            style: theme.typography.body.copyWith(
+              color: theme.colors.onSurface,
+              height: 1.5,
+            ),
+          ),
+          SizedBox(height: theme.spacing.medium),
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: theme.spacing.medium,
+              vertical: theme.spacing.small,
+            ),
+            decoration: BoxDecoration(
+              color: theme.colors.surfaceVariant.withOpacity(0.5),
+              borderRadius: theme.corners.roundedMedium,
+              border: Border.all(
+                color: theme.colors.outlineVariant.withOpacity(0.1),
+                width: theme.borders.small,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'On: ',
+                  style: theme.typography.caption.copyWith(
+                    color: theme.colors.onSurfaceVariant,
+                  ),
+                ),
+                Text(
+                  comment['postTitle'] as String,
+                  style: theme.typography.caption.copyWith(
+                    color: theme.colors.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              setState(() {
+                _expandedReplies[index] = !(_expandedReplies[index] ?? false);
+              });
+            },
+            borderRadius: theme.corners.roundedMedium,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: theme.spacing.medium,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _expandedReplies[index] == true
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    size: 20,
+                    color: theme.colors.onSurfaceVariant,
+                  ),
+                  SizedBox(width: theme.spacing.small),
+                  Text(
+                    'Quick Reply',
+                    style: theme.typography.button.copyWith(
+                      color: theme.colors.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (_expandedReplies[index] == true) ...[
+            Container(
+              padding: EdgeInsets.all(theme.spacing.medium),
+              decoration: BoxDecoration(
+                color: theme.colors.surfaceVariant.withOpacity(0.5),
+                borderRadius: theme.corners.roundedMedium,
+                border: Border.all(
+                  color: theme.colors.outlineVariant.withOpacity(0.1),
+                  width: theme.borders.small,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _replyControllers[index],
+                    decoration: InputDecoration(
+                      hintText: 'Write a reply...',
+                      hintStyle: theme.typography.body.copyWith(
+                        color: theme.colors.onSurfaceVariant.withOpacity(0.7),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: theme.corners.roundedMedium,
+                        borderSide: BorderSide(
+                          color: theme.colors.outlineVariant.withOpacity(0.2),
+                          width: theme.borders.small,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: theme.corners.roundedMedium,
+                        borderSide: BorderSide(
+                          color: theme.colors.outlineVariant.withOpacity(0.2),
+                          width: theme.borders.small,
+                        ),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: theme.spacing.medium,
+                        vertical: theme.spacing.medium,
+                      ),
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.emoji_emotions_outlined,
+                              color: theme.colors.onSurfaceVariant
+                                  .withOpacity(0.7),
+                            ),
+                            onPressed: () {},
+                            tooltip: 'Add emoji',
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.send,
+                              color: theme.colors.primary,
+                            ),
+                            onPressed: () {
+                              if (_replyControllers[index]!.text.isNotEmpty) {
+                                print(
+                                    'Sending reply to comment ${comment['postId']}: ${_replyControllers[index]!.text}');
+                                _replyControllers[index]!.clear();
+                                setState(() {
+                                  _expandedReplies[index] = false;
+                                });
+                              }
+                            },
+                            tooltip: 'Send reply',
+                          ),
+                        ],
+                      ),
+                    ),
+                    maxLines: 3,
+                  ),
+                  SizedBox(height: theme.spacing.small),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.format_bold,
+                          color: theme.colors.onSurfaceVariant,
+                        ),
+                        onPressed: () {},
+                        tooltip: 'Bold',
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.format_italic,
+                          color: theme.colors.onSurfaceVariant,
+                        ),
+                        onPressed: () {},
+                        tooltip: 'Italic',
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.link,
+                          color: theme.colors.onSurfaceVariant,
+                        ),
+                        onPressed: () {},
+                        tooltip: 'Insert link',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildForumsParticipated() {
+    final theme = ref.watch(themeProvider);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        color: theme.colors.surface,
+        borderRadius: theme.corners.roundedLarge,
+        border: Border.all(
+          color: theme.colors.outlineVariant.withOpacity(0.1),
+          width: theme.borders.small,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colors.shadow.withOpacity(0.05),
+            offset: Offset(0, 4),
+            blurRadius: 20,
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(theme.spacing.large),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Forums Participated',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                  style: theme.typography.title.copyWith(
+                    color: theme.colors.onSurface,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.keyboard_arrow_down),
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: theme.colors.onSurfaceVariant,
+                  ),
                   onPressed: () {},
                 ),
               ],
@@ -1044,45 +1194,38 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           Center(
             child: TextButton(
               onPressed: () {},
-              child: Text('Load More'),
+              child: Text(
+                'Load More',
+                style: theme.typography.button.copyWith(
+                  color: theme.colors.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: theme.spacing.large),
         ],
       ),
     );
   }
 
   Widget _buildForumItem(int index) {
-    final forums = [
-      {
-        'title': 'Best practices for React hooks',
-        'description':
-            'Started a discussion about useEffect dependencies and cleanup',
-        'replies': '32',
-        'views': '128',
-        'likes': '45',
-        'timeAgo': '2h ago',
-      },
-      {
-        'title': 'Next.js vs Remix - Pros and Cons',
-        'description':
-            'Comparing modern React frameworks for enterprise applications',
-        'replies': '56',
-        'views': '342',
-        'likes': '89',
-        'timeAgo': '1d ago',
-      },
-    ];
-
+    final theme = ref.watch(themeProvider);
     final forum = forums[index];
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      padding: EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(
+        horizontal: theme.spacing.large,
+        vertical: theme.spacing.small,
+      ),
+      padding: EdgeInsets.all(theme.spacing.medium),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        color: theme.colors.surface,
+        borderRadius: theme.corners.roundedLarge,
+        border: Border.all(
+          color: theme.colors.outlineVariant.withOpacity(0.1),
+          width: theme.borders.small,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1090,55 +1233,56 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           Row(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: EdgeInsets.symmetric(
+                  horizontal: theme.spacing.medium,
+                  vertical: theme.spacing.small,
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
+                  color: theme.colors.primary.withOpacity(0.1),
+                  borderRadius: theme.corners.roundedSmall,
                 ),
                 child: Text(
                   'Discussion',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.blue,
+                  style: theme.typography.label.copyWith(
+                    color: theme.colors.primary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: theme.spacing.medium),
               Text(
                 forum['timeAgo'] as String,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 14,
+                style: theme.typography.body.copyWith(
+                  color: theme.colors.onSurfaceVariant,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: theme.spacing.medium),
           Text(
             forum['title'] as String,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+            style: theme.typography.title.copyWith(
+              color: theme.colors.onSurface,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: theme.spacing.small),
           Text(
             forum['description'] as String,
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 14,
+            style: theme.typography.body.copyWith(
+              color: theme.colors.onSurfaceVariant,
+              height: 1.5,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: theme.spacing.medium),
           Row(
             children: [
               _buildForumStat(
                   Icons.chat_bubble_outline, forum['replies'] as String),
-              const SizedBox(width: 24),
+              SizedBox(width: theme.spacing.large),
               _buildForumStat(
                   Icons.visibility_outlined, forum['views'] as String),
-              const SizedBox(width: 24),
+              SizedBox(width: theme.spacing.large),
               _buildForumStat(Icons.favorite_border, forum['likes'] as String),
             ],
           ),
@@ -1148,183 +1292,30 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   }
 
   Widget _buildForumStat(IconData icon, String value) {
+    final theme = ref.watch(themeProvider);
     return Row(
       children: [
         Icon(
           icon,
           size: 16,
-          color: Colors.grey[600],
+          color: theme.colors.onSurfaceVariant,
         ),
-        const SizedBox(width: 4),
+        SizedBox(width: theme.spacing.small),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[600],
+          style: theme.typography.body.copyWith(
+            color: theme.colors.onSurfaceVariant,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildRecentNotifications() {
-    final notifications = [
-      {
-        'type': 'like',
-        'user': 'John Doe',
-        'action': 'liked your post',
-        'target': 'Understanding React Hooks',
-        'timeAgo': '2h ago',
-      },
-      {
-        'type': 'comment',
-        'user': 'Emma Wilson',
-        'action': 'commented on your post',
-        'target': 'TypeScript Best Practices',
-        'timeAgo': '3h ago',
-      },
-      {
-        'type': 'follow',
-        'user': 'Alex Chen',
-        'action': 'started following you',
-        'target': '',
-        'timeAgo': '5h ago',
-      },
-    ];
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Recent Notifications',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'View All',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: notifications.length,
-            itemBuilder: (context, index) {
-              final notification = notifications[index];
-              IconData icon;
-              Color iconColor;
-              switch (notification['type']) {
-                case 'like':
-                  icon = Icons.favorite;
-                  iconColor = Colors.red;
-                  break;
-                case 'comment':
-                  icon = Icons.chat_bubble;
-                  iconColor = Colors.blue;
-                  break;
-                case 'follow':
-                  icon = Icons.person_add;
-                  iconColor = Colors.green;
-                  break;
-                default:
-                  icon = Icons.notifications;
-                  iconColor = Colors.grey;
-              }
-              return Container(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Colors.grey[200]!),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: iconColor.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(icon, color: iconColor, size: 20),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[800],
-                                height: 1.5,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: notification['user'],
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey[900],
-                                  ),
-                                ),
-                                TextSpan(text: ' ${notification['action']} '),
-                                if (notification['target']!.isNotEmpty)
-                                  TextSpan(
-                                    text: notification['target'],
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey[900],
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            notification['timeAgo'] as String,
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
     return Scaffold(
+      backgroundColor: theme.colors.surface,
       body: Column(
         children: [
           const AppHeader(),
@@ -1332,16 +1323,18 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
             child: Center(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.9),
+                  maxWidth: MediaQuery.of(context).size.width * 0.9,
+                ),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 24),
+                      SizedBox(height: theme.spacing.large),
                       _buildProfileHeader(),
-                      const SizedBox(height: 24),
+                      SizedBox(height: theme.spacing.large),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: theme.spacing.large),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -1350,22 +1343,20 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                               child: Column(
                                 children: [
                                   _buildSavedPosts(),
-                                  const SizedBox(height: 24),
+                                  SizedBox(height: theme.spacing.large),
                                   _buildForumsParticipated(),
-                                  const SizedBox(height: 24),
-                                  _buildRecentNotifications(),
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 24),
+                            SizedBox(width: theme.spacing.large),
                             Expanded(
                               flex: 1,
                               child: Column(
                                 children: [
                                   _buildQuickReply(),
-                                  const SizedBox(height: 24),
+                                  SizedBox(height: theme.spacing.large),
                                   _buildSocialMediaSection(),
-                                  const SizedBox(height: 24),
+                                  SizedBox(height: theme.spacing.large),
                                   _buildFollowersSection(),
                                 ],
                               ),
@@ -1373,7 +1364,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: theme.spacing.large),
                     ],
                   ),
                 ),

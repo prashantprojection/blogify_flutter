@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:blogify_flutter/widgets/common/buttons/custom_button.dart';
+import 'package:blogify_flutter/widgets/common/backgrounds/aurora_background.dart';
 
 class HeroSection extends ConsumerWidget {
   final String title;
@@ -32,57 +34,90 @@ class HeroSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
-    return Container(
-      width: double.infinity,
-      padding: padding ?? EdgeInsets.symmetric(vertical: 150, horizontal: 45),
-      decoration: decoration ??
-          BoxDecoration(
-            color: theme.colors.primary,
+
+    return Stack(
+      children: [
+        // Aurora Background
+        Positioned.fill(
+          child: AuroraBackground.fromTheme(
+            primary: theme.colors.primary,
+            secondary: theme.colors.secondary,
+            accent: theme.colors.accent,
+            blur: kIsWeb ? 40 : 80,
           ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: alignment ?? CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: theme.typography.title.copyWith(
-              color: Colors.white,
-              fontSize: titleFontSize ?? 64,
-              height: 1.1,
-            ),
-            textAlign: TextAlign.start,
+        ),
+        // Content
+        Container(
+          width: double.infinity,
+          padding: padding ??
+              const EdgeInsets.symmetric(vertical: 150, horizontal: 45),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: alignment ?? CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: theme.typography.title.copyWith(
+                  color: theme.colors.textPrimary,
+                  fontSize: titleFontSize ?? 64,
+                  height: 1.1,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withOpacity(0.1),
+                      offset: const Offset(0, 4),
+                      blurRadius: 8,
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.start,
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 24),
+                Text(
+                  subtitle!,
+                  style: theme.typography.headline.copyWith(
+                    color: theme.colors.textPrimary,
+                    fontSize: subtitleFontSize ?? 24,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.1),
+                        offset: const Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.start,
+                ),
+              ],
+              if (description != null) ...[
+                const SizedBox(height: 16),
+                Text(
+                  description!,
+                  style: theme.typography.headline.copyWith(
+                    color: theme.colors.textPrimary,
+                    fontSize: descriptionFontSize ?? 20,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.1),
+                        offset: const Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.start,
+                ),
+              ],
+              if (actions != null) ...[
+                const SizedBox(height: 48),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: actions!,
+                ),
+              ],
+            ],
           ),
-          if (subtitle != null) ...[
-            SizedBox(height: 24),
-            Text(
-              subtitle!,
-              style: theme.typography.body.copyWith(
-                color: Colors.white.withOpacity(0.9),
-                fontSize: subtitleFontSize ?? 24,
-              ),
-              textAlign: TextAlign.start,
-            ),
-          ],
-          if (description != null) ...[
-            SizedBox(height: 16),
-            Text(
-              description!,
-              style: theme.typography.body.copyWith(
-                color: Colors.white.withOpacity(0.9),
-                fontSize: descriptionFontSize ?? 20,
-              ),
-              textAlign: TextAlign.start,
-            ),
-          ],
-          if (actions != null) ...[
-            SizedBox(height: 48),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: actions!,
-            ),
-          ],
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -110,15 +145,13 @@ class HeroSection extends ConsumerWidget {
         CustomButton(
           label: primaryActionLabel,
           onPressed: onPrimaryAction,
-          backgroundColor: Colors.white,
         ),
         if (secondaryActionLabel != null && onSecondaryAction != null) ...[
-          SizedBox(width: 24),
+          const SizedBox(width: 24),
           CustomButton(
             label: secondaryActionLabel,
             onPressed: onSecondaryAction,
             type: CustomButtonType.outlined,
-            foregroundColor: Colors.white,
           ),
         ],
       ],

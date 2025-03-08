@@ -21,42 +21,45 @@ class CategoryCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeProvider);
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedContainer(
           duration: Duration(milliseconds: 200),
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: EdgeInsets.symmetric(
+              horizontal: theme.spacing.large, vertical: theme.spacing.medium),
           decoration: BoxDecoration(
-            color: isSelected ? color.withOpacity(0.1) : Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            color: isSelected
+                ? theme.colors.primaryContainer
+                : theme.colors.surface,
+            borderRadius: theme.corners.roundedMedium,
             border: Border.all(
-              color: isSelected ? color : Colors.grey.shade200,
-              width: 1,
+              color: isSelected
+                  ? theme.colors.primary
+                  : theme.colors.outlineVariant,
+              width: theme.borders.small,
             ),
-            boxShadow: [
-              if (isSelected)
-                BoxShadow(
-                  color: color.withOpacity(0.2),
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
-                ),
-            ],
+            boxShadow: isSelected ? theme.shadows.small : theme.shadows.none,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 icon,
-                color: isSelected ? color : Colors.grey.shade600,
+                color: isSelected
+                    ? theme.colors.primary
+                    : theme.colors.onSurfaceVariant,
                 size: 20,
               ),
-              SizedBox(width: 12),
+              SizedBox(width: theme.spacing.medium),
               Text(
                 title,
                 style: theme.typography.body.copyWith(
-                  color: isSelected ? color : Colors.grey.shade800,
+                  color: isSelected
+                      ? theme.colors.primary
+                      : theme.colors.onSurface,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 ),
               ),

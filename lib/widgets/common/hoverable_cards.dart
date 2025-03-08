@@ -8,42 +8,14 @@ import 'package:blogify_flutter/controllers/home/hover_state_controller.dart';
 import 'package:blogify_flutter/widgets/common/neon_border_effect.dart';
 import 'package:blogify_flutter/utils/navigation_helper.dart';
 import 'package:blogify_flutter/models/article.dart';
+import 'package:blogify_flutter/models/theme_palette.dart';
 
-class HoverableLatestPostCard extends ConsumerWidget {
+class HoverablePostCard extends ConsumerWidget {
   final Article article;
   final bool isHovered;
   final VoidCallback onHover;
 
-  const HoverableLatestPostCard({
-    required this.article,
-    required this.isHovered,
-    required this.onHover,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return MouseRegion(
-      onEnter: (_) => onHover(),
-      onExit: (_) => onHover(),
-      child: GestureDetector(
-        onTap: () => NavigationHelper.navigateToArticle(context, article),
-        child: Stack(
-          children: [
-            // ... rest of the implementation
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class HoverableFeaturedPostCard extends ConsumerWidget {
-  final Article article;
-  final bool isHovered;
-  final VoidCallback onHover;
-
-  const HoverableFeaturedPostCard({
+  const HoverablePostCard({
     required this.article,
     required this.isHovered,
     required this.onHover,
@@ -85,9 +57,10 @@ class HoverableWebStoryCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hoverState = ref.watch(hoverStateProvider
+    final bool hoverState = ref.watch(hoverStateProvider
         .select((state) => state.webStoryHoverStates[title] ?? false));
     final hoverNotifier = ref.read(hoverStateProvider.notifier);
+    final ThemePalette theme = ref.watch(themeProvider);
 
     return MouseRegion(
       onEnter: (_) => hoverNotifier.setWebStoryHover(title, true),
@@ -97,92 +70,88 @@ class HoverableWebStoryCard extends ConsumerWidget {
         child: Stack(
           children: [
             AnimatedContainer(
-              duration: Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 200),
               width: 270,
               height: 479,
-              margin: EdgeInsets.only(right: 24),
+              margin: EdgeInsets.only(right: theme.spacing.large),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
+                color: theme.colors.surface,
+                borderRadius: theme.corners.roundedLarge,
                 boxShadow: [
                   BoxShadow(
                     color: hoverState
                         ? badgeColor.withOpacity(0.4)
-                        : Colors.black.withOpacity(0.05),
-                    blurRadius: hoverState ? 20 : 20,
+                        : theme.colors.shadow.withOpacity(0.05),
+                    blurRadius: 20,
                     spreadRadius: hoverState ? 2 : 0,
-                    offset: Offset(0, 4),
+                    offset: const Offset(0, 4),
                   ),
                 ],
                 image: DecorationImage(
                   image: NetworkImage(imageUrl),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.4),
+                    theme.colors.shadow.withOpacity(0.4),
                     BlendMode.darken,
                   ),
                 ),
               ),
               child: Padding(
-                padding: EdgeInsets.all(24),
+                padding: EdgeInsets.all(theme.spacing.large),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: theme.spacing.medium,
+                        vertical: theme.spacing.small,
+                      ),
                       decoration: BoxDecoration(
                         color: badgeColor,
-                        borderRadius: BorderRadius.circular(100),
+                        borderRadius: theme.corners.roundedMaximum,
                       ),
                       child: Text(
                         subtitle,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                        style: theme.typography.button.copyWith(
+                          color: theme.colors.onPrimary,
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: theme.spacing.medium),
                     Text(
                       title,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
+                      style: theme.typography.headline.copyWith(
+                        color: theme.colors.onPrimary,
                         height: 1.4,
                       ),
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: theme.spacing.medium),
                     Row(
                       children: [
-                        CircleAvatar(
+                        const CircleAvatar(
                           radius: 16,
                           backgroundImage: NetworkImage(
                             'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1780&q=80',
                           ),
                         ),
-                        SizedBox(width: 12),
+                        SizedBox(width: theme.spacing.medium),
                         Text(
                           'Read Story',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                          style: theme.typography.button.copyWith(
+                            color: theme.colors.onPrimary,
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Container(
-                          padding: EdgeInsets.all(8),
+                          padding: EdgeInsets.all(theme.spacing.small),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: theme.colors.onPrimary.withOpacity(0.2),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.arrow_forward,
-                            color: Colors.white,
+                            color: theme.colors.onPrimary,
                             size: 16,
                           ),
                         ),
@@ -195,7 +164,7 @@ class HoverableWebStoryCard extends ConsumerWidget {
             if (hoverState)
               Positioned.fill(
                 child: NeonBorderEffect(
-                  borderRadius: 24,
+                  borderRadius: theme.corners.roundedLarge.topLeft.x,
                   margin: EdgeInsets.zero,
                 ),
               ),
@@ -211,6 +180,8 @@ class HoverableCategoryCard extends ConsumerStatefulWidget {
   final String title;
   final String description;
   final Color? badgeColor;
+  final double? width;
+  final EdgeInsetsGeometry? padding;
 
   const HoverableCategoryCard({
     Key? key,
@@ -218,6 +189,8 @@ class HoverableCategoryCard extends ConsumerStatefulWidget {
     required this.title,
     required this.description,
     this.badgeColor,
+    this.width,
+    this.padding,
   }) : super(key: key);
 
   @override
@@ -227,45 +200,16 @@ class HoverableCategoryCard extends ConsumerStatefulWidget {
 
 class _HoverableCategoryCardState extends ConsumerState<HoverableCategoryCard> {
   late final Color color;
-  BoxDecoration? _cachedDecoration;
-  bool _isHovered = false;
 
   @override
   void initState() {
     super.initState();
-    color = widget.badgeColor ?? Color(0xFF6366F1);
-  }
-
-  BoxDecoration _buildDecoration(bool hoverState) {
-    if (_cachedDecoration != null && _isHovered == hoverState) {
-      return _cachedDecoration!;
-    }
-
-    _isHovered = hoverState;
-    _cachedDecoration = BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: hoverState ? color : Color(0xFFE5E7EB),
-        width: 1,
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: hoverState
-              ? color.withOpacity(0.4)
-              : Colors.black.withOpacity(0.05),
-          blurRadius: 20,
-          spreadRadius: hoverState ? 2 : 0,
-          offset: Offset(0, 4),
-        ),
-      ],
-    );
-
-    return _cachedDecoration!;
+    color = widget.badgeColor ?? const Color(0xFF6366F1);
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
     final hoverState = ref.watch(
       hoverStateProvider
           .select((state) => state.categoryHoverStates[widget.title] ?? false),
@@ -278,24 +222,42 @@ class _HoverableCategoryCardState extends ConsumerState<HoverableCategoryCard> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Container(
-            width: constraints.maxWidth,
+            width: widget.width ?? constraints.maxWidth,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: theme.corners.roundedMedium,
             ),
             child: Stack(
               children: [
                 Container(
-                  width: constraints.maxWidth,
-                  padding: EdgeInsets.all(24),
-                  decoration: _buildDecoration(hoverState),
+                  width: widget.width ?? constraints.maxWidth,
+                  padding:
+                      widget.padding ?? EdgeInsets.all(theme.spacing.large),
+                  decoration: BoxDecoration(
+                    color: theme.colors.surface,
+                    borderRadius: theme.corners.roundedMedium,
+                    border: Border.all(
+                      color: hoverState ? color : theme.colors.outlineVariant,
+                      width: theme.borders.small,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: hoverState
+                            ? color.withOpacity(0.4)
+                            : theme.colors.shadow.withOpacity(0.05),
+                        blurRadius: 20,
+                        spreadRadius: hoverState ? 2 : 0,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: EdgeInsets.all(12),
+                        padding: EdgeInsets.all(theme.spacing.medium),
                         decoration: BoxDecoration(
                           color: color.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: theme.corners.roundedMedium,
                         ),
                         child: Icon(
                           widget.icon,
@@ -303,21 +265,18 @@ class _HoverableCategoryCardState extends ConsumerState<HoverableCategoryCard> {
                           size: 24,
                         ),
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: theme.spacing.medium),
                       Text(
                         widget.title,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF111827),
+                        style: theme.typography.title.copyWith(
+                          color: theme.colors.onSurface,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: theme.spacing.small),
                       Text(
                         widget.description,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF6B7280),
+                        style: theme.typography.body.copyWith(
+                          color: theme.colors.onSurfaceVariant,
                           height: 1.5,
                         ),
                       ),
@@ -328,10 +287,10 @@ class _HoverableCategoryCardState extends ConsumerState<HoverableCategoryCard> {
                   Positioned.fill(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
-                        maxWidth: constraints.maxWidth,
+                        maxWidth: widget.width ?? constraints.maxWidth,
                       ),
                       child: NeonBorderEffect(
-                        borderRadius: 16,
+                        borderRadius: theme.corners.roundedMedium.topLeft.x,
                         margin: EdgeInsets.zero,
                       ),
                     ),
@@ -343,49 +302,54 @@ class _HoverableCategoryCardState extends ConsumerState<HoverableCategoryCard> {
       ),
     );
   }
-
-  @override
-  void dispose() {
-    _cachedDecoration = null;
-    super.dispose();
-  }
 }
 
 class HoverableTrendingTopic extends ConsumerWidget {
   final String topic;
+  final Color? color;
+  final EdgeInsetsGeometry? padding;
 
   const HoverableTrendingTopic({
-    Key? key,
+    super.key,
     required this.topic,
-  }) : super(key: key);
+    this.color,
+    this.padding,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
     final hoverState = ref.watch(hoverStateProvider
         .select((state) => state.trendingTopicHoverStates[topic] ?? false));
     final hoverNotifier = ref.read(hoverStateProvider.notifier);
+    final effectiveColor = color ?? theme.colors.primary;
 
     return MouseRegion(
       onEnter: (_) => hoverNotifier.setTrendingTopicHover(topic, true),
       onExit: (_) => hoverNotifier.setTrendingTopicHover(topic, false),
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        duration: const Duration(milliseconds: 200),
+        padding: padding ??
+            EdgeInsets.symmetric(
+              horizontal: theme.spacing.large,
+              vertical: theme.spacing.medium,
+            ),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(100),
+          color: theme.colors.surface,
+          borderRadius: theme.corners.roundedMaximum,
           boxShadow: [
             BoxShadow(
               color: hoverState
-                  ? Color(0xFF6366F1).withOpacity(0.4)
-                  : Colors.black.withOpacity(0.05),
-              blurRadius: hoverState ? 20 : 20,
+                  ? effectiveColor.withOpacity(0.4)
+                  : theme.colors.shadow.withOpacity(0.05),
+              blurRadius: 20,
               spreadRadius: hoverState ? 2 : 0,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
           border: Border.all(
-            color: hoverState ? Color(0xFF6366F1) : Color(0xFFEEF2FF),
+            color: hoverState ? effectiveColor : theme.colors.outlineVariant,
+            width: theme.borders.small,
           ),
         ),
         child: Row(
@@ -393,19 +357,15 @@ class HoverableTrendingTopic extends ConsumerWidget {
           children: [
             Text(
               '#',
-              style: TextStyle(
-                color: Color(0xFF6366F1),
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+              style: theme.typography.button.copyWith(
+                color: effectiveColor,
               ),
             ),
-            SizedBox(width: 4),
+            SizedBox(width: theme.spacing.extraSmall),
             Text(
               topic,
-              style: TextStyle(
-                color: hoverState ? Color(0xFF6366F1) : Color(0xFF1F2937),
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+              style: theme.typography.button.copyWith(
+                color: hoverState ? effectiveColor : theme.colors.onSurface,
               ),
             ),
           ],
@@ -415,13 +375,15 @@ class HoverableTrendingTopic extends ConsumerWidget {
   }
 }
 
-class HoverableAuthorCard extends ConsumerStatefulWidget {
+class HoverableAuthorCard extends ConsumerWidget {
   final String name;
   final String imageUrl;
   final String bio;
   final int followers;
   final int articles;
   final String category;
+  final EdgeInsetsGeometry? padding;
+  final double? width;
 
   const HoverableAuthorCard({
     Key? key,
@@ -431,38 +393,57 @@ class HoverableAuthorCard extends ConsumerStatefulWidget {
     required this.followers,
     required this.articles,
     required this.category,
+    this.padding,
+    this.width,
   }) : super(key: key);
 
-  @override
-  ConsumerState<HoverableAuthorCard> createState() =>
-      _HoverableAuthorCardState();
-}
+  Widget _buildStat(IconData icon, String value, ThemePalette theme) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 16,
+          color: theme.colors.onSurfaceVariant,
+        ),
+        SizedBox(width: theme.spacing.extraSmall),
+        Text(
+          value,
+          style: theme.typography.caption.copyWith(
+            color: theme.colors.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
 
-class _HoverableAuthorCardState extends ConsumerState<HoverableAuthorCard> {
-  bool isHovered = false;
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
+    final hoverState = ref.watch(hoverStateProvider
+        .select((state) => state.authorHoverStates[name] ?? false));
+    final hoverNotifier = ref.read(hoverStateProvider.notifier);
+
     return MouseRegion(
-      onEnter: (_) => setState(() => isHovered = true),
-      onExit: (_) => setState(() => isHovered = false),
+      onEnter: (_) => hoverNotifier.setAuthorHover(name, true),
+      onExit: (_) => hoverNotifier.setAuthorHover(name, false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
+        width: width,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: theme.colors.surface,
+          borderRadius: theme.corners.roundedMedium,
           boxShadow: [
             BoxShadow(
-              color: isHovered
-                  ? Colors.black.withOpacity(0.1)
-                  : Colors.black.withOpacity(0.05),
-              blurRadius: isHovered ? 10 : 5,
-              offset: Offset(0, isHovered ? 5 : 2),
+              color: hoverState
+                  ? theme.colors.shadow.withOpacity(0.1)
+                  : theme.colors.shadow.withOpacity(0.05),
+              blurRadius: hoverState ? 10 : 5,
+              offset: Offset(0, hoverState ? 5 : 2),
             ),
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: padding ?? EdgeInsets.all(theme.spacing.large),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -470,26 +451,24 @@ class _HoverableAuthorCardState extends ConsumerState<HoverableAuthorCard> {
                 children: [
                   CircleAvatar(
                     radius: 32,
-                    backgroundImage: NetworkImage(widget.imageUrl),
+                    backgroundImage: NetworkImage(imageUrl),
                   ),
-                  SizedBox(width: 16),
+                  SizedBox(width: theme.spacing.medium),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.name,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                          name,
+                          style: theme.typography.title.copyWith(
+                            color: theme.colors.onSurface,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: theme.spacing.extraSmall),
                         Text(
-                          widget.category,
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 14,
+                          category,
+                          style: theme.typography.caption.copyWith(
+                            color: theme.colors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -497,44 +476,27 @@ class _HoverableAuthorCardState extends ConsumerState<HoverableAuthorCard> {
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              SizedBox(height: theme.spacing.medium),
               Text(
-                widget.bio,
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontSize: 14,
+                bio,
+                style: theme.typography.body.copyWith(
+                  color: theme.colors.onSurfaceVariant,
                   height: 1.5,
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: theme.spacing.medium),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildStat(Icons.people_outline, '${widget.followers}'),
+                  _buildStat(Icons.people_outline, '$followers', theme),
                   _buildStat(
-                      Icons.article_outlined, '${widget.articles} articles'),
+                      Icons.article_outlined, '$articles articles', theme),
                 ],
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildStat(IconData icon, String value) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: Colors.grey.shade600),
-        SizedBox(width: 4),
-        Text(
-          value,
-          style: TextStyle(
-            color: Colors.grey.shade600,
-            fontSize: 14,
-          ),
-        ),
-      ],
     );
   }
 }
@@ -548,6 +510,10 @@ class HoverableBlogOfDayCard extends ConsumerStatefulWidget {
   final String excerpt;
   final String readTime;
   final String publishedDate;
+  final EdgeInsetsGeometry? padding;
+  final double? width;
+  final double breakpoint;
+  final VoidCallback? onTap;
 
   const HoverableBlogOfDayCard({
     Key? key,
@@ -559,6 +525,10 @@ class HoverableBlogOfDayCard extends ConsumerStatefulWidget {
     required this.excerpt,
     required this.readTime,
     required this.publishedDate,
+    this.padding,
+    this.width,
+    this.breakpoint = 600,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -570,124 +540,98 @@ class _HoverableBlogOfDayCardState
     extends ConsumerState<HoverableBlogOfDayCard> {
   bool isHovered = false;
 
-  @override
-  Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 600;
-
-    return MouseRegion(
-      onEnter: (_) => setState(() => isHovered = true),
-      onExit: (_) => setState(() => isHovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: isHovered
-                  ? Colors.black.withOpacity(0.1)
-                  : Colors.black.withOpacity(0.05),
-              blurRadius: isHovered ? 20 : 10,
-              offset: Offset(0, isHovered ? 10 : 5),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: isMobile
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildImage(),
-                    _buildContent(),
-                  ],
-                )
-              : Row(
-                  children: [
-                    Expanded(child: _buildImage()),
-                    Expanded(child: _buildContent()),
-                  ],
-                ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildImage() {
-    return AspectRatio(
-      aspectRatio: 16 / 9,
+  Widget _buildImage(double imageHeight) {
+    return Container(
+      height: imageHeight,
       child: Image.network(
         widget.imageUrl,
         fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(child: CircularProgressIndicator());
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: Colors.grey[200],
+            child: Icon(Icons.error_outline, color: Colors.grey[400]),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildContent() {
-    final theme = ref.watch(themeProvider);
+  Widget _buildContent(ThemePalette theme, bool isMobile) {
     return Padding(
-      padding: const EdgeInsets.all(32),
+      padding: widget.padding ??
+          EdgeInsets.all(
+              isMobile ? theme.spacing.large : theme.spacing.extraLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: EdgeInsets.symmetric(
+              horizontal: theme.spacing.medium,
+              vertical: theme.spacing.small,
+            ),
             decoration: BoxDecoration(
               color: theme.colors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: theme.corners.roundedLarge,
             ),
             child: Text(
               widget.category,
-              style: TextStyle(
+              style: theme.typography.button.copyWith(
                 color: theme.colors.primary,
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
               ),
             ),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: theme.spacing.medium),
           Text(
             widget.title,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.typography.headline.copyWith(
+              color: theme.colors.onSurface,
               height: 1.3,
+              fontSize: isMobile ? 20 : 24,
             ),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: theme.spacing.medium),
           Text(
             widget.excerpt,
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: 16,
+            maxLines: isMobile ? 3 : 4,
+            overflow: TextOverflow.ellipsis,
+            style: theme.typography.body.copyWith(
+              color: theme.colors.onSurfaceVariant,
               height: 1.6,
             ),
           ),
-          SizedBox(height: 24),
+          SizedBox(height: theme.spacing.large),
           Row(
             children: [
               CircleAvatar(
-                radius: 20,
+                radius: isMobile ? 16 : 20,
                 backgroundImage: NetworkImage(widget.authorImageUrl),
+                onBackgroundImageError: (e, s) => Icon(Icons.person),
               ),
-              SizedBox(width: 12),
+              SizedBox(width: theme.spacing.medium),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       widget.author,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.typography.title.copyWith(
+                        color: theme.colors.onSurface,
+                        fontSize: isMobile ? 14 : 16,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: theme.spacing.extraSmall),
                     Text(
                       '${widget.publishedDate} · ${widget.readTime}',
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 14,
+                      style: theme.typography.caption.copyWith(
+                        color: theme.colors.onSurfaceVariant,
+                        fontSize: isMobile ? 12 : 14,
                       ),
                     ),
                   ],
@@ -699,14 +643,67 @@ class _HoverableBlogOfDayCardState
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ref.watch(themeProvider);
+    final size = MediaQuery.of(context).size;
+    final isMobile = size.width < widget.breakpoint;
+    final imageHeight = isMobile ? size.width * 0.6 : size.height * 0.4;
+
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => isHovered = true),
+        onExit: (_) => setState(() => isHovered = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: widget.width ?? (isMobile ? size.width : null),
+          decoration: BoxDecoration(
+            color: theme.colors.surface,
+            borderRadius: theme.corners.roundedLarge,
+            boxShadow: [
+              BoxShadow(
+                color: theme.colors.shadow.withOpacity(isHovered ? 0.1 : 0.05),
+                blurRadius: isHovered ? 20 : 10,
+                offset: Offset(0, isHovered ? 10 : 5),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: theme.corners.roundedLarge,
+            child: isMobile
+                ? SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildImage(imageHeight),
+                        _buildContent(theme, isMobile),
+                      ],
+                    ),
+                  )
+                : Row(
+                    children: [
+                      Expanded(child: _buildImage(imageHeight)),
+                      Expanded(child: _buildContent(theme, isMobile)),
+                    ],
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class HoverableChannelCard extends StatefulWidget {
+class HoverableChannelCard extends ConsumerWidget {
   final String name;
   final String imageUrl;
   final String description;
   final int subscribers;
   final Color color;
+  final EdgeInsetsGeometry? padding;
+  final double? width;
+  final double? imageHeight;
 
   const HoverableChannelCard({
     Key? key,
@@ -715,32 +712,34 @@ class HoverableChannelCard extends StatefulWidget {
     required this.description,
     required this.subscribers,
     required this.color,
+    this.padding,
+    this.width,
+    this.imageHeight = 160,
   }) : super(key: key);
 
   @override
-  State<HoverableChannelCard> createState() => _HoverableChannelCardState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
+    final hoverState = ref.watch(hoverStateProvider
+        .select((state) => state.channelHoverStates[name] ?? false));
+    final hoverNotifier = ref.read(hoverStateProvider.notifier);
 
-class _HoverableChannelCardState extends State<HoverableChannelCard> {
-  bool isHovered = false;
-
-  @override
-  Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (_) => setState(() => isHovered = true),
-      onExit: (_) => setState(() => isHovered = false),
+      onEnter: (_) => hoverNotifier.setChannelHover(name, true),
+      onExit: (_) => hoverNotifier.setChannelHover(name, false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
+        width: width,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: theme.colors.surface,
+          borderRadius: theme.corners.roundedMedium,
           boxShadow: [
             BoxShadow(
-              color: isHovered
-                  ? Colors.black.withOpacity(0.1)
-                  : Colors.black.withOpacity(0.05),
-              blurRadius: isHovered ? 10 : 5,
-              offset: Offset(0, isHovered ? 5 : 2),
+              color: hoverState
+                  ? theme.colors.shadow.withOpacity(0.1)
+                  : theme.colors.shadow.withOpacity(0.05),
+              blurRadius: hoverState ? 10 : 5,
+              offset: Offset(0, hoverState ? 5 : 2),
             ),
           ],
         ),
@@ -748,50 +747,48 @@ class _HoverableChannelCardState extends State<HoverableChannelCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: BorderRadius.vertical(
+                top: theme.corners.roundedMedium.topLeft,
+              ),
               child: Image.network(
-                widget.imageUrl,
-                height: 160,
+                imageUrl,
+                height: imageHeight,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: padding ?? EdgeInsets.all(theme.spacing.large),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.name,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
+                    name,
+                    style: theme.typography.title.copyWith(
+                      color: theme.colors.onSurface,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: theme.spacing.small),
                   Text(
-                    widget.description,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 14,
+                    description,
+                    style: theme.typography.body.copyWith(
+                      color: theme.colors.onSurfaceVariant,
                       height: 1.5,
                     ),
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: theme.spacing.medium),
                   Row(
                     children: [
                       Icon(
                         Icons.people_outline,
                         size: 16,
-                        color: widget.color,
+                        color: color,
                       ),
-                      SizedBox(width: 4),
+                      SizedBox(width: theme.spacing.extraSmall),
                       Text(
-                        '${widget.subscribers} subscribers',
-                        style: TextStyle(
-                          color: widget.color,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
+                        '$subscribers subscribers',
+                        style: theme.typography.button.copyWith(
+                          color: color,
                         ),
                       ),
                     ],

@@ -15,6 +15,18 @@ class VintageJewelryTheme {
   static const _errorContainer = Color(0xFFFDE0E0);
   static const _onErrorContainer = Color(0xFF5F1412);
 
+  // Additional color palette
+  static const _roseGold = Color(0xFFB76E79);
+  static const _antiqueBrass = Color(0xFFCD9575);
+  static const _platinumGray = Color(0xFFE5E4E2);
+  static const _vintageCopper = Color(0xFFDA8A67);
+  static const _antiqueGreen = Color(0xFF8B9B8B);
+  static const _softPearl = Color(0xFFFAF3E6);
+  static const _vintageSilver = Color(0xFFC0C0C0);
+  static const _burgundy = Color(0xFF800020);
+  static const _ivoryWhite = Color(0xFFFFFFF0);
+  static const _vintageBlue = Color(0xFF537188);
+
   // Shared instances for theme configurations
   static const _corners = Corners(
     zero: 0,
@@ -41,10 +53,10 @@ class VintageJewelryTheme {
     onSecondary: _cream,
     secondaryContainer: _deepNavy,
     onSecondaryContainer: _lightGold,
-    tertiary: _cream,
-    onTertiary: _primaryNavy,
-    tertiaryContainer: _pearl,
-    onTertiaryContainer: _deepNavy,
+    tertiary: _roseGold,
+    onTertiary: _ivoryWhite,
+    tertiaryContainer: _antiqueGreen,
+    onTertiaryContainer: _softPearl,
     error: _error,
     onError: Colors.white,
     errorContainer: _errorContainer,
@@ -53,27 +65,52 @@ class VintageJewelryTheme {
     onBackground: _deepNavy,
     surface: _cream,
     onSurface: _primaryNavy,
-    surfaceVariant: _withOpacity(_pearl, 0.7),
-    onSurfaceVariant: _withOpacity(_primaryNavy, 0.7),
-    outline: _withOpacity(_darkGold, 0.5),
-    outlineVariant: _withOpacity(_darkGold, 0.2),
+    surfaceVariant: _withOpacity(_platinumGray, 0.7),
+    onSurfaceVariant: _withOpacity(_burgundy, 0.7),
+    outline: _withOpacity(_antiqueBrass, 0.5),
+    outlineVariant: _withOpacity(_vintageCopper, 0.2),
     shadow: _withOpacity(_deepNavy, 0.2),
     scrim: _withOpacity(_deepNavy, 0.4),
     inverseSurface: _deepNavy,
     onInverseSurface: _pearl,
     inversePrimary: _lightGold,
     surfaceTint: _withOpacity(_goldAccent, 0.2),
-    surfaceContainerLowest: _withOpacity(_pearl, 0.9),
-    surfaceContainerLow: _withOpacity(_pearl, 0.8),
-    surfaceContainer: _withOpacity(_pearl, 0.7),
-    surfaceContainerHigh: _withOpacity(_pearl, 0.6),
-    surfaceContainerHighest: _withOpacity(_pearl, 0.5),
-    surfaceDim: _withOpacity(_pearl, 0.4),
+    surfaceContainerLowest: _withOpacity(_ivoryWhite, 0.9),
+    surfaceContainerLow: _withOpacity(_softPearl, 0.8),
+    surfaceContainer: _withOpacity(_platinumGray, 0.7),
+    surfaceContainerHigh: _withOpacity(_vintageSilver, 0.6),
+    surfaceContainerHighest: _withOpacity(_vintageBlue, 0.5),
+    surfaceDim: _withOpacity(_antiqueGreen, 0.4),
     surfaceBright: _withOpacity(_pearl, 1),
-    hoverColor: _withOpacity(_goldAccent, 0.08),
-    focusColor: _withOpacity(_goldAccent, 0.12),
-    highlightColor: _withOpacity(_goldAccent, 0.12),
+    hoverColor: _withOpacity(_roseGold, 0.08),
+    focusColor: _withOpacity(_antiqueBrass, 0.12),
+    highlightColor: _withOpacity(_vintageCopper, 0.12),
     splashColor: _withOpacity(_goldAccent, 0.12),
+    accent: _roseGold,
+    accentLight: _vintageCopper,
+    accentDark: _burgundy,
+    divider: _withOpacity(_vintageSilver, 0.3),
+    cardColor: _withOpacity(_ivoryWhite, 0.95),
+    dialogBackgroundColor: _softPearl,
+    disabledColor: _withOpacity(_platinumGray, 0.5),
+    hintColor: _withOpacity(_vintageBlue, 0.6),
+    indicatorColor: _antiqueBrass,
+    scaffoldBackgroundColor: _ivoryWhite,
+    secondaryHeaderColor: _vintageBlue,
+    selectedRowColor: _withOpacity(_roseGold, 0.1),
+    unselectedWidgetColor: _withOpacity(_platinumGray, 0.4),
+    textPrimary: _deepNavy,
+    textSecondary: _burgundy,
+    textHint: _withOpacity(_vintageBlue, 0.6),
+    textDisabled: _withOpacity(_platinumGray, 0.5),
+    textSelectionColor: _withOpacity(_roseGold, 0.2),
+    textSelectionHandleColor: _roseGold,
+    hoverStateColor: _withOpacity(_roseGold, 0.08),
+    focusStateColor: _withOpacity(_antiqueBrass, 0.12),
+    splashStateColor: _withOpacity(_goldAccent, 0.12),
+    pressedOpacity: 0.12,
+    draggedOpacity: 0.16,
+    disabledOpacity: 0.38,
   );
 
   // Shared typography instance
@@ -118,6 +155,13 @@ class VintageJewelryTheme {
       fontSize: 14,
       fontWeight: FontWeight.w500,
       letterSpacing: 0.25,
+      color: _deepNavy,
+    ),
+    button: GoogleFonts.montserrat(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.15,
+      height: 1.4,
       color: _deepNavy,
     ),
     caption: GoogleFonts.montserrat(

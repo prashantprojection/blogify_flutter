@@ -34,7 +34,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/community',
-        builder: (context, state) => const CommunityForumView(),
+        builder: (context, state) => CommunityForumView(),
       ),
       GoRoute(
         path: '/settings',

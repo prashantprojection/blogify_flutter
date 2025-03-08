@@ -29,6 +29,36 @@ class ElegantTheme {
   static const _surface = Color(0xFFFFFFFF);
   static const _onSurface = Color(0xFF2C3E50);
 
+  // Additional color definitions
+  static const _accent = Color(0xFF16A085); // Teal
+  static const _accentLight = Color(0xFF1ABC9C);
+  static const _accentDark = Color(0xFF0E6655);
+
+  // UI Element colors
+  static const _divider = Color(0xFFBDC3C7);
+  static const _cardColor = Color(0xFFFFFFFF);
+  static const _dialogBackgroundColor = Color(0xFFFAFAFA);
+  static const _disabledColor = Color(0xFF95A5A6);
+  static const _hintColor = Color(0xFF7F8C8D);
+  static const _indicatorColor = Color(0xFF16A085);
+  static const _scaffoldBackgroundColor = Color(0xFFF5F5F5);
+  static const _secondaryHeaderColor = Color(0xFFECF0F1);
+  static const _selectedRowColor = Color(0xFFE8F5E9);
+  static const _unselectedWidgetColor = Color(0xFF95A5A6);
+
+  // Text colors
+  static const _textPrimary = Color(0xFF2C3E50);
+  static const _textSecondary = Color(0xFF34495E);
+  static const _textHint = Color(0xFF7F8C8D);
+  static const _textDisabled = Color(0xFF95A5A6);
+  static const _textSelectionColor = Color(0xFF1ABC9C);
+  static const _textSelectionHandleColor = Color(0xFF16A085);
+
+  // State colors
+  static const _hoverStateColor = Color(0x0A000000);
+  static const _focusStateColor = Color(0x1A000000);
+  static const _splashStateColor = Color(0x1A000000);
+
   // Shared instances for theme configurations
   static const _corners = Corners(
     zero: 0,
@@ -61,12 +91,15 @@ class ElegantTheme {
     onTertiaryContainer: _onTertiaryContainer,
     error: _error,
     onError: _onError,
+    accentDark: _accentDark,
+    accentLight: _accentLight,
     errorContainer: _errorContainer,
     onErrorContainer: _onErrorContainer,
-    background: _background,
-    onBackground: _onBackground,
-    surface: _surface,
-    onSurface: _onSurface,
+    accent: _accent,
+    background: Colors.white,
+    onBackground: _textPrimary,
+    surface: Colors.white,
+    onSurface: _textPrimary,
     surfaceVariant: _withOpacity(_surface, 0.8),
     onSurfaceVariant: _withOpacity(_onSurface, 0.8),
     outline: _withOpacity(_onSurface, 0.15),
@@ -84,10 +117,32 @@ class ElegantTheme {
     surfaceContainerHighest: _withOpacity(_surface, 0.75),
     surfaceDim: _withOpacity(_surface, 0.6),
     surfaceBright: _withOpacity(_surface, 1),
-    hoverColor: _withOpacity(_primary, 0.06),
+    pressedOpacity: 0.12,
+    draggedOpacity: 0.16,
+    disabledOpacity: 0.38,
+    divider: _divider,
+    cardColor: _cardColor,
+    dialogBackgroundColor: _dialogBackgroundColor,
+    disabledColor: _disabledColor,
     focusColor: _withOpacity(_primary, 0.1),
-    highlightColor: _withOpacity(_primary, 0.1),
+    hintColor: _hintColor,
+    hoverColor: _withOpacity(_primary, 0.06),
+    indicatorColor: _indicatorColor,
+    scaffoldBackgroundColor: _scaffoldBackgroundColor,
+    secondaryHeaderColor: _secondaryHeaderColor,
+    selectedRowColor: _selectedRowColor,
     splashColor: _withOpacity(_primary, 0.1),
+    unselectedWidgetColor: _unselectedWidgetColor,
+    textPrimary: _textPrimary,
+    textSecondary: _textSecondary,
+    textHint: _textHint,
+    textDisabled: _textDisabled,
+    textSelectionColor: _textSelectionColor,
+    textSelectionHandleColor: _textSelectionHandleColor,
+    hoverStateColor: _hoverStateColor,
+    focusStateColor: _focusStateColor,
+    highlightColor: _withOpacity(_primary, 0.1),
+    splashStateColor: _splashStateColor,
   );
 
   // Shared typography instance
@@ -133,6 +188,13 @@ class ElegantTheme {
       height: 1.5,
       color: _onSurface,
     ),
+    button: GoogleFonts.lato(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.15,
+      height: 1.4,
+      color: _onSurface,
+    ),
     label: GoogleFonts.lato(
       fontSize: 14,
       fontWeight: FontWeight.w500,
@@ -170,8 +232,6 @@ class ElegantTheme {
       color: _onSurface,
     ),
   );
-
-  // Helper methods for text styles with color overrides
 
   static ThemePalette get theme => ThemePalette(
         id: 'elegant',

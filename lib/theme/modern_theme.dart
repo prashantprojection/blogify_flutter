@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/theme_palette.dart';
 
 class ModernTheme {
-  // Color definitions
+  // Color definitions - Modern Color Palette
   static const _primary = Color(0xFF6750A4);
   static const _onPrimary = Color(0xFFFFFFFF);
   static const _primaryContainer = Color(0xFFEADDFF);
@@ -28,6 +28,34 @@ class ModernTheme {
   static const _onBackground = Color(0xFF1C1B1F);
   static const _surface = Color(0xFFFFFBFE);
   static const _onSurface = Color(0xFF1C1B1F);
+
+  // Additional color definitions for UI elements
+  static const _accent = Color(0xFF03DAC6); // Teal accent
+  static const _accentLight = Color(0xFF4DB6AC);
+  static const _accentDark = Color(0xFF018786);
+  static const _divider = Color(0xFFE0E0E0);
+  static const _cardColor = Color(0xFFFAFAFA);
+  static const _dialogBackgroundColor = Color(0xFFFFFFFF);
+  static const _disabledColor = Color(0xFFBDBDBD);
+  static const _hintColor = Color(0xFF9E9E9E);
+  static const _indicatorColor = Color(0xFF6750A4);
+  static const _scaffoldBackgroundColor = Color(0xFFFFFBFE);
+  static const _secondaryHeaderColor = Color(0xFFF3E5F5);
+  static const _selectedRowColor = Color(0xFFF5F5F5);
+  static const _unselectedWidgetColor = Color(0xFF757575);
+
+  // Text-specific colors
+  static const _textPrimary = Color(0xFF1C1B1F);
+  static const _textSecondary = Color(0xFF49454F);
+  static const _textHint = Color(0xFF79747E);
+  static const _textDisabled = Color(0xFFBDBDBD);
+  static const _textSelectionColor = Color(0xFFE8DEF8);
+  static const _textSelectionHandleColor = Color(0xFF6750A4);
+
+  // State colors
+  static const _hoverStateColor = Color(0x0A000000);
+  static const _focusStateColor = Color(0x1F6750A4);
+  static const _splashStateColor = Color(0x1A6750A4);
 
   // Shared instances for theme configurations
   static const _corners = Corners(
@@ -63,10 +91,10 @@ class ModernTheme {
     onError: _onError,
     errorContainer: _errorContainer,
     onErrorContainer: _onErrorContainer,
-    background: _background,
-    onBackground: _onBackground,
-    surface: _surface,
-    onSurface: _onSurface,
+    background: Colors.white,
+    onBackground: _textPrimary,
+    surface: Colors.white,
+    onSurface: _textPrimary,
     surfaceVariant: _withOpacity(_surface, 0.7),
     onSurfaceVariant: _withOpacity(_onSurface, 0.7),
     outline: _withOpacity(_onSurface, 0.12),
@@ -84,10 +112,35 @@ class ModernTheme {
     surfaceContainerHighest: _withOpacity(_surface, 0.5),
     surfaceDim: _withOpacity(_surface, 0.4),
     surfaceBright: _withOpacity(_surface, 1),
+    accent: _accent,
+    accentLight: _accentLight,
+    accentDark: _accentDark,
+    divider: _divider,
+    cardColor: _cardColor,
+    dialogBackgroundColor: _dialogBackgroundColor,
+    disabledColor: _disabledColor,
+    hintColor: _hintColor,
+    indicatorColor: _indicatorColor,
+    scaffoldBackgroundColor: _scaffoldBackgroundColor,
+    secondaryHeaderColor: _secondaryHeaderColor,
+    selectedRowColor: _selectedRowColor,
+    unselectedWidgetColor: _unselectedWidgetColor,
+    textPrimary: _textPrimary,
+    textSecondary: _textSecondary,
+    textHint: _textHint,
+    textDisabled: _textDisabled,
+    textSelectionColor: _textSelectionColor,
+    textSelectionHandleColor: _textSelectionHandleColor,
+    hoverStateColor: _hoverStateColor,
+    focusStateColor: _focusStateColor,
+    splashStateColor: _splashStateColor,
     hoverColor: _withOpacity(_primary, 0.08),
     focusColor: _withOpacity(_primary, 0.12),
     highlightColor: _withOpacity(_primary, 0.12),
     splashColor: _withOpacity(_primary, 0.12),
+    pressedOpacity: 0.12,
+    draggedOpacity: 0.16,
+    disabledOpacity: 0.38,
   );
 
   // Shared typography instance
@@ -132,6 +185,13 @@ class ModernTheme {
       fontSize: 14,
       fontWeight: FontWeight.w500,
       letterSpacing: 0.25,
+      color: _onSurface,
+    ),
+    button: GoogleFonts.inter(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      letterSpacing: 0.15,
+      height: 1.4,
       color: _onSurface,
     ),
     caption: GoogleFonts.inter(

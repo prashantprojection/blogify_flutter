@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
+import 'package:blogify_flutter/models/theme_palette.dart';
 
-class AppFooter extends StatelessWidget {
+class AppFooter extends ConsumerWidget {
   final Color? backgroundColor;
   final Color? textColor;
   final Color? dividerColor;
@@ -97,100 +99,157 @@ class AppFooter extends StatelessWidget {
     );
   }
 
-  void _launchURL(String url) async {
+  Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     }
   }
 
+  double _getResponsiveSpacing(double baseSpacing, bool isMobile) {
+    return isMobile ? baseSpacing * 0.75 : baseSpacing;
+  }
+
+  double _getResponsiveFontSize(double baseFontSize, bool isMobile) {
+    return isMobile ? baseFontSize * 0.875 : baseFontSize;
+  }
+
+  double _getResponsiveIconSize(double baseSize, bool isMobile) {
+    return isMobile ? baseSize * 0.875 : baseSize;
+  }
+
   Widget _buildSocialIcon({
     required IconData icon,
     required String url,
     required Color color,
+    required ThemePalette theme,
+    required bool isMobile,
   }) {
+    final double iconSize = _getResponsiveIconSize(20, isMobile);
+    final double containerPadding =
+        _getResponsiveSpacing(theme.spacing.medium, isMobile);
+
     return InkWell(
       onTap: () => _launchURL(url),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: theme.corners.roundedSmall,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(containerPadding),
         decoration: BoxDecoration(
-          color: (textColor ?? Colors.white).withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          color: theme.colors.surfaceVariant,
+          borderRadius: theme.corners.roundedSmall,
         ),
         child: FaIcon(
           icon,
           color: color,
-          size: 20,
+          size: iconSize,
         ),
       ),
     );
   }
 
-  Widget _buildFooterLink(BuildContext context, String title, String route) {
+  Widget _buildFooterLink(
+    BuildContext context, {
+    required String title,
+    required String route,
+    required ThemePalette theme,
+    required bool isMobile,
+  }) {
     return InkWell(
       onTap: () => context.go(route),
-      child: Text(
-        title,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          vertical: _getResponsiveSpacing(theme.spacing.extraSmall, isMobile),
+        ),
+        child: Text(
+          title,
+          style: theme.typography.body.copyWith(
+            color: theme.colors.onSurface.withOpacity(0.7),
+            fontSize: _getResponsiveFontSize(
+                theme.typography.body.fontSize!, isMobile),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildBrandSection(BuildContext context, bool isMobile) {
+  Widget _buildBrandSection(
+    BuildContext context, {
+    required bool isMobile,
+    required ThemePalette theme,
+  }) {
     if (customBrandSection != null) return customBrandSection!;
+
+    final double titleFontSize = _getResponsiveFontSize(
+      isMobile ? 24 : 32,
+      isMobile,
+    );
+    final double taglineFontSize = _getResponsiveFontSize(
+      isMobile ? 14 : 16,
+      isMobile,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           brandName ?? 'Blogify',
-          style: TextStyle(
-            fontSize: 24,
+          style: theme.typography.display.copyWith(
             fontWeight: FontWeight.w900,
-            color: textColor ?? Colors.white,
+            color: theme.colors.onSurface,
+            fontSize: titleFontSize,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: _getResponsiveSpacing(theme.spacing.medium, isMobile)),
         Text(
           tagline ?? 'Empowering Bloggers, One Story at a Time',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            color: (textColor ?? Colors.white).withOpacity(0.7),
+          style: theme.typography.body.copyWith(
+            color: theme.colors.onSurface.withOpacity(0.7),
+            fontSize: taglineFontSize,
           ),
         ),
         if (showSocialIcons) ...[
-          const SizedBox(height: 24),
+          SizedBox(
+              height: _getResponsiveSpacing(theme.spacing.large, isMobile)),
           Wrap(
-            spacing: 16,
-            runSpacing: 16,
+            spacing: _getResponsiveSpacing(theme.spacing.medium, isMobile),
+            runSpacing: _getResponsiveSpacing(theme.spacing.medium, isMobile),
             children: [
               _buildSocialIcon(
                 icon: FontAwesomeIcons.twitter,
                 url: socialLinks?['twitter'] ?? 'https://twitter.com/blogify',
                 color: const Color(0xFF1DA1F2),
+                theme: theme,
+                isMobile: isMobile,
               ),
               _buildSocialIcon(
                 icon: FontAwesomeIcons.facebook,
                 url: socialLinks?['facebook'] ?? 'https://facebook.com/blogify',
                 color: const Color(0xFF4267B2),
+                theme: theme,
+                isMobile: isMobile,
               ),
               _buildSocialIcon(
                 icon: FontAwesomeIcons.instagram,
                 url: socialLinks?['instagram'] ??
                     'https://instagram.com/blogify',
                 color: const Color(0xFFE1306C),
+                theme: theme,
+                isMobile: isMobile,
               ),
               _buildSocialIcon(
                 icon: FontAwesomeIcons.linkedin,
                 url: socialLinks?['linkedin'] ??
                     'https://linkedin.com/company/blogify',
                 color: const Color(0xFF0077B5),
+                theme: theme,
+                isMobile: isMobile,
               ),
               _buildSocialIcon(
                 icon: FontAwesomeIcons.github,
                 url: socialLinks?['github'] ?? 'https://github.com/blogify',
-                color: textColor ?? Colors.white,
+                color: theme.colors.onSurface,
+                theme: theme,
+                isMobile: isMobile,
               ),
             ],
           ),
@@ -199,11 +258,15 @@ class AppFooter extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickLinksSection(BuildContext context) {
+  Widget _buildQuickLinksSection(
+    BuildContext context, {
+    required ThemePalette theme,
+    required bool isMobile,
+  }) {
     if (customQuickLinks != null) return customQuickLinks!;
     if (!showQuickLinks) return const SizedBox.shrink();
 
-    final links = quickLinks ??
+    final Map<String, String> links = quickLinks ??
         {
           'About Us': '/about',
           'Contact': '/contact',
@@ -211,33 +274,50 @@ class AppFooter extends StatelessWidget {
           'Support': '/support',
         };
 
+    final double titleFontSize = _getResponsiveFontSize(
+      isMobile ? 18 : 20,
+      isMobile,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Quick Links',
-          style: TextStyle(
-            fontSize: 16,
+          style: theme.typography.title.copyWith(
             fontWeight: FontWeight.w900,
-            color: textColor ?? Colors.white,
+            color: theme.colors.onSurface,
+            fontSize: titleFontSize,
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: _getResponsiveSpacing(theme.spacing.large, isMobile)),
         ...links.entries.map((entry) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: _buildFooterLink(context, entry.key, entry.value),
+            padding: EdgeInsets.only(
+              bottom: _getResponsiveSpacing(theme.spacing.medium, isMobile),
+            ),
+            child: _buildFooterLink(
+              context,
+              title: entry.key,
+              route: entry.value,
+              theme: theme,
+              isMobile: isMobile,
+            ),
           );
-        }).toList(),
+        }),
       ],
     );
   }
 
-  Widget _buildLegalSection(BuildContext context) {
+  Widget _buildLegalSection(
+    BuildContext context, {
+    required ThemePalette theme,
+    required bool isMobile,
+  }) {
     if (customLegalSection != null) return customLegalSection!;
     if (!showLegalLinks) return const SizedBox.shrink();
 
-    final links = legalLinks ??
+    final Map<String, String> links = legalLinks ??
         {
           'Terms of Service': '/terms',
           'Privacy Policy': '/privacy',
@@ -245,54 +325,74 @@ class AppFooter extends StatelessWidget {
           'Blog Guidelines': '/guidelines',
         };
 
+    final double titleFontSize = _getResponsiveFontSize(
+      isMobile ? 18 : 20,
+      isMobile,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Legal',
-          style: TextStyle(
-            fontSize: 16,
+          style: theme.typography.title.copyWith(
             fontWeight: FontWeight.w900,
-            color: textColor ?? Colors.white,
+            color: theme.colors.onSurface,
+            fontSize: titleFontSize,
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: _getResponsiveSpacing(theme.spacing.large, isMobile)),
         ...links.entries.map((entry) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: _buildFooterLink(context, entry.key, entry.value),
+            padding: EdgeInsets.only(
+              bottom: _getResponsiveSpacing(theme.spacing.medium, isMobile),
+            ),
+            child: _buildFooterLink(
+              context,
+              title: entry.key,
+              route: entry.value,
+              theme: theme,
+              isMobile: isMobile,
+            ),
           );
-        }).toList(),
+        }),
       ],
     );
   }
 
-  Widget _buildCopyrightSection(BuildContext context) {
+  Widget _buildCopyrightSection(
+    BuildContext context, {
+    required ThemePalette theme,
+    required bool isMobile,
+  }) {
     if (customCopyrightSection != null) return customCopyrightSection!;
     if (!showCopyright) return const SizedBox.shrink();
 
+    final double fontSize = _getResponsiveFontSize(14, isMobile);
+
     return Container(
-      padding: const EdgeInsets.only(top: 32),
+      padding: EdgeInsets.only(
+        top: _getResponsiveSpacing(theme.spacing.extraLarge, isMobile),
+      ),
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: (dividerColor ?? Colors.white).withOpacity(0.1),
-            width: 1,
+            color: theme.colors.outlineVariant,
+            width: theme.borders.extraSmall,
           ),
         ),
       ),
       child: Wrap(
         alignment: WrapAlignment.spaceBetween,
-        spacing: 16,
-        runSpacing: 16,
+        spacing: _getResponsiveSpacing(theme.spacing.medium, isMobile),
+        runSpacing: _getResponsiveSpacing(theme.spacing.medium, isMobile),
         children: [
           Text(
             copyrightText ??
                 '© ${DateTime.now().year} Blogify. All rights reserved.',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: (textColor ?? Colors.white).withOpacity(0.5),
+            style: theme.typography.caption.copyWith(
+              color: theme.colors.onSurface.withOpacity(0.5),
+              fontSize: fontSize,
             ),
           ),
           Row(
@@ -300,26 +400,27 @@ class AppFooter extends StatelessWidget {
             children: [
               Text(
                 'Made with',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: (textColor ?? Colors.white).withOpacity(0.5),
+                style: theme.typography.caption.copyWith(
+                  color: theme.colors.onSurface.withOpacity(0.5),
+                  fontSize: fontSize,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: EdgeInsets.symmetric(
+                  horizontal:
+                      _getResponsiveSpacing(theme.spacing.extraSmall, isMobile),
+                ),
                 child: Icon(
                   Icons.favorite,
-                  color: Colors.red[400],
-                  size: 16,
+                  color: theme.colors.error,
+                  size: _getResponsiveIconSize(16, isMobile),
                 ),
               ),
               Text(
                 'by Blogify Team',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: (textColor ?? Colors.white).withOpacity(0.5),
+                style: theme.typography.caption.copyWith(
+                  color: theme.colors.onSurface.withOpacity(0.5),
+                  fontSize: fontSize,
                 ),
               ),
             ],
@@ -330,53 +431,110 @@ class AppFooter extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < breakpoint;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile = screenWidth < breakpoint;
+    final ThemePalette theme = ref.watch(themeProvider);
 
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
-        horizontal: horizontalPadding ?? (isMobile ? 24 : 32),
-        vertical: verticalPadding ?? (isMobile ? 48 : 64),
+        horizontal: horizontalPadding ??
+            _getResponsiveSpacing(
+              isMobile ? theme.spacing.medium : theme.spacing.large,
+              isMobile,
+            ),
+        vertical: verticalPadding ??
+            _getResponsiveSpacing(
+              isMobile ? theme.spacing.large : theme.spacing.extraLarge,
+              isMobile,
+            ),
       ),
-      color: backgroundColor ?? const Color(0xFF1A1D1F),
+      color: backgroundColor ?? theme.colors.surface,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (isMobile)
             Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildBrandSection(context, isMobile),
+                _buildBrandSection(
+                  context,
+                  isMobile: isMobile,
+                  theme: theme,
+                ),
                 if (showQuickLinks) ...[
-                  const SizedBox(height: 48),
-                  _buildQuickLinksSection(context),
+                  SizedBox(
+                      height:
+                          _getResponsiveSpacing(theme.spacing.large, isMobile)),
+                  _buildQuickLinksSection(
+                    context,
+                    theme: theme,
+                    isMobile: isMobile,
+                  ),
                 ],
                 if (showLegalLinks) ...[
-                  const SizedBox(height: 48),
-                  _buildLegalSection(context),
+                  SizedBox(
+                      height:
+                          _getResponsiveSpacing(theme.spacing.large, isMobile)),
+                  _buildLegalSection(
+                    context,
+                    theme: theme,
+                    isMobile: isMobile,
+                  ),
                 ],
               ],
             )
           else
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: _buildBrandSection(context, isMobile)),
-                if (showQuickLinks) ...[
-                  const SizedBox(width: 64),
-                  Expanded(child: _buildQuickLinksSection(context)),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: _buildBrandSection(
+                      context,
+                      isMobile: isMobile,
+                      theme: theme,
+                    ),
+                  ),
+                  if (showQuickLinks) ...[
+                    SizedBox(
+                        width: _getResponsiveSpacing(
+                            theme.spacing.large, isMobile)),
+                    Expanded(
+                      child: _buildQuickLinksSection(
+                        context,
+                        theme: theme,
+                        isMobile: isMobile,
+                      ),
+                    ),
+                  ],
+                  if (showLegalLinks) ...[
+                    SizedBox(
+                        width: _getResponsiveSpacing(
+                            theme.spacing.large, isMobile)),
+                    Expanded(
+                      child: _buildLegalSection(
+                        context,
+                        theme: theme,
+                        isMobile: isMobile,
+                      ),
+                    ),
+                  ],
                 ],
-                if (showLegalLinks) ...[
-                  const SizedBox(width: 64),
-                  Expanded(child: _buildLegalSection(context)),
-                ],
-              ],
+              ),
             ),
           if (showCopyright) ...[
-            const SizedBox(height: 48),
-            _buildCopyrightSection(context),
+            SizedBox(
+                height: _getResponsiveSpacing(theme.spacing.large, isMobile)),
+            _buildCopyrightSection(
+              context,
+              theme: theme,
+              isMobile: isMobile,
+            ),
           ],
         ],
       ),

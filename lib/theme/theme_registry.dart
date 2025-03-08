@@ -5,7 +5,7 @@ import 'elegant_theme.dart';
 import 'fitness_theme.dart';
 import 'fitness_pro_theme.dart';
 import 'gold_age_theme.dart';
-import 'pirate_ship_theme.dart';
+import 'nautical_theme.dart';
 import 'news_theme.dart';
 import 'eye_comfort_theme.dart';
 import 'windows_theme.dart';
@@ -21,7 +21,7 @@ class ThemeRegistry {
     'fitness',
     'fitness_pro',
     'gold_age',
-    'pirate_ship',
+    'nautical',
     'news',
     'eye_comfort',
     'windows',
@@ -44,8 +44,8 @@ class ThemeRegistry {
         return FitnessProTheme.theme;
       case 'gold_age':
         return GoldAgeTheme.theme;
-      case 'pirate_ship':
-        return PirateShipTheme.theme;
+      case 'nautical':
+        return NauticalTheme.theme;
       case 'news':
         return NewsTheme.theme;
       case 'eye_comfort':

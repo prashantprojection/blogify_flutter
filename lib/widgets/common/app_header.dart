@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:blogify_flutter/utils/menu_drawer.dart';
 
-class AppHeader extends StatefulWidget implements PreferredSizeWidget {
+class AppHeader extends ConsumerStatefulWidget implements PreferredSizeWidget {
   final bool isLarge;
   final double? height;
   final List<Widget>? actions;
@@ -91,7 +93,7 @@ class AppHeader extends StatefulWidget implements PreferredSizeWidget {
   }) : super(key: key);
 
   @override
-  State<AppHeader> createState() => _AppHeaderState();
+  ConsumerState<AppHeader> createState() => _AppHeaderState();
 
   @override
   Size get preferredSize =>
@@ -183,36 +185,9 @@ class AppHeader extends StatefulWidget implements PreferredSizeWidget {
       borderRadius: borderRadius,
     );
   }
-
-  Widget _buildLogo({required bool isMobile}) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          Icons.edit_note_rounded,
-          size: isMobile ? 28 : (isLarge ? 40 : 32),
-          color: Colors.blue.shade700,
-        ),
-        SizedBox(width: isMobile ? 8 : (isLarge ? 12 : 8)),
-        ShaderMask(
-          shaderCallback: (bounds) => LinearGradient(
-            colors: [Colors.blue.shade700, Colors.purple.shade700],
-          ).createShader(bounds),
-          child: Text(
-            'Blogify',
-            style: TextStyle(
-              fontSize: isMobile ? 20 : (isLarge ? 32 : 24),
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
-class _AppHeaderState extends State<AppHeader> {
+class _AppHeaderState extends ConsumerState<AppHeader> {
   late ScrollController _scrollController;
   bool _isCollapsed = false;
 
@@ -248,73 +223,69 @@ class _AppHeaderState extends State<AppHeader> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < widget.breakpoint;
+    final theme = ref.watch(themeProvider);
 
     return Material(
-      color: Colors.white,
+      color: theme.colors.surface,
       elevation: widget.elevation ?? 0,
+      shadowColor: theme.colors.shadow,
       child: SafeArea(
         child: Container(
           padding: EdgeInsets.symmetric(
-            horizontal: isMobile ? 16 : (widget.isLarge ? 48 : 32),
-            vertical: isMobile ? 8 : (widget.isLarge ? 20 : 12),
+            horizontal: isMobile
+                ? theme.spacing.medium
+                : (widget.isLarge
+                    ? theme.spacing.extraLarge
+                    : theme.spacing.large),
+            vertical: isMobile
+                ? theme.spacing.small
+                : (widget.isLarge ? theme.spacing.large : theme.spacing.medium),
           ),
           child: Row(
             children: [
               if (isMobile && widget.leading != null) widget.leading!,
-              widget._buildLogo(isMobile: isMobile),
+              _buildLogo(isMobile: isMobile),
               if (!isMobile) ...[
-                SizedBox(width: widget.isLarge ? 64 : 48),
+                SizedBox(
+                    width: widget.isLarge
+                        ? theme.spacing.extraLarge
+                        : theme.spacing.large),
                 Expanded(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        TextButton(
-                          onPressed: () => context.go('/'),
-                          child: Text(
-                            'Home',
-                            style: TextStyle(
-                              fontSize: widget.isLarge ? 16 : 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade800,
-                            ),
-                          ),
+                        _buildNavItem(
+                          title: 'Home',
+                          route: '/',
+                          theme: theme,
                         ),
-                        SizedBox(width: widget.isLarge ? 40 : 32),
-                        TextButton(
-                          onPressed: () => context.go('/explore'),
-                          child: Text(
-                            'Explore',
-                            style: TextStyle(
-                              fontSize: widget.isLarge ? 16 : 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade800,
-                            ),
-                          ),
+                        SizedBox(
+                            width: widget.isLarge
+                                ? theme.spacing.large
+                                : theme.spacing.medium),
+                        _buildNavItem(
+                          title: 'Explore',
+                          route: '/explore',
+                          theme: theme,
                         ),
-                        SizedBox(width: widget.isLarge ? 40 : 32),
-                        TextButton(
-                          onPressed: () => context.go('/categories'),
-                          child: Text(
-                            'Categories',
-                            style: TextStyle(
-                              fontSize: widget.isLarge ? 16 : 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade800,
-                            ),
-                          ),
+                        SizedBox(
+                            width: widget.isLarge
+                                ? theme.spacing.large
+                                : theme.spacing.medium),
+                        _buildNavItem(
+                          title: 'Categories',
+                          route: '/categories',
+                          theme: theme,
                         ),
-                        SizedBox(width: widget.isLarge ? 40 : 32),
-                        TextButton(
-                          onPressed: () => context.go('/stories'),
-                          child: Text(
-                            'Stories',
-                            style: TextStyle(
-                              fontSize: widget.isLarge ? 16 : 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey.shade800,
-                            ),
-                          ),
+                        SizedBox(
+                            width: widget.isLarge
+                                ? theme.spacing.large
+                                : theme.spacing.medium),
+                        _buildNavItem(
+                          title: 'Stories',
+                          route: '/stories',
+                          theme: theme,
                         ),
                       ],
                     ),
@@ -330,11 +301,13 @@ class _AppHeaderState extends State<AppHeader> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.notifications_outlined),
+                        icon: Icon(Icons.notifications_outlined,
+                            color: theme.colors.onSurface),
                         onPressed: () {},
                       ),
                       IconButton(
-                        icon: const Icon(Icons.person_outline),
+                        icon: Icon(Icons.person_outline,
+                            color: theme.colors.onSurface),
                         onPressed: () => MenuDrawer.open(context),
                       ),
                     ],
@@ -344,10 +317,8 @@ class _AppHeaderState extends State<AppHeader> {
                     onPressed: () => context.go('/login'),
                     child: Text(
                       'Sign In',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.blue.shade700,
+                      style: theme.typography.button.copyWith(
+                        color: theme.colors.primary,
                       ),
                     ),
                   ),
@@ -361,14 +332,19 @@ class _AppHeaderState extends State<AppHeader> {
                         icon: Icon(
                           Icons.notifications_outlined,
                           size: widget.isLarge ? 28 : 24,
+                          color: theme.colors.onSurface,
                         ),
                         onPressed: () {},
                       ),
-                      SizedBox(width: widget.isLarge ? 24 : 16),
+                      SizedBox(
+                          width: widget.isLarge
+                              ? theme.spacing.large
+                              : theme.spacing.medium),
                       IconButton(
                         icon: Icon(
                           Icons.person_outline,
                           size: widget.isLarge ? 28 : 24,
+                          color: theme.colors.onSurface,
                         ),
                         onPressed: () => MenuDrawer.open(context),
                       ),
@@ -381,32 +357,35 @@ class _AppHeaderState extends State<AppHeader> {
                         onPressed: () => context.go('/login'),
                         child: Text(
                           'Sign In',
-                          style: TextStyle(
-                            fontSize: widget.isLarge ? 16 : 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.blue.shade700,
+                          style: theme.typography.button.copyWith(
+                            color: theme.colors.primary,
                           ),
                         ),
                       ),
-                      SizedBox(width: widget.isLarge ? 16 : 12),
+                      SizedBox(
+                          width: widget.isLarge
+                              ? theme.spacing.medium
+                              : theme.spacing.small),
                       ElevatedButton(
                         onPressed: () => context.go('/register'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade700,
+                          backgroundColor: theme.colors.primary,
                           padding: EdgeInsets.symmetric(
-                            horizontal: widget.isLarge ? 24 : 20,
-                            vertical: widget.isLarge ? 12 : 10,
+                            horizontal: widget.isLarge
+                                ? theme.spacing.large
+                                : theme.spacing.medium,
+                            vertical: widget.isLarge
+                                ? theme.spacing.medium
+                                : theme.spacing.small,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: theme.corners.roundedSmall,
                           ),
                         ),
                         child: Text(
                           'Get Started',
-                          style: TextStyle(
-                            fontSize: widget.isLarge ? 16 : 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
+                          style: theme.typography.button.copyWith(
+                            color: theme.colors.onPrimary,
                           ),
                         ),
                       ),
@@ -421,6 +400,7 @@ class _AppHeaderState extends State<AppHeader> {
   }
 
   Widget _buildLogo({required bool isMobile}) {
+    final theme = ref.watch(themeProvider);
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -431,19 +411,28 @@ class _AppHeaderState extends State<AppHeader> {
             Icon(
               Icons.edit_note_rounded,
               size: isMobile ? 28 : (widget.isLarge ? 40 : 32),
-              color: Colors.blue.shade700,
+              color: theme.colors.primary,
             ),
-            SizedBox(width: isMobile ? 8 : (widget.isLarge ? 12 : 8)),
+            SizedBox(
+                width: isMobile
+                    ? theme.spacing.small
+                    : (widget.isLarge
+                        ? theme.spacing.medium
+                        : theme.spacing.small)),
             ShaderMask(
               shaderCallback: (bounds) => LinearGradient(
-                colors: [Colors.blue.shade700, Colors.purple.shade700],
+                colors: [theme.colors.primary, theme.colors.secondary],
               ).createShader(bounds),
               child: Text(
                 'Blogify',
-                style: TextStyle(
-                  fontSize: isMobile ? 20 : (widget.isLarge ? 32 : 24),
+                style: (isMobile
+                        ? theme.typography.title
+                        : (widget.isLarge
+                            ? theme.typography.display
+                            : theme.typography.headline))
+                    .copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: theme.colors.onPrimary,
                 ),
               ),
             ),
@@ -453,23 +442,33 @@ class _AppHeaderState extends State<AppHeader> {
     );
   }
 
-  Widget _buildNavItem(String title, String route) {
+  Widget _buildNavItem({
+    required String title,
+    required String route,
+    required theme,
+  }) {
     final isCurrentRoute = GoRouterState.of(context).uri.path == route;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () => context.go(route),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: EdgeInsets.symmetric(
+            horizontal: theme.spacing.medium,
+            vertical: theme.spacing.small,
+          ),
           decoration: BoxDecoration(
-            color: isCurrentRoute ? Colors.blue.shade50 : Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
+            color: isCurrentRoute
+                ? theme.colors.primaryContainer
+                : Colors.transparent,
+            borderRadius: theme.corners.roundedLarge,
           ),
           child: Text(
             title,
-            style: TextStyle(
-              color:
-                  isCurrentRoute ? Colors.blue.shade700 : Colors.grey.shade700,
+            style: theme.typography.button.copyWith(
+              color: isCurrentRoute
+                  ? theme.colors.primary
+                  : theme.colors.onSurfaceVariant,
               fontWeight: isCurrentRoute ? FontWeight.w600 : FontWeight.w500,
             ),
           ),
@@ -523,10 +522,10 @@ class _CustomAppHeader extends AppHeader {
   Size get preferredSize => Size.fromHeight(toolbarHeight ?? kToolbarHeight);
 
   @override
-  State<AppHeader> createState() => _CustomAppHeaderState();
+  ConsumerState<AppHeader> createState() => _CustomAppHeaderState();
 }
 
-class _CustomAppHeaderState extends State<_CustomAppHeader> {
+class _CustomAppHeaderState extends ConsumerState<_CustomAppHeader> {
   @override
   Widget build(BuildContext context) {
     final effectivePadding = widget.padding ?? const EdgeInsets.all(16.0);

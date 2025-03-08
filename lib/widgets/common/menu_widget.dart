@@ -1,3 +1,4 @@
+import 'package:blogify_flutter/controllers/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +19,10 @@ class MenuWidget extends ConsumerStatefulWidget {
 class _MenuWidgetState extends ConsumerState<MenuWidget> {
   @override
   Widget build(BuildContext context) {
-    final settings = ref.watch(settingsControllerProvider);
+    final settings = ref.watch(settingsProvider);
+    final theme = ref.watch(themeProvider);
+    final screenHeight = MediaQuery.of(context).size.height;
+    final maxHeight = screenHeight * 0.85; // 85% of screen height
 
     return Align(
       alignment: Alignment.centerRight,
@@ -38,30 +42,39 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
               if (settings.neonEffectEnabled)
                 Positioned.fill(
                   child: NeonBorderEffect(
-                    borderRadius: 24,
-                    margin: EdgeInsets.symmetric(horizontal: 25, vertical: 14),
+                    borderRadius: theme.corners.roundedLarge.topLeft.x,
+                    margin: EdgeInsets.symmetric(
+                      horizontal: theme.spacing.large,
+                      vertical: theme.spacing.medium,
+                    ),
                   ),
                 ),
               Container(
                 width: 300,
-                height: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 25, vertical: 14),
+                constraints: BoxConstraints(
+                  maxHeight: maxHeight,
+                  minHeight: 200, // Minimum reasonable height
+                ),
+                margin: EdgeInsets.symmetric(
+                  horizontal: theme.spacing.large,
+                  vertical: theme.spacing.medium,
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
+                  color: theme.colors.surface,
+                  borderRadius: theme.corners.roundedLarge,
                   border: Border.all(
-                    color: Colors.grey.shade200,
-                    width: 1,
+                    color: theme.colors.outline,
+                    width: theme.borders.small,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: theme.colors.shadow.withOpacity(0.08),
                       blurRadius: 15,
                       spreadRadius: 1,
                       offset: Offset(0, 0),
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: theme.colors.shadow.withOpacity(0.05),
                       blurRadius: 8,
                       spreadRadius: 2,
                       offset: Offset(0, 4),
@@ -69,52 +82,54 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
                   ],
                 ),
                 child: Container(
-                  margin: EdgeInsets.all(8),
+                  margin: EdgeInsets.all(theme.spacing.small),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
+                    color: theme.colors.surface,
+                    borderRadius: theme.corners.roundedMedium,
                     border: Border.all(
-                      color: Colors.grey.shade200,
-                      width: 1,
+                      color: theme.colors.outline,
+                      width: theme.borders.small,
                     ),
                   ),
                   child: Container(
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height - 100,
-                    ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      color: theme.colors.surface,
+                      borderRadius: theme.corners.roundedMedium,
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          Colors.grey.shade100,
-                          Colors.white,
+                          theme.colors.surfaceVariant,
+                          theme.colors.surface,
                         ],
                       ),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: theme.corners.roundedMedium,
                       child: SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 24, horizontal: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildProfileSection(),
-                              SizedBox(height: 24),
-                              _buildDivider(),
-                              _buildNavigationItems(),
-                              _buildDivider(),
-                              _buildCreatorSection(),
-                              _buildDivider(),
-                              _buildSettingsSection(),
-                              _buildDivider(),
-                              SizedBox(height: 16),
-                              _buildLogoutButton(),
-                            ],
+                        child: IntrinsicHeight(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: theme.spacing.large,
+                              horizontal: theme.spacing.medium,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildProfileSection(),
+                                SizedBox(height: theme.spacing.large),
+                                _buildDivider(),
+                                _buildNavigationItems(),
+                                _buildDivider(),
+                                _buildCreatorSection(),
+                                _buildDivider(),
+                                _buildSettingsSection(),
+                                _buildDivider(),
+                                SizedBox(height: theme.spacing.medium),
+                                _buildLogoutButton(),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -130,13 +145,14 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
   }
 
   Widget _buildProfileSection() {
+    final theme = ref.watch(themeProvider);
     return InkWell(
       onTap: () {
         Navigator.of(context).pop(); // Close the menu
         context.go('/profile'); // Navigate to profile
       },
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: theme.spacing.medium),
         child: Row(
           children: [
             CircleAvatar(
@@ -145,23 +161,23 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
                 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
               ),
             ),
-            SizedBox(width: 12),
+            SizedBox(width: theme.spacing.medium),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Sarah Johnson',
-                    style: TextStyle(
+                    style: theme.typography.title.copyWith(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
                     '@sarahjohnson',
-                    style: TextStyle(
+                    style: theme.typography.body.copyWith(
                       fontSize: 13,
-                      color: Colors.grey.shade600,
+                      color: theme.colors.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -171,7 +187,7 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
               icon: Icon(
                 IconsaxPlusBold.edit,
                 size: 18,
-                color: Colors.grey.shade700,
+                color: theme.colors.onSurfaceVariant,
               ),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the menu
@@ -188,37 +204,38 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
   }
 
   Widget _buildNavigationItems() {
+    final theme = ref.watch(themeProvider);
     return Column(
       children: [
         _buildMenuItem(
           icon: Icons.home_outlined,
           label: 'My Page',
           onTap: () => context.go('/'),
-          iconColor: Colors.blue,
+          iconColor: theme.colors.primary,
         ),
         _buildMenuItem(
           icon: Icons.explore_outlined,
           label: 'Explore',
           onTap: () => context.go('/explore'),
-          iconColor: Colors.blue,
+          iconColor: theme.colors.primary,
         ),
         _buildMenuItem(
           icon: Icons.play_circle_outline,
           label: 'Stories',
           onTap: () => context.go('/stories'),
-          iconColor: Colors.blue,
+          iconColor: theme.colors.primary,
         ),
         _buildMenuItem(
           icon: Icons.bookmark_border,
           label: 'Saved Posts',
           onTap: () {},
-          iconColor: Colors.blue,
+          iconColor: theme.colors.primary,
         ),
         _buildMenuItem(
           icon: Icons.forum_outlined,
           label: 'Community Forum',
           onTap: () => context.go('/community'),
-          iconColor: Colors.blue,
+          iconColor: theme.colors.primary,
         ),
       ],
     );
@@ -229,126 +246,118 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
       icon: Icons.video_library_outlined,
       label: 'Creator Studio',
       onTap: () {},
-      iconColor: Colors.purple,
     );
   }
 
   Widget _buildSettingsSection() {
-    final settings = ref.watch(settingsControllerProvider);
+    final settings = ref.watch(settingsProvider);
+    final theme = ref.watch(themeProvider);
 
     return Column(
       children: [
         _buildToggleMenuItem(
           icon: Icons.dark_mode_outlined,
           label: 'Dark Mode',
-          value: false,
-          onChanged: (value) {},
+          value: settings.isDarkMode,
+          onChanged: (value) {
+            ref.read(settingsProvider.notifier).setDarkMode(value);
+          },
         ),
         _buildToggleMenuItem(
           icon: Icons.notifications_outlined,
           label: 'Notifications',
-          value: true,
-          onChanged: (value) {},
+          value: settings.notificationsEnabled,
+          onChanged: (value) {
+            ref.read(settingsProvider.notifier).setNotificationsEnabled(value);
+          },
         ),
         _buildToggleMenuItem(
           icon: Icons.light_mode_outlined,
           label: 'Neon Effect',
           value: settings.neonEffectEnabled,
           onChanged: (value) {
-            ref.read(settingsControllerProvider.notifier).toggleNeonEffect();
+            ref.read(settingsProvider.notifier).toggleNeonEffect();
           },
           submenu: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
+                padding:
+                    EdgeInsets.symmetric(horizontal: theme.spacing.extraSmall),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Speed',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
+                      style: theme.typography.body.copyWith(
+                        color: theme.colors.onSurfaceVariant,
                       ),
                     ),
-                    Container(
-                      width: 48,
-                      child: Text(
-                        '${settings.neonEffectSpeed}x',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
-                          fontFeatures: [FontFeature.tabularFigures()],
-                        ),
-                        textAlign: TextAlign.end,
+                    Text(
+                      '${settings.neonEffectSpeed}x',
+                      style: theme.typography.body.copyWith(
+                        color: theme.colors.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 8),
-              Column(
-                children: [
-                  SliderTheme(
-                    data: SliderThemeData(
-                      trackHeight: 2,
-                      activeTrackColor: Color(0xFF6366F1),
-                      inactiveTrackColor: Colors.grey.shade200,
-                      thumbColor: Color(0xFF6366F1),
-                      overlayColor: Color(0xFF6366F1).withOpacity(0.12),
-                      thumbShape: RoundSliderThumbShape(
-                        enabledThumbRadius: 6,
-                        elevation: 2,
-                      ),
-                      overlayShape: RoundSliderOverlayShape(
-                        overlayRadius: 16,
-                      ),
-                      tickMarkShape: RoundSliderTickMarkShape(
-                        tickMarkRadius: 2,
-                      ),
-                      activeTickMarkColor: Color(0xFF6366F1),
-                      inactiveTickMarkColor: Colors.grey.shade300,
-                      valueIndicatorShape: PaddleSliderValueIndicatorShape(),
-                      valueIndicatorColor: Color(0xFF6366F1),
-                      valueIndicatorTextStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
-                      showValueIndicator: ShowValueIndicator.always,
-                    ),
-                    child: Slider(
-                      value: settings.neonEffectSpeed,
-                      min: 0.25,
-                      max: 5.0,
-                      divisions: SettingsController.speedValues.length - 1,
-                      label: '${settings.neonEffectSpeed}x',
-                      onChanged: (value) {
-                        ref
-                            .read(settingsControllerProvider.notifier)
-                            .setNeonEffectSpeed(value);
-                      },
-                    ),
+              SliderTheme(
+                data: SliderThemeData(
+                  trackHeight: theme.borders.small,
+                  activeTrackColor: theme.colors.primary,
+                  inactiveTrackColor: theme.colors.outlineVariant,
+                  thumbColor: theme.colors.primary,
+                  overlayColor: theme.colors.primary.withOpacity(0.12),
+                  thumbShape: RoundSliderThumbShape(
+                    enabledThumbRadius: theme.spacing.small,
+                    elevation: theme.borders.small,
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: SettingsController.speedValues.map((speed) {
-                        return Container(
-                          width: 2,
-                          height: 2,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: speed <= settings.neonEffectSpeed
-                                ? Color(0xFF6366F1).withOpacity(0.5)
-                                : Colors.grey.shade300.withOpacity(0.5),
-                          ),
-                        );
-                      }).toList(),
-                    ),
+                  overlayShape: RoundSliderOverlayShape(
+                    overlayRadius: theme.spacing.medium,
                   ),
-                ],
+                  tickMarkShape: RoundSliderTickMarkShape(
+                    tickMarkRadius: theme.borders.extraSmall,
+                  ),
+                  activeTickMarkColor: theme.colors.primary,
+                  inactiveTickMarkColor: theme.colors.outlineVariant,
+                  valueIndicatorShape: PaddleSliderValueIndicatorShape(),
+                  valueIndicatorColor: theme.colors.primary,
+                  valueIndicatorTextStyle: theme.typography.label.copyWith(
+                    color: theme.colors.onPrimary,
+                  ),
+                  showValueIndicator: ShowValueIndicator.always,
+                ),
+                child: Slider(
+                  value: settings.neonEffectSpeed,
+                  min: SettingsNotifier.speedValues.first,
+                  max: SettingsNotifier.speedValues.last,
+                  divisions: SettingsNotifier.speedValues.length - 1,
+                  label: '${settings.neonEffectSpeed}x',
+                  onChanged: (value) {
+                    ref
+                        .read(settingsProvider.notifier)
+                        .setNeonEffectSpeed(value);
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: theme.spacing.small),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: SettingsNotifier.speedValues.map((speed) {
+                    return Container(
+                      width: theme.borders.small,
+                      height: theme.borders.small,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: speed <= settings.neonEffectSpeed
+                            ? theme.colors.primary.withOpacity(0.5)
+                            : theme.colors.outlineVariant.withOpacity(0.5),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ],
           ),
@@ -382,21 +391,26 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
   }
 
   Widget _buildLogoutButton() {
+    final theme = ref.watch(themeProvider);
     return _buildMenuItem(
       icon: Icons.logout_outlined,
       label: 'Log Out',
       onTap: () {},
-      textColor: Colors.red,
-      iconColor: Colors.red,
+      textColor: theme.colors.error,
+      iconColor: theme.colors.error,
     );
   }
 
   Widget _buildDivider() {
+    final theme = ref.watch(themeProvider);
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: theme.spacing.medium,
+        vertical: theme.spacing.small,
+      ),
       child: Divider(
-        height: 1,
-        color: Colors.grey.shade200,
+        height: theme.borders.small,
+        color: theme.colors.outlineVariant,
       ),
     );
   }
@@ -408,6 +422,7 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
     Color? textColor,
     Color? iconColor,
   }) {
+    final theme = ref.watch(themeProvider);
     final isDesktop = UniversalPlatform.isWindows ||
         UniversalPlatform.isLinux ||
         UniversalPlatform.isMacOS ||
@@ -420,28 +435,30 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
           child: InkWell(
             onTap: onTap,
             hoverColor: isDesktop
-                ? const Color(0xFF6366F1).withOpacity(0.08)
+                ? theme.colors.primary.withOpacity(0.08)
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: theme.corners.roundedSmall,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(
+                horizontal: theme.spacing.medium,
+                vertical: theme.spacing.medium,
+              ),
               child: Row(
                 children: [
                   Icon(
                     icon,
                     size: 20,
                     color: isHovered && isDesktop
-                        ? const Color(0xFF6366F1)
-                        : (iconColor ?? Colors.grey.shade700),
+                        ? theme.colors.primary
+                        : (iconColor ?? theme.colors.onSurfaceVariant),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: theme.spacing.medium),
                   Text(
                     label,
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: theme.typography.button.copyWith(
                       color: isHovered && isDesktop
-                          ? const Color(0xFF6366F1)
-                          : (textColor ?? Colors.grey.shade800),
+                          ? theme.colors.primary
+                          : (textColor ?? theme.colors.onSurface),
                       fontWeight: isHovered && isDesktop
                           ? FontWeight.w600
                           : FontWeight.w500,
@@ -463,19 +480,19 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
     required ValueChanged<bool> onChanged,
     Widget? submenu,
   }) {
+    final theme = ref.watch(themeProvider);
     return Column(
       children: [
         ListTile(
           leading: Icon(
             icon,
-            size: 24,
-            color: Colors.grey.shade700,
+            size: 20,
+            color: theme.colors.onSurfaceVariant,
           ),
           title: Text(
             label,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey.shade800,
+            style: theme.typography.button.copyWith(
+              color: theme.colors.onSurface,
             ),
           ),
           trailing: Row(
@@ -486,7 +503,7 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
                 height: 24,
                 value: value,
                 onToggle: onChanged,
-                activeColor: Color(0xFF6366F1),
+                activeColor: theme.colors.primary,
               ),
               if (submenu != null) ...[],
             ],
@@ -494,7 +511,11 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
         ),
         if (submenu != null && value)
           Padding(
-            padding: EdgeInsets.only(left: 48, right: 16, bottom: 8),
+            padding: EdgeInsets.only(
+              left: theme.spacing.extraLarge,
+              right: theme.spacing.medium,
+              bottom: theme.spacing.small,
+            ),
             child: submenu,
           ),
       ],
@@ -508,19 +529,25 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
     required List<String> items,
     required ValueChanged<String?> onChanged,
   }) {
+    final theme = ref.watch(themeProvider);
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(
+        horizontal: theme.spacing.medium,
+        vertical: theme.spacing.medium,
+      ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.grey.shade700),
-          SizedBox(width: 12),
+          Icon(
+            icon,
+            size: 20,
+            color: theme.colors.onSurfaceVariant,
+          ),
+          SizedBox(width: theme.spacing.medium),
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade800,
-                fontWeight: FontWeight.w500,
+              style: theme.typography.button.copyWith(
+                color: theme.colors.onSurface,
               ),
             ),
           ),
@@ -531,16 +558,18 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
                       value: item,
                       child: Text(
                         item,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade800,
+                        style: theme.typography.button.copyWith(
+                          color: theme.colors.onSurface,
                         ),
                       ),
                     ))
                 .toList(),
             onChanged: onChanged,
-            underline: SizedBox(),
-            icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade700),
+            underline: const SizedBox(),
+            icon: Icon(
+              Icons.arrow_drop_down,
+              color: theme.colors.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -553,32 +582,41 @@ class _MenuWidgetState extends ConsumerState<MenuWidget> {
     required double value,
     required ValueChanged<double> onChanged,
   }) {
+    final theme = ref.watch(themeProvider);
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(
+        horizontal: theme.spacing.medium,
+        vertical: theme.spacing.medium,
+      ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.grey.shade700),
-          SizedBox(width: 12),
+          Icon(
+            icon,
+            size: 20,
+            color: theme.colors.onSurfaceVariant,
+          ),
+          SizedBox(width: theme.spacing.medium),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade800,
-              fontWeight: FontWeight.w500,
+            style: theme.typography.button.copyWith(
+              color: theme.colors.onSurface,
             ),
           ),
-          SizedBox(width: 12),
+          SizedBox(width: theme.spacing.medium),
           Expanded(
             child: SliderTheme(
               data: SliderThemeData(
-                trackHeight: 2,
-                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
+                trackHeight: theme.borders.small,
+                thumbShape: RoundSliderThumbShape(
+                  enabledThumbRadius: theme.spacing.small,
+                ),
+                activeTrackColor: theme.colors.primary,
+                inactiveTrackColor: theme.colors.outlineVariant,
+                thumbColor: theme.colors.primary,
               ),
               child: Slider(
                 value: value,
                 onChanged: onChanged,
-                activeColor: Colors.blue,
-                inactiveColor: Colors.grey.shade300,
               ),
             ),
           ),

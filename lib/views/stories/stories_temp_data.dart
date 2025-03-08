@@ -1,0 +1,58 @@
+import 'dart:ui';
+
+final List<Map<String, dynamic>> stories = [
+  {
+    'title': 'The Future of AI in 2024',
+    'image': 'https://images.unsplash.com/photo-1677442136019-21780ecad995',
+    'author': 'John Smith',
+    'authorImage': 'https://randomuser.me/api/portraits/men/1.jpg',
+    'category': 'Technology',
+    'badgeName': 'New',
+    'badgeColor': Color(0xFF6366F1),
+  },
+  {
+    'title': 'Healthy Living: Morning Routines',
+    'image': 'https://images.unsplash.com/photo-1545205597-3d9d02c29597',
+    'author': 'Sarah Johnson',
+    'authorImage': 'https://randomuser.me/api/portraits/women/2.jpg',
+    'category': 'Health',
+    'badgeName': 'Featured',
+    'badgeColor': Color(0xFF7C3AED),
+  },
+  {
+    'title': 'Exploring Hidden Beaches in Bali',
+    'image': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800',
+    'author': 'Mike Wilson',
+    'authorImage': 'https://randomuser.me/api/portraits/men/3.jpg',
+    'category': 'Travel',
+    'badgeName': 'Trending',
+    'badgeColor': Color(0xFFD97706),
+  },
+  {
+    'title': 'Modern Work-Life Balance Tips',
+    'image': 'https://images.unsplash.com/photo-1497215728101-856f4ea42174',
+    'author': 'Emma Davis',
+    'authorImage': 'https://randomuser.me/api/portraits/women/4.jpg',
+    'category': 'Lifestyle',
+    'badgeName': 'Popular',
+    'badgeColor': Color(0xFF059669),
+  },
+  {
+    'title': 'Gourmet Cooking at Home',
+    'image': 'https://images.unsplash.com/photo-1556910103-1c02745aae4d',
+    'author': 'Chef Alex',
+    'authorImage': 'https://randomuser.me/api/portraits/men/5.jpg',
+    'category': 'Food',
+    'badgeName': 'Must Read',
+    'badgeColor': Color(0xFFDC2626),
+  },
+  {
+    'title': 'Web3 and Future of Internet',
+    'image': 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0',
+    'author': 'Tech Insider',
+    'authorImage': 'https://randomuser.me/api/portraits/men/6.jpg',
+    'category': 'Technology',
+    'badgeName': 'Hot',
+    'badgeColor': Color(0xFF6366F1),
+  },
+];

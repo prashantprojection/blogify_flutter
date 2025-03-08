@@ -1,157 +1,520 @@
+import 'dart:ui';
+import 'package:blogify_flutter/models/theme_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:blogify_flutter/widgets/common/app_header.dart';
 import 'package:blogify_flutter/widgets/common/inputs/search_box.dart';
 import 'package:blogify_flutter/widgets/common/cards/hoverable_card.dart';
-import 'package:blogify_flutter/widgets/common/loading/loading_shimmer.dart';
-import 'package:blogify_flutter/widgets/common/menu_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:blogify_flutter/utils/menu_drawer.dart';
+import 'package:blogify_flutter/controllers/theme_controller.dart';
+import 'package:flutter/rendering.dart';
 
 class CommunityForumView extends ConsumerWidget {
-  const CommunityForumView({Key? key}) : super(key: key);
+  CommunityForumView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
+
     return Scaffold(
+      backgroundColor: theme.colors.surface,
       body: Column(
         children: [
           // Header Section - Fixed
-          AppHeader.custom(
-            title: 'Community & Forum',
-            centerTitle: false,
-            backgroundColor: Colors.white,
-            elevation: 1,
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-            titleStyle: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1F2937),
+          Container(
+            decoration: BoxDecoration(
+              color: theme.colors.surface.withOpacity(0.8),
+              border: Border(
+                bottom: BorderSide(
+                  color: theme.colors.outlineVariant.withOpacity(0.1),
+                  width: theme.borders.small,
+                ),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colors.shadow.withOpacity(0.05),
+                  offset: Offset(0, 1),
+                  blurRadius: 8,
+                ),
+              ],
             ),
-            actions: [
-              SearchBox(
-                hintText: 'Search discussions...',
-                width: 280,
-                height: 40,
-                backgroundColor: Colors.grey.shade50,
-                onChanged: (value) {
-                  // Implement search functionality
-                },
-              ),
-              const SizedBox(width: 16),
-              IconButton(
-                icon: const Icon(Icons.tune),
-                onPressed: () {
-                  // Implement filter functionality
-                },
-                tooltip: 'Filter discussions',
-              ),
-              const SizedBox(width: 16),
-              IconButton(
-                icon: const Icon(
-                  Icons.notifications_outlined,
-                  size: 24,
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: AppHeader.custom(
+                title: 'Community Forum',
+                centerTitle: false,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                padding: EdgeInsets.symmetric(
+                  horizontal: theme.spacing.extraLarge,
+                  vertical: theme.spacing.medium,
                 ),
-                onPressed: () {},
-              ),
-              const SizedBox(width: 16),
-              IconButton(
-                icon: const Icon(
-                  Icons.person_outline,
-                  size: 24,
+                titleStyle: theme.typography.title.copyWith(
+                  color: theme.colors.onSurface,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
                 ),
-                onPressed: () => MenuDrawer.open(context),
-              ),
-            ],
-          ),
-
-          // Scrollable Content
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  // Community Categories Section - Full Width
+                actions: [
                   Container(
-                    width: double.infinity,
-                    color: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 24),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
+                    decoration: BoxDecoration(
+                      color: theme.colors.surface,
+                      borderRadius: theme.corners.roundedMedium,
+                      border: Border.all(
+                        color: theme.colors.outlineVariant.withOpacity(0.2),
+                        width: theme.borders.small,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colors.shadow.withOpacity(0.05),
+                          offset: Offset(0, 2),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: theme.spacing.medium,
+                        vertical: theme.spacing.small,
+                      ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.075),
-                          _buildCategoryCard(
-                            icon: Icons.edit,
-                            title: 'Writing Tips',
-                            description: 'Share and learn writing techniques',
-                            color: Colors.blue.shade50,
-                            iconColor: Colors.blue.shade700,
+                            width: 240,
+                            child: SearchBox(
+                              hintText: 'Search discussions...',
+                              backgroundColor: Colors.transparent,
+                              onChanged: (value) {},
+                            ),
                           ),
-                          _buildCategoryCard(
-                            icon: Icons.feedback,
-                            title: 'Feedback Requests',
-                            description: 'Get feedback on your content',
-                            color: Colors.purple.shade50,
-                            iconColor: Colors.purple.shade700,
+                          Container(
+                            margin: EdgeInsets.only(left: theme.spacing.small),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: theme.spacing.small,
+                              vertical: theme.spacing.extraSmall,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  theme.colors.surfaceVariant.withOpacity(0.5),
+                              borderRadius: theme.corners.roundedMedium,
+                            ),
+                            child: Text(
+                              '⌘K',
+                              style: theme.typography.caption.copyWith(
+                                color: theme.colors.onSurfaceVariant,
+                              ),
+                            ),
                           ),
-                          _buildCategoryCard(
-                            icon: Icons.lightbulb,
-                            title: 'Ideas & Inspiration',
-                            description: 'Find your next writing topic',
-                            color: Colors.green.shade50,
-                            iconColor: Colors.green.shade700,
-                          ),
-                          _buildCategoryCard(
-                            icon: Icons.group,
-                            title: 'Collaborations',
-                            description: 'Connect with other writers',
-                            color: Colors.orange.shade50,
-                            iconColor: Colors.orange.shade700,
-                          ),
-                          SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.075),
                         ],
                       ),
                     ),
                   ),
+                  SizedBox(width: theme.spacing.medium),
+                  _buildHeaderIconButton(
+                    icon: Icons.filter_list,
+                    tooltip: 'Sort & Filter',
+                    onPressed: () {},
+                    theme: theme,
+                  ),
+                  SizedBox(width: theme.spacing.medium),
+                  _buildHeaderIconButton(
+                    icon: Icons.notifications_outlined,
+                    onPressed: () {},
+                    theme: theme,
+                    badge: '3',
+                  ),
+                  SizedBox(width: theme.spacing.medium),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: theme.colors.primary.withOpacity(0.1),
+                      borderRadius: theme.corners.roundedLarge,
+                    ),
+                    child: _buildHeaderIconButton(
+                      icon: Icons.person_outline,
+                      onPressed: () => MenuDrawer.open(context),
+                      theme: theme,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
 
-                  // Content Section with 85% width
-                  Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width * 0.85,
+          // Main Content
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.all(theme.spacing.large),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Left Sidebar
+                  Container(
+                    width: 300,
+                    decoration: BoxDecoration(
+                      color: theme.colors.surface,
+                      borderRadius: theme.corners.roundedLarge,
+                      border: Border.all(
+                        color: theme.colors.outlineVariant.withOpacity(0.1),
+                        width: theme.borders.small,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 8),
-                            // Forum Threads Section
-                            ..._buildThreadsList(),
-
-                            const SizedBox(height: 16),
-
-                            // Load More Button
-                            Center(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  // Implement load more functionality
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue.shade700,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 12,
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colors.shadow.withOpacity(0.05),
+                          offset: Offset(0, 4),
+                          blurRadius: 20,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: theme.corners.roundedLarge,
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: theme.colors.surfaceVariant.withOpacity(0.3),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Categories Section
+                              Padding(
+                                padding: EdgeInsets.all(theme.spacing.large),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Categories',
+                                      style: theme.typography.title.copyWith(
+                                        color: theme.colors.onSurface,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: theme.colors.primary
+                                            .withOpacity(0.1),
+                                        borderRadius:
+                                            theme.corners.roundedLarge,
+                                      ),
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.add,
+                                          size: 20,
+                                          color: theme.colors.primary,
+                                        ),
+                                        onPressed: () {},
+                                        tooltip: 'Create Category',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: ListView(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: theme.spacing.medium,
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                                  children: [
+                                    _buildCategoryTile(
+                                      icon: Icons.edit,
+                                      title: 'Writing Tips',
+                                      count: 156,
+                                      color: Colors.blue.shade700,
+                                      theme: theme,
+                                      hasNewPosts: true,
+                                    ),
+                                    _buildCategoryTile(
+                                      icon: Icons.feedback,
+                                      title: 'Feedback Requests',
+                                      count: 89,
+                                      color: Colors.purple.shade700,
+                                      theme: theme,
+                                      hasNewPosts: true,
+                                    ),
+                                    _buildCategoryTile(
+                                      hasNewPosts: false,
+                                      icon: Icons.lightbulb,
+                                      title: 'Ideas & Inspiration',
+                                      count: 234,
+                                      color: Colors.green.shade700,
+                                      theme: theme,
+                                    ),
+                                    _buildCategoryTile(
+                                      icon: Icons.group,
+                                      title: 'Collaborations',
+                                      count: 67,
+                                      color: Colors.orange.shade700,
+                                      theme: theme,
+                                      hasNewPosts: false,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Main Content Area
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.only(left: theme.spacing.large),
+                      decoration: BoxDecoration(
+                        color: theme.colors.surface,
+                        borderRadius: theme.corners.roundedLarge,
+                        border: Border.all(
+                          color: theme.colors.outlineVariant.withOpacity(0.1),
+                          width: theme.borders.small,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.colors.shadow.withOpacity(0.05),
+                            offset: Offset(0, 4),
+                            blurRadius: 20,
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: theme.corners.roundedLarge,
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color:
+                                  theme.colors.surfaceVariant.withOpacity(0.3),
+                            ),
+                            child: CustomScrollView(
+                              slivers: [
+                                SliverPadding(
+                                  padding: EdgeInsets.all(theme.spacing.large),
+                                  sliver: SliverToBoxAdapter(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Recent Discussions',
+                                                  style: theme.typography.title
+                                                      .copyWith(
+                                                    color:
+                                                        theme.colors.onSurface,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                    height:
+                                                        theme.spacing.small),
+                                                Text(
+                                                  'Join the conversation or start a new discussion',
+                                                  style: theme.typography.body
+                                                      .copyWith(
+                                                    color: theme.colors
+                                                        .onSurfaceVariant,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: theme.colors.primary,
+                                                borderRadius:
+                                                    theme.corners.roundedMedium,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: theme.colors.primary
+                                                        .withOpacity(0.25),
+                                                    offset: Offset(0, 4),
+                                                    blurRadius: 12,
+                                                    spreadRadius: -2,
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  onTap: () {},
+                                                  borderRadius: theme
+                                                      .corners.roundedMedium,
+                                                  hoverColor: Colors.white
+                                                      .withOpacity(0.1),
+                                                  splashColor: Colors.white
+                                                      .withOpacity(0.2),
+                                                  child: Container(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                      horizontal:
+                                                          theme.spacing.large,
+                                                      vertical:
+                                                          theme.spacing.medium,
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Container(
+                                                          padding:
+                                                              EdgeInsets.all(4),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white
+                                                                .withOpacity(
+                                                                    0.2),
+                                                            borderRadius: theme
+                                                                .corners
+                                                                .roundedMedium,
+                                                          ),
+                                                          child: Icon(
+                                                            Icons.add_rounded,
+                                                            size: 18,
+                                                            color: theme.colors
+                                                                .onPrimary,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                            width: theme.spacing
+                                                                .medium),
+                                                        Text(
+                                                          'Start Discussion',
+                                                          style: theme
+                                                              .typography.button
+                                                              .copyWith(
+                                                            color: theme.colors
+                                                                .onPrimary,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: theme.spacing.large),
+                                        // Filter Chips with modern styling
+                                        SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: Row(
+                                            children: [
+                                              _buildFilterChip(
+                                                label: 'All Topics',
+                                                isSelected: true,
+                                                theme: theme,
+                                              ),
+                                              SizedBox(
+                                                  width: theme.spacing.small),
+                                              _buildFilterChip(
+                                                label: 'Most Recent',
+                                                theme: theme,
+                                              ),
+                                              SizedBox(
+                                                  width: theme.spacing.small),
+                                              _buildFilterChip(
+                                                label: 'Most Popular',
+                                                theme: theme,
+                                              ),
+                                              SizedBox(
+                                                  width: theme.spacing.small),
+                                              _buildFilterChip(
+                                                label: 'Unanswered',
+                                                theme: theme,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                child: const Text('Load More Discussions'),
-                              ),
+                                SliverPadding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: theme.spacing.large,
+                                  ),
+                                  sliver: SliverList(
+                                    delegate: SliverChildBuilderDelegate(
+                                      (context, index) {
+                                        final thread = _threads[index];
+                                        return Padding(
+                                          padding: EdgeInsets.only(
+                                              bottom: theme.spacing.medium),
+                                          child: _buildThreadCard(
+                                            avatar: thread['avatar'] as String,
+                                            author: thread['author'] as String,
+                                            title: thread['title'] as String,
+                                            time: thread['time'] as String,
+                                            category:
+                                                thread['category'] as String,
+                                            replies: thread['replies'] as int,
+                                            views: thread['views'] as int,
+                                            isHot: index == 0,
+                                            isPinned: index == 1,
+                                          ),
+                                        );
+                                      },
+                                      childCount: _threads.length,
+                                    ),
+                                  ),
+                                ),
+                                SliverPadding(
+                                  padding:
+                                      EdgeInsets.all(theme.spacing.extraLarge),
+                                  sliver: SliverToBoxAdapter(
+                                    child: Center(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: theme.colors.primary
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              theme.corners.roundedMedium,
+                                        ),
+                                        child: OutlinedButton(
+                                          onPressed: () {},
+                                          style: OutlinedButton.styleFrom(
+                                            foregroundColor:
+                                                theme.colors.primary,
+                                            side: BorderSide(
+                                              color: theme.colors.primary
+                                                  .withOpacity(0.2),
+                                              width: theme.borders.small,
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  theme.spacing.extraLarge,
+                                              vertical: theme.spacing.medium,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  theme.corners.roundedMedium,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            'Load More',
+                                            style: theme.typography.button
+                                                .copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
@@ -162,155 +525,297 @@ class CommunityForumView extends ConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Implement new post creation
-        },
-        backgroundColor: Colors.blue.shade700,
-        child: const Icon(Icons.add),
+      floatingActionButton: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                theme.colors.primary,
+                theme.colors.primary.withOpacity(0.8),
+              ],
+            ),
+            borderRadius: theme.corners.roundedMedium,
+            boxShadow: [
+              BoxShadow(
+                color: theme.colors.primary.withOpacity(0.2),
+                offset: Offset(0, 4),
+                blurRadius: 12,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {},
+              borderRadius: theme.corners.roundedMedium,
+              hoverColor: Colors.white.withOpacity(0.1),
+              splashColor: Colors.white.withOpacity(0.2),
+              child: Container(
+                width: 56,
+                height: 56,
+                alignment: Alignment.center,
+                child: Icon(
+                  Icons.add_rounded,
+                  color: theme.colors.onPrimary,
+                  size: 28,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        height: 28,
+        decoration: BoxDecoration(
+          color: theme.colors.surface,
+          border: Border(
+            top: BorderSide(
+              color: theme.colors.outlineVariant.withOpacity(0.1),
+              width: theme.borders.small,
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+            // Forum Stats
+            _buildStatusItem(
+              icon: Icons.forum_outlined,
+              label: '1,234 Discussions',
+              theme: theme,
+            ),
+            _buildStatusDivider(theme),
+            _buildStatusItem(
+              icon: Icons.people_outline,
+              label: '546 Active Members',
+              theme: theme,
+            ),
+            _buildStatusDivider(theme),
+            _buildStatusItem(
+              icon: Icons.message_outlined,
+              label: '8,901 Replies',
+              theme: theme,
+            ),
+            const Spacer(),
+            // Right side items
+            _buildStatusItem(
+              icon: Icons.notifications_none_rounded,
+              label: '3 New',
+              theme: theme,
+              color: theme.colors.primary,
+            ),
+            _buildStatusDivider(theme),
+            _buildStatusItem(
+              icon: Icons.circle,
+              label: 'Online',
+              theme: theme,
+              color: Colors.green,
+              iconSize: 8,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildCategoryCard({
+  Widget _buildHeaderIconButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required ThemePalette theme,
+    String? tooltip,
+    String? badge,
+  }) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Material(
+          color: Colors.transparent,
+          borderRadius: theme.corners.roundedMedium,
+          child: InkWell(
+            borderRadius: theme.corners.roundedMedium,
+            hoverColor: theme.colors.surfaceVariant.withOpacity(0.5),
+            splashColor: theme.colors.primary.withOpacity(0.1),
+            onTap: onPressed,
+            child: Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
+              child: Icon(
+                icon,
+                size: 24,
+                color: theme.colors.onSurface,
+              ),
+            ),
+          ),
+        ),
+        if (badge != null)
+          Positioned(
+            top: 2,
+            right: 2,
+            child: Container(
+              padding: EdgeInsets.all(theme.spacing.extraSmall),
+              decoration: BoxDecoration(
+                color: theme.colors.error,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.colors.error.withOpacity(0.2),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              constraints: const BoxConstraints(
+                minWidth: 18,
+                minHeight: 18,
+              ),
+              child: Center(
+                child: Text(
+                  badge,
+                  style: theme.typography.label.copyWith(
+                    color: theme.colors.onError,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCategoryTile({
     required IconData icon,
     required String title,
-    required String description,
+    required int count,
     required Color color,
-    required Color iconColor,
+    required ThemePalette theme,
+    required bool hasNewPosts,
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 16.0),
-      child: HoverableCard(
-        elevation: 1,
-        hoverElevation: 8,
-        shadowColor: iconColor.withOpacity(0.2),
-        backgroundColor: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-        onTap: () {},
-        child: Container(
-          width: 280,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 32, color: iconColor),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  height: 1.2,
-                ),
-                softWrap: false,
+    return Container(
+      margin: EdgeInsets.only(bottom: theme.spacing.small),
+      child: Material(
+        color: theme.colors.surface,
+        borderRadius: theme.corners.roundedLarge,
+        child: InkWell(
+          borderRadius: theme.corners.roundedLarge,
+          hoverColor: color.withOpacity(0.05),
+          splashColor: color.withOpacity(0.1),
+          onTap: () {},
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: theme.colors.outlineVariant.withOpacity(0.1),
+                width: theme.borders.small,
               ),
-              const SizedBox(height: 8),
-              Text(
-                description,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 14,
-                  height: 1.2,
-                ),
-                softWrap: false,
+              borderRadius: theme.corners.roundedLarge,
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: theme.spacing.medium,
+                vertical: theme.spacing.medium,
               ),
-            ],
+              child: Row(
+                children: [
+                  Stack(
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: EdgeInsets.all(theme.spacing.medium),
+                        decoration: BoxDecoration(
+                          color: color.withOpacity(0.1),
+                          borderRadius: theme.corners.roundedLarge,
+                        ),
+                        child: Icon(icon, size: 20, color: color),
+                      ),
+                      if (hasNewPosts)
+                        Positioned(
+                          right: -2,
+                          top: -2,
+                          child: Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: theme.colors.error,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: theme.colors.surface,
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: theme.colors.error.withOpacity(0.2),
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  SizedBox(width: theme.spacing.medium),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: theme.typography.title.copyWith(
+                        color: theme.colors.onSurface,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: theme.spacing.medium,
+                      vertical: theme.spacing.small,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.1),
+                      borderRadius: theme.corners.roundedMedium,
+                    ),
+                    child: Text(
+                      count.toString(),
+                      style: theme.typography.label.copyWith(
+                        color: color,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  List<Widget> _buildThreadsList() {
-    return [
-      _buildThreadCard(
-        avatar: 'assets/avatars/sarah.jpg',
-        author: 'Sarah Mitchell',
-        title: 'How to create engaging blog introductions?',
-        time: '2 hours ago',
-        category: 'Writing Tips',
-        replies: 24,
-        views: 142,
-      ),
-      const SizedBox(height: 16),
-      _buildThreadCard(
-        avatar: 'assets/avatars/john.jpg',
-        author: 'John Cooper',
-        title: 'Looking for feedback on my latest tech article',
-        time: '5 hours ago',
-        category: 'Feedback',
-        replies: 18,
-        views: 89,
-      ),
-      const SizedBox(height: 16),
-      _buildThreadCard(
-        avatar: 'assets/avatars/emma.jpg',
-        author: 'Emma Watson',
-        title: 'Tips for writing compelling story endings',
-        time: '1 day ago',
-        category: 'Writing Tips',
-        replies: 45,
-        views: 230,
-      ),
-      const SizedBox(height: 16),
-      _buildThreadCard(
-        avatar: 'assets/avatars/michael.jpg',
-        author: 'Michael Chen',
-        title: 'Anyone interested in co-authoring a tech series?',
-        time: '2 days ago',
-        category: 'Collaborations',
-        replies: 32,
-        views: 178,
-      ),
-      const SizedBox(height: 16),
-      _buildThreadCard(
-        avatar: 'assets/avatars/sophia.jpg',
-        author: 'Sophia Rodriguez',
-        title: 'How do you overcome writer\'s block?',
-        time: '3 days ago',
-        category: 'Ideas & Inspiration',
-        replies: 67,
-        views: 345,
-      ),
-      const SizedBox(height: 16),
-      _buildThreadCard(
-        avatar: 'assets/avatars/david.jpg',
-        author: 'David Kim',
-        title: 'Need feedback on my blog\'s visual design',
-        time: '4 days ago',
-        category: 'Feedback',
-        replies: 29,
-        views: 156,
-      ),
-      const SizedBox(height: 16),
-      _buildThreadCard(
-        avatar: 'assets/avatars/lisa.jpg',
-        author: 'Lisa Thompson',
-        title: 'Best practices for SEO optimization in 2024',
-        time: '5 days ago',
-        category: 'Writing Tips',
-        replies: 51,
-        views: 289,
-      ),
-      const SizedBox(height: 16),
-      _buildThreadCard(
-        avatar: 'assets/avatars/james.jpg',
-        author: 'James Wilson',
-        title: 'Looking for writers in the AI/ML space',
-        time: '6 days ago',
-        category: 'Collaborations',
-        replies: 38,
-        views: 203,
-      ),
-    ];
-  }
+  final List<Map<String, dynamic>> _threads = [
+    {
+      'avatar': 'assets/avatars/sarah.jpg',
+      'author': 'Sarah Mitchell',
+      'title': 'How to create engaging blog introductions?',
+      'time': '2 hours ago',
+      'category': 'Writing Tips',
+      'replies': 24,
+      'views': 142,
+    },
+    {
+      'avatar': 'assets/avatars/john.jpg',
+      'author': 'John Cooper',
+      'title': 'Looking for feedback on my latest tech article',
+      'time': '5 hours ago',
+      'category': 'Feedback',
+      'replies': 18,
+      'views': 89,
+    },
+    // ... Add the rest of your thread data here
+  ];
 
   Widget _buildThreadCard({
     required String avatar,
@@ -320,155 +825,277 @@ class CommunityForumView extends ConsumerWidget {
     required String category,
     required int replies,
     required int views,
+    bool isHot = false,
+    bool isPinned = false,
   }) {
     final badgeColor = _getCategoryColor(category);
 
-    return HoverableCard(
-      elevation: 2,
-      hoverElevation: 12,
-      shadowColor: badgeColor.withOpacity(0.3),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: Colors.grey.shade200),
-      backgroundColor: Colors.white,
-      duration: const Duration(milliseconds: 150),
-      onTap: () {},
-      hoverColor: badgeColor.withOpacity(0.02),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              backgroundImage: AssetImage(avatar),
-              radius: 24,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1F2937),
-                      height: 1.3,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          'by $author',
-                          style: const TextStyle(
-                            color: Color(0xFF4B5563),
-                            fontSize: 15,
-                          ),
-                          maxLines: 1,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '• $time',
-                        style: const TextStyle(
-                          color: Color(0xFF4B5563),
-                          fontSize: 15,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: badgeColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          category,
-                          style: TextStyle(
-                            color: badgeColor,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+    return Consumer(
+      builder: (context, ref, _) {
+        final theme = ref.watch(themeProvider);
+        return MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.colors.surface,
+              borderRadius: theme.corners.roundedLarge,
+              border: Border.all(
+                color: theme.colors.outlineVariant.withOpacity(0.1),
+                width: theme.borders.small,
               ),
-            ),
-            const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildMetricColumn(
-                      icon: Icons.chat_bubble_outline,
-                      count: replies,
-                      label: 'Replies',
-                    ),
-                    const SizedBox(width: 32),
-                    _buildMetricColumn(
-                      icon: Icons.visibility_outlined,
-                      count: views,
-                      label: 'Views',
-                    ),
-                  ],
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colors.shadow.withOpacity(0.05),
+                  offset: Offset(0, 2),
+                  blurRadius: 8,
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMetricColumn({
-    required IconData icon,
-    required int count,
-    required String label,
-  }) {
-    return Column(
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 22,
-              color: const Color(0xFF374151),
-            ),
-            const SizedBox(width: 6),
-            Text(
-              '$count',
-              style: const TextStyle(
-                color: Color(0xFF374151),
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {},
+                borderRadius: theme.corners.roundedLarge,
+                hoverColor: badgeColor.withOpacity(0.02),
+                splashColor: badgeColor.withOpacity(0.05),
+                child: Padding(
+                  padding: EdgeInsets.all(theme.spacing.large),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Vote Column with modern styling
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: theme.spacing.extraSmall,
+                            vertical: theme.spacing.small,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colors.surfaceVariant.withOpacity(0.3),
+                            borderRadius: theme.corners.roundedLarge,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _buildVoteButton(
+                                icon: Icons.keyboard_arrow_up_rounded,
+                                theme: theme,
+                                onTap: () {},
+                              ),
+                              Container(
+                                margin: EdgeInsets.symmetric(
+                                  vertical: theme.spacing.small,
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: theme.spacing.medium,
+                                  vertical: theme.spacing.extraSmall,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.colors.surface,
+                                  borderRadius: theme.corners.roundedMedium,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          theme.colors.shadow.withOpacity(0.05),
+                                      offset: Offset(0, 2),
+                                      blurRadius: 6,
+                                      spreadRadius: -2,
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  '${replies + 12}',
+                                  style: theme.typography.code.copyWith(
+                                    color: theme.colors.onSurface,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              _buildVoteButton(
+                                icon: Icons.keyboard_arrow_down_rounded,
+                                theme: theme,
+                                onTap: () {},
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: theme.spacing.medium),
+                        // Main Content
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Title & Badges Row
+                              Row(
+                                children: [
+                                  if (isPinned)
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          right: theme.spacing.small),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: theme.spacing.small,
+                                        vertical: theme.spacing.extraSmall,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: theme.colors.primary
+                                            .withOpacity(0.1),
+                                        borderRadius:
+                                            theme.corners.roundedMedium,
+                                        border: Border.all(
+                                          color: theme.colors.primary
+                                              .withOpacity(0.2),
+                                          width: theme.borders.small,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.push_pin_rounded,
+                                            size: 12,
+                                            color: theme.colors.primary,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            'Pinned',
+                                            style:
+                                                theme.typography.label.copyWith(
+                                              color: theme.colors.primary,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  if (isHot)
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          right: theme.spacing.small),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: theme.spacing.small,
+                                        vertical: theme.spacing.extraSmall,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            theme.colors.error,
+                                            theme.colors.error.withOpacity(0.8),
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            theme.corners.roundedMedium,
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.local_fire_department_rounded,
+                                            size: 12,
+                                            color: theme.colors.onError,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            'Hot',
+                                            style:
+                                                theme.typography.label.copyWith(
+                                              color: theme.colors.onError,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: theme.spacing.medium,
+                                      vertical: theme.spacing.extraSmall,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: badgeColor.withOpacity(0.1),
+                                      borderRadius: theme.corners.roundedMedium,
+                                      border: Border.all(
+                                        color: badgeColor.withOpacity(0.2),
+                                        width: theme.borders.small,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      category,
+                                      style: theme.typography.label.copyWith(
+                                        color: badgeColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: theme.spacing.small),
+                              // Title
+                              Text(
+                                title,
+                                style: theme.typography.title.copyWith(
+                                  color: theme.colors.onSurface,
+                                  height: 1.3,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: theme.spacing.medium),
+                              // Author & Stats Row
+                              Row(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: theme.colors.primary
+                                            .withOpacity(0.2),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: CircleAvatar(
+                                      backgroundImage: AssetImage(avatar),
+                                      radius: 14,
+                                    ),
+                                  ),
+                                  SizedBox(width: theme.spacing.small),
+                                  Text(
+                                    author,
+                                    style: theme.typography.label.copyWith(
+                                      color: theme.colors.onSurface,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(width: theme.spacing.small),
+                                  Container(
+                                    width: 3,
+                                    height: 3,
+                                    decoration: BoxDecoration(
+                                      color: theme.colors.onSurfaceVariant,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  SizedBox(width: theme.spacing.small),
+                                  Text(
+                                    time,
+                                    style: theme.typography.label.copyWith(
+                                      color: theme.colors.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Color(0xFF374151),
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -485,5 +1112,153 @@ class CommunityForumView extends ConsumerWidget {
       default:
         return const Color(0xFF2563EB); // Default blue
     }
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    bool isSelected = false,
+    required ThemePalette theme,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: theme.corners.roundedMedium,
+        onTap: () {},
+        hoverColor: theme.colors.primary.withOpacity(0.05),
+        splashColor: theme.colors.primary.withOpacity(0.1),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: EdgeInsets.symmetric(
+            horizontal: theme.spacing.large,
+            vertical: theme.spacing.medium,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? theme.colors.primary.withOpacity(0.1)
+                : theme.colors.surfaceVariant.withOpacity(0.5),
+            borderRadius: theme.corners.roundedMedium,
+            border: Border.all(
+              color: isSelected
+                  ? theme.colors.primary
+                  : theme.colors.outlineVariant.withOpacity(0.2),
+              width: theme.borders.small,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isSelected) ...[
+                Icon(
+                  Icons.check_rounded,
+                  size: 16,
+                  color: theme.colors.primary,
+                ),
+                SizedBox(width: theme.spacing.small),
+              ],
+              Text(
+                label,
+                style: theme.typography.button.copyWith(
+                  color: isSelected
+                      ? theme.colors.primary
+                      : theme.colors.onSurfaceVariant,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVoteButton({
+    required IconData icon,
+    required ThemePalette theme,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: theme.corners.roundedMedium,
+      child: InkWell(
+        borderRadius: theme.corners.roundedMedium,
+        onTap: onTap,
+        hoverColor: theme.colors.primary.withOpacity(0.1),
+        splashColor: theme.colors.primary.withOpacity(0.15),
+        child: Container(
+          width: 36,
+          height: 36,
+          padding: EdgeInsets.zero,
+          decoration: BoxDecoration(
+            color: theme.colors.surface,
+            borderRadius: theme.corners.roundedMedium,
+            border: Border.all(
+              color: theme.colors.outlineVariant.withOpacity(0.2),
+              width: theme.borders.small,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: theme.colors.shadow.withOpacity(0.05),
+                offset: Offset(0, 2),
+                blurRadius: 6,
+                spreadRadius: -2,
+              ),
+            ],
+          ),
+          child: Center(
+            child: Icon(
+              icon,
+              size: 20,
+              color: theme.colors.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusItem({
+    required IconData icon,
+    required String label,
+    required ThemePalette theme,
+    Color? color,
+    double? iconSize,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {},
+        hoverColor: theme.colors.surfaceVariant.withOpacity(0.5),
+        child: Container(
+          height: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: theme.spacing.medium),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: iconSize ?? 14,
+                color: color ?? theme.colors.onSurfaceVariant,
+              ),
+              SizedBox(width: theme.spacing.small),
+              Text(
+                label,
+                style: theme.typography.caption.copyWith(
+                  color: color ?? theme.colors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusDivider(ThemePalette theme) {
+    return Container(
+      height: 14,
+      width: 1,
+      margin: EdgeInsets.symmetric(horizontal: theme.spacing.small),
+      color: theme.colors.outlineVariant.withOpacity(0.2),
+    );
   }
 }

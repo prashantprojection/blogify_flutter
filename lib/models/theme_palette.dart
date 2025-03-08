@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class ThemeColors {
@@ -33,6 +32,32 @@ class ThemeColors {
   final Color inversePrimary;
   final Color surfaceTint;
 
+  // Additional Flutter colors
+  final Color accent;
+  final Color accentLight;
+  final Color accentDark;
+  final Color divider;
+  final Color cardColor;
+  final Color dialogBackgroundColor;
+  final Color disabledColor;
+  final Color focusColor;
+  final Color hintColor;
+  final Color hoverColor;
+  final Color indicatorColor;
+  final Color scaffoldBackgroundColor;
+  final Color secondaryHeaderColor;
+  final Color selectedRowColor;
+  final Color splashColor;
+  final Color unselectedWidgetColor;
+
+  // Text colors
+  final Color textPrimary;
+  final Color textSecondary;
+  final Color textHint;
+  final Color textDisabled;
+  final Color textSelectionColor;
+  final Color textSelectionHandleColor;
+
   // State colors
   final Color surfaceContainerLowest;
   final Color surfaceContainerLow;
@@ -43,10 +68,10 @@ class ThemeColors {
   final Color surfaceBright;
 
   // State layer colors
-  final Color hoverColor;
-  final Color focusColor;
+  final Color hoverStateColor;
+  final Color focusStateColor;
   final Color highlightColor;
-  final Color splashColor;
+  final Color splashStateColor;
 
   // State opacities
   final double hoverOpacity;
@@ -93,10 +118,32 @@ class ThemeColors {
     required this.surfaceContainerHighest,
     required this.surfaceDim,
     required this.surfaceBright,
-    required this.hoverColor,
+    required this.accent,
+    required this.accentLight,
+    required this.accentDark,
+    required this.divider,
+    required this.cardColor,
+    required this.dialogBackgroundColor,
+    required this.disabledColor,
     required this.focusColor,
-    required this.highlightColor,
+    required this.hintColor,
+    required this.hoverColor,
+    required this.indicatorColor,
+    required this.scaffoldBackgroundColor,
+    required this.secondaryHeaderColor,
+    required this.selectedRowColor,
     required this.splashColor,
+    required this.unselectedWidgetColor,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.textHint,
+    required this.textDisabled,
+    required this.textSelectionColor,
+    required this.textSelectionHandleColor,
+    required this.hoverStateColor,
+    required this.focusStateColor,
+    required this.highlightColor,
+    required this.splashStateColor,
     this.hoverOpacity = 0.08,
     this.focusOpacity = 0.12,
     this.pressedOpacity = 0.12,
@@ -149,8 +196,15 @@ class ThemeColors {
       onErrorContainer: onErrorContainer,
       surface: surface,
       onSurface: onSurface,
-      surfaceContainerHighest: surfaceVariant,
       onSurfaceVariant: onSurfaceVariant,
+      surfaceTint: surfaceTint,
+      surfaceContainerLowest: surfaceContainerLowest,
+      surfaceContainerLow: surfaceContainerLow,
+      surfaceContainer: surfaceContainer,
+      surfaceContainerHigh: surfaceContainerHigh,
+      surfaceContainerHighest: surfaceContainerHighest,
+      surfaceDim: surfaceDim,
+      surfaceBright: surfaceBright,
       outline: outline,
       outlineVariant: outlineVariant,
       shadow: shadow,
@@ -158,7 +212,6 @@ class ThemeColors {
       inverseSurface: inverseSurface,
       onInverseSurface: onInverseSurface,
       inversePrimary: inversePrimary,
-      surfaceTint: surfaceTint,
     );
   }
 }
@@ -216,7 +269,8 @@ class ThemeTypography {
   final TextStyle title; // Content titles, card headers (24-28)
   final TextStyle subtitle; // Secondary titles, descriptions (18-20)
   final TextStyle body; // Main content text (16)
-  final TextStyle label; // Buttons, form fields (14)
+  final TextStyle button; // Button text style
+  final TextStyle label; // Form fields (14)
   final TextStyle caption; // Helper text, timestamps (12)
   final TextStyle code; // Code blocks, technical content
   final TextStyle quote; // Blockquotes, testimonials
@@ -234,6 +288,7 @@ class ThemeTypography {
     required this.title,
     required this.subtitle,
     required this.body,
+    required this.button,
     required this.label,
     required this.caption,
     required this.code,
@@ -254,6 +309,7 @@ class ThemeTypography {
     TextStyle? title,
     TextStyle? subtitle,
     TextStyle? body,
+    TextStyle? button,
     TextStyle? label,
     TextStyle? caption,
     TextStyle? code,
@@ -272,6 +328,7 @@ class ThemeTypography {
       title: title ?? this.title,
       subtitle: subtitle ?? this.subtitle,
       body: body ?? this.body,
+      button: button ?? this.button,
       label: label ?? this.label,
       caption: caption ?? this.caption,
       code: code ?? this.code,
@@ -295,6 +352,9 @@ class ThemeTypography {
       monospaceFont: monospaceFont ?? this.monospaceFont,
       handwritingFont: handwritingFont ?? this.handwritingFont,
       body: primaryFont != null ? body.copyWith(fontFamily: primaryFont) : body,
+      button: primaryFont != null
+          ? button.copyWith(fontFamily: primaryFont)
+          : button,
       label:
           primaryFont != null ? label.copyWith(fontFamily: primaryFont) : label,
       caption: primaryFont != null
@@ -372,6 +432,14 @@ class ThemeTypography {
         height: lineHeight,
         decoration: decoration,
       ),
+      button: button.copyWith(
+        color: color,
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        letterSpacing: letterSpacing,
+        height: lineHeight,
+        decoration: decoration,
+      ),
       label: label.copyWith(
         color: color,
         fontSize: fontSize,
@@ -422,6 +490,7 @@ class ThemeTypography {
     TextStyle? title,
     TextStyle? subtitle,
     TextStyle? body,
+    TextStyle? button,
     TextStyle? label,
     TextStyle? caption,
     TextStyle? code,
@@ -434,6 +503,7 @@ class ThemeTypography {
       title: title != null ? this.title.merge(title) : null,
       subtitle: subtitle != null ? this.subtitle.merge(subtitle) : null,
       body: body != null ? this.body.merge(body) : null,
+      button: button != null ? this.button.merge(button) : null,
       label: label != null ? this.label.merge(label) : null,
       caption: caption != null ? this.caption.merge(caption) : null,
       code: code != null ? this.code.merge(code) : null,
@@ -443,15 +513,33 @@ class ThemeTypography {
     );
   }
 
+  /// Converts typography to Flutter's TextTheme
   TextTheme toTextTheme() => TextTheme(
-        displayMedium: display,
-        headlineMedium: headline,
-        titleMedium: title,
-        titleSmall: subtitle,
-        bodyMedium: body,
-        labelMedium: label,
+        displayLarge: display,
+        displayMedium: headline,
+        titleLarge: title,
+        titleMedium: subtitle,
+        bodyLarge: body,
+        labelLarge: button,
+        bodyMedium: label,
         bodySmall: caption,
       );
+
+  /// Creates a copy with responsive font sizes based on screen width
+  ThemeTypography responsive(double screenWidth) {
+    final scaleFactor = (screenWidth / 1440).clamp(0.8, 1.2);
+
+    return copyWith(
+      display: display.copyWith(fontSize: display.fontSize! * scaleFactor),
+      headline: headline.copyWith(fontSize: headline.fontSize! * scaleFactor),
+      title: title.copyWith(fontSize: title.fontSize! * scaleFactor),
+      subtitle: subtitle.copyWith(fontSize: subtitle.fontSize! * scaleFactor),
+      body: body.copyWith(fontSize: body.fontSize! * scaleFactor),
+      button: button.copyWith(fontSize: button.fontSize! * scaleFactor),
+      label: label.copyWith(fontSize: label.fontSize! * scaleFactor),
+      caption: caption.copyWith(fontSize: caption.fontSize! * scaleFactor),
+    );
+  }
 }
 
 class Spacing {
